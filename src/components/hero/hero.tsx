@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+import { StartCta } from "@/components/layout/auth-slot";
 import { ApiPanel } from "./api-panel";
 
 export function Hero() {
@@ -23,12 +25,10 @@ export function Hero() {
           through one unified API.
         </p>
         <div className="hero-cta reveal delay-5">
-          <a href="#models" className="btn-ink" data-cursor="hover">
-            Start building
-          </a>
-          <a href="#models" className="btn-ghost" data-cursor="hover">
+          <StartCta className="btn-ink" />
+          <Link to="/models" className="btn-ghost" data-cursor="hover">
             Explore models
-          </a>
+          </Link>
         </div>
       </div>
       <ApiPanel />

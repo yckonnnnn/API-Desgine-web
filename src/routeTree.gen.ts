@@ -10,33 +10,160 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConsoleRouteImport } from './routes/console'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ModelsRouteImport } from './routes/models'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ConsoleIndexRouteImport } from './routes/console/index'
+import { Route as ConsoleBillingRouteImport } from './routes/console/billing'
+import { Route as ConsoleKeysRouteImport } from './routes/console/keys'
+import { Route as ConsoleUsageRouteImport } from './routes/console/usage'
+import { Route as ConsoleWalletRouteImport } from './routes/console/wallet'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConsoleRoute = ConsoleRouteImport.update({
+  id: '/console',
+  path: '/console',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ModelsRoute = ModelsRouteImport.update({
+  id: '/models',
+  path: '/models',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsoleIndexRoute = ConsoleIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleBillingRoute = ConsoleBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleKeysRoute = ConsoleKeysRouteImport.update({
+  id: '/keys',
+  path: '/keys',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleUsageRoute = ConsoleUsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleWalletRoute = ConsoleWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/console': typeof ConsoleRouteWithChildren
+  '/login': typeof LoginRoute
+  '/models': typeof ModelsRoute
+  '/register': typeof RegisterRoute
+  '/console/billing': typeof ConsoleBillingRoute
+  '/console/keys': typeof ConsoleKeysRoute
+  '/console/usage': typeof ConsoleUsageRoute
+  '/console/wallet': typeof ConsoleWalletRoute
+  '/console/': typeof ConsoleIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/models': typeof ModelsRoute
+  '/register': typeof RegisterRoute
+  '/console/billing': typeof ConsoleBillingRoute
+  '/console/keys': typeof ConsoleKeysRoute
+  '/console/usage': typeof ConsoleUsageRoute
+  '/console/wallet': typeof ConsoleWalletRoute
+  '/console': typeof ConsoleIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/console': typeof ConsoleRouteWithChildren
+  '/login': typeof LoginRoute
+  '/models': typeof ModelsRoute
+  '/register': typeof RegisterRoute
+  '/console/billing': typeof ConsoleBillingRoute
+  '/console/keys': typeof ConsoleKeysRoute
+  '/console/usage': typeof ConsoleUsageRoute
+  '/console/wallet': typeof ConsoleWalletRoute
+  '/console/': typeof ConsoleIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/console'
+    | '/login'
+    | '/models'
+    | '/register'
+    | '/console/billing'
+    | '/console/keys'
+    | '/console/usage'
+    | '/console/wallet'
+    | '/console/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/models'
+    | '/register'
+    | '/console/billing'
+    | '/console/keys'
+    | '/console/usage'
+    | '/console/wallet'
+    | '/console'
+    | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/console'
+    | '/login'
+    | '/models'
+    | '/register'
+    | '/console/billing'
+    | '/console/keys'
+    | '/console/usage'
+    | '/console/wallet'
+    | '/console/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConsoleRoute: typeof ConsoleRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  ModelsRoute: typeof ModelsRoute
+  RegisterRoute: typeof RegisterRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +175,105 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/console': {
+      id: '/console'
+      path: '/console'
+      fullPath: '/console'
+      preLoaderRoute: typeof ConsoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/models': {
+      id: '/models'
+      path: '/models'
+      fullPath: '/models'
+      preLoaderRoute: typeof ModelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/console/': {
+      id: '/console/'
+      path: '/'
+      fullPath: '/console/'
+      preLoaderRoute: typeof ConsoleIndexRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/console/billing': {
+      id: '/console/billing'
+      path: '/billing'
+      fullPath: '/console/billing'
+      preLoaderRoute: typeof ConsoleBillingRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/console/keys': {
+      id: '/console/keys'
+      path: '/keys'
+      fullPath: '/console/keys'
+      preLoaderRoute: typeof ConsoleKeysRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/console/usage': {
+      id: '/console/usage'
+      path: '/usage'
+      fullPath: '/console/usage'
+      preLoaderRoute: typeof ConsoleUsageRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/console/wallet': {
+      id: '/console/wallet'
+      path: '/wallet'
+      fullPath: '/console/wallet'
+      preLoaderRoute: typeof ConsoleWalletRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface ConsoleRouteChildren {
+  ConsoleBillingRoute: typeof ConsoleBillingRoute
+  ConsoleKeysRoute: typeof ConsoleKeysRoute
+  ConsoleUsageRoute: typeof ConsoleUsageRoute
+  ConsoleWalletRoute: typeof ConsoleWalletRoute
+  ConsoleIndexRoute: typeof ConsoleIndexRoute
+}
+
+const ConsoleRouteChildren: ConsoleRouteChildren = {
+  ConsoleBillingRoute: ConsoleBillingRoute,
+  ConsoleKeysRoute: ConsoleKeysRoute,
+  ConsoleUsageRoute: ConsoleUsageRoute,
+  ConsoleWalletRoute: ConsoleWalletRoute,
+  ConsoleIndexRoute: ConsoleIndexRoute,
+}
+
+const ConsoleRouteWithChildren =
+  ConsoleRoute._addFileChildren(ConsoleRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConsoleRoute: ConsoleRouteWithChildren,
+  LoginRoute: LoginRoute,
+  ModelsRoute: ModelsRoute,
+  RegisterRoute: RegisterRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

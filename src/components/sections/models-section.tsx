@@ -16,7 +16,8 @@ export function ModelsSection() {
         </h2>
       </div>
       <ol className="model-list">
-        {MODELS.map((model) => {
+        {MODELS.filter((model) => model.category !== "IMAGE" && model.category !== "AUDIO").map(
+          (model) => {
           const open = active === model.name;
           return (
             <li key={model.name} className={cn("model-row", open && "is-open")}>
@@ -42,7 +43,8 @@ export function ModelsSection() {
               </button>
             </li>
           );
-        })}
+          },
+        )}
       </ol>
     </section>
   );
