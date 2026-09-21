@@ -4,7 +4,7 @@ import { SiteChrome } from "@/components/layout/site-chrome";
 import { EcosystemSection } from "@/components/sections/ecosystem-section";
 import { InfraSection } from "@/components/sections/infra-section";
 import { ModelsSection } from "@/components/sections/models-section";
-import { PlaygroundSection } from "@/components/sections/playground-section";
+import { WarpTunnelSection } from "@/components/sections/warp-tunnel-section";
 import { SiteFooter } from "@/components/sections/site-footer";
 
 export const Route = createFileRoute("/")({ component: Home });
@@ -17,7 +17,7 @@ function Home() {
         <EcosystemSection />
         <ModelsSection />
         <InfraSection />
-        <PlaygroundSection />
+        <WarpTunnelSection />
         <SiteFooter />
       </main>
     </SiteChrome>

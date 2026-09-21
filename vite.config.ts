@@ -158,7 +158,12 @@ export default defineConfig(({ command, isPreview }) => ({
   },
   resolve: { tsconfigPaths: true },
   ssr: {
-    noExternal: ["@lobehub/icons"],
+    // @lobehub/icons' Avatar/Combine variants import @lobehub/ui, whose barrel
+    // pulls in @emoji-mart/data — a package whose main entry is a .json file.
+    // Node's ESM loader rejects that without an `import ... with { type: "json" }`
+    // attribute, so leaving it external breaks SSR on every render. Bundling both
+    // lets Vite resolve the JSON and tree-shake the unused EmojiPicker subtree.
+    noExternal: ["@lobehub/icons", "@lobehub/ui"],
   },
   plugins: [
     pgliteBootstrapPlugin(),
