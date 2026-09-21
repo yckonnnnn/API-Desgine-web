@@ -19,6 +19,15 @@
   --color-glass: rgb(255 255 255 / 0.28);
   --color-glass-border: rgb(255 255 255 / 0.55);
 
+  /* Console accent. The marketing site stays on the ice/teal pair above; the
+     workspace uses this acid-lime instead, which is what the wallet, tab and
+     badge treatments are built around. `acid-ink` is the readable-on-white
+     member of the family — plain lime fails contrast as text. */
+  --color-acid: #cbf24f;
+  --color-acid-soft: #e4fba8;
+  --color-acid-ink: #5f7a16;
+  --color-acid-tint: rgb(203 242 79 / 0.22);
+
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -532,7 +541,7 @@
   background: linear-gradient(to bottom, var(--color-line), transparent);
 }
 
-.models,
+.why,
 .infra {
   position: relative;
   z-index: 4;
@@ -540,13 +549,18 @@
   padding: 18vh 6vw 12vh;
 }
 
-.models {
-  padding-left: max(6vw, 38vw);
+.why-head {
+  max-width: 46rem;
+  margin-bottom: 56px;
 }
 
-.models-copy {
-  max-width: 42rem;
-  margin-bottom: 48px;
+.why-lede {
+  margin: 22px 0 0;
+  max-width: 38rem;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-mist);
+  text-wrap: pretty;
 }
 
 .section-title {
@@ -559,104 +573,198 @@
   text-wrap: balance;
 }
 
-.model-list {
+/* — Scenario bento. An asymmetric 12-column grid rather than the ecosystem
+   section's uniform cards, so the two read as different blocks. Each tile
+   carries a cursor-tracking spotlight: `--spot-x/y` are written on pointermove
+   and the gradient inside ::before follows them. */
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.why-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 30px 28px 26px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgb(213 215 214 / 0.62);
+  background: rgb(255 255 255 / 0.5);
+  box-shadow: 0 22px 44px -38px rgb(110 158 162 / 0.5);
+  transition-property: transform, border-color, box-shadow, background-color;
+  transition-duration: 320ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+/* Spans live in classes rather than an inline custom property so the media
+   queries below can actually override them. */
+.why-span-4 { grid-column: span 4; }
+.why-span-5 { grid-column: span 5; }
+.why-span-7 { grid-column: span 7; }
+
+.why-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 320ms var(--ease-out-power3);
+  background: radial-gradient(
+    300px circle at var(--spot-x, 50%) var(--spot-y, 0%),
+    rgb(169 221 224 / 0.44),
+    transparent 70%
+  );
+}
+
+.why-tile:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in oklab, var(--color-ice) 58%, white);
+  background: rgb(255 255 255 / 0.68);
+  box-shadow: 0 30px 54px -34px rgb(110 158 162 / 0.44);
+}
+
+.why-tile:hover::before {
+  opacity: 1;
+}
+
+.why-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: rgb(255 255 255 / 0.8);
+  border: 1px solid rgb(213 215 214 / 0.6);
+  color: var(--color-ice-deep);
+}
+
+.why-tile h3 {
+  position: relative;
+  margin: 4px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+}
+
+.why-tile p {
+  position: relative;
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-mist);
+  text-wrap: pretty;
+}
+
+/* — Top-up band. Sits directly under the reasons so the purchase path is one
+   step from the argument for it. Light ice tint rather than the infra card's
+   dark panel, so the two heavy blocks don't repeat. */
+
+.why-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 18px;
+  padding: 28px 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in oklab, var(--color-ice) 55%, white);
+  background:
+    radial-gradient(ellipse at 8% 20%, rgb(169 221 224 / 0.3), transparent 58%),
+    rgb(255 255 255 / 0.55);
+  box-shadow: 0 26px 50px -42px rgb(110 158 162 / 0.55);
+}
+
+.why-cta-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.why-cta-note {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--color-mist);
+}
+
+.why-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.why-amounts {
   list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
   margin: 0;
   padding: 0;
 }
 
-.model-row button {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 24px;
-  width: 100%;
-  padding: 18px 0;
-  border: 0;
-  border-bottom: 1px solid rgb(17 18 20 / 0.06);
-  background: transparent;
-  text-align: left;
-  color: inherit;
-  transition-property: padding, background-color;
-  transition-duration: 280ms;
-  transition-timing-function: var(--ease-out-power3);
-}
-
-.model-row.is-open button {
-  background: rgb(255 255 255 / 0.28);
-  padding-left: 14px;
-  padding-right: 14px;
-  border-radius: 10px;
-  border-bottom-color: transparent;
-}
-
-.model-name {
-  display: inline-flex;
-  align-items: center;
-  gap: clamp(14px, 2vw, 24px);
-  font-size: clamp(2.4rem, 5.6vw, 4.8rem);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 1;
-  color: var(--color-ink);
-}
-
-.model-logo {
-  display: inline-flex;
-  width: clamp(34px, 4vw, 48px);
-  height: clamp(34px, 4vw, 48px);
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-}
-
-.model-logo > * {
-  width: 100%;
-  height: 100%;
-}
-
-.model-meta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 10px 16px;
-  min-width: 0;
-  opacity: 0;
-  filter: blur(8px);
-  transform: translateY(6px);
-  transition-property: opacity, filter, transform;
-  transition-duration: 420ms;
-  transition-timing-function: var(--ease-out-power3);
+.why-amounts a {
+  display: grid;
+  place-items: center;
+  min-width: 68px;
+  padding: 11px 14px;
+  border-radius: var(--radius-capsule);
+  border: 1px solid rgb(213 215 214 / 0.72);
+  background: rgb(255 255 255 / 0.82);
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--color-mist);
-}
-
-.model-meta.is-visible {
-  opacity: 1;
-  filter: blur(0);
-  transform: translateY(0);
-}
-
-.model-meta em {
-  font-style: normal;
+  font-size: 13.5px;
+  font-weight: 500;
   color: var(--color-ink);
+  text-decoration: none;
+  transition-property: transform, border-color, background-color, box-shadow;
+  transition-duration: 260ms;
+  transition-timing-function: var(--ease-out-power3);
 }
 
-.model-status {
+.why-amounts a:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--color-ice) 62%, white);
+  background: #fff;
+  box-shadow: 0 14px 26px -18px rgb(110 158 162 / 0.6);
+}
+
+.why-buy {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: var(--color-ice-deep);
+  gap: 9px;
+  text-decoration: none;
 }
 
-.model-status i {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-ice-deep);
+@media (max-width: 639px) {
+  .why-cta {
+    padding: 22px 20px;
+    gap: 20px;
+  }
+
+  .why-cta-actions {
+    width: 100%;
+  }
+
+  .why-amounts a {
+    min-width: 60px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+  }
 }
+
+/* — Infrastructure card. A rounded two-panel card: deep ink brand panel on the
+   left, warm link panel on the right, with a dashed stamp badge. Structure
+   follows the reference footer; the cloud photograph is replaced by an
+   ink-to-slate gradient lit with the site's ice tone, and the stamp keeps the
+   site's palette instead of the reference's violet. */
 
 .infra {
   display: flex;
@@ -677,41 +785,352 @@
   opacity: 0.9;
 }
 
-.infra-title {
-  font-size: clamp(3rem, 8vw, 7rem);
+.infra-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgb(213 215 214 / 0.7);
+  background: #f8f7f2;
+  box-shadow: 0 44px 84px -56px rgb(70 93 101 / 0.45);
 }
 
-.stat-list {
+/* — Left: brand panel */
+
+.infra-brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 30px;
+  min-height: 400px;
+  padding: 38px 36px;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(165deg, #12161a 0%, #1e282c 46%, #33474b 100%);
+}
+
+.infra-brand-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 16% 10%, rgb(169 221 224 / 0.28), transparent 52%),
+    radial-gradient(ellipse at 92% 96%, rgb(110 158 162 / 0.24), transparent 56%);
+}
+
+/* FoytonBrand defaults to ink-on-light, so invert it for the dark panel:
+   white body, dark eyes, muted whiskers. */
+.infra-brand .foyton-brand {
+  color: #fff;
+}
+
+.infra-brand .foyton-brand-api {
+  background: rgb(255 255 255 / 0.94);
+  color: #14181b;
+}
+
+.infra-brand .foyton-cat circle {
+  fill: #1b2226;
+}
+
+.infra-brand .foyton-cat path[stroke] {
+  stroke: rgb(20 24 27 / 0.42);
+}
+
+.infra-brand-top,
+.infra-brand-mid,
+.infra-brand-foot {
+  position: relative;
+}
+
+.infra-brand-mid {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.infra-brand-kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.6);
+}
+
+.infra-brand-slogan {
+  margin: 0;
+  font-size: clamp(1.2rem, 1.85vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.infra-brand-stats {
   list-style: none;
-  margin: 10vh 0 0;
-  padding: 0;
+  margin: 12px 0 0;
+  padding: 20px 0 0;
+  display: flex;
+  gap: 30px;
+  border-top: 1px solid rgb(255 255 255 / 0.15);
+}
+
+.infra-brand-stats li {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.infra-stat-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.infra-stat-label {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.55);
+}
+
+.infra-brand-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.infra-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.9);
+}
+
+.infra-contact i {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 0.82);
+}
+
+.infra-social {
+  display: flex;
+  gap: 8px;
+}
+
+.infra-social a {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+  backdrop-filter: blur(8px);
+  transition-property: background-color, transform;
+  transition-duration: 240ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.infra-social a:hover {
+  background: rgb(255 255 255 / 0.28);
+  transform: translateY(-2px);
+}
+
+.infra-social svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* — Right: links panel */
+
+.infra-links {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 44px;
+  padding: 40px 44px 30px;
+  background: #f8f7f2;
+}
+
+.infra-stamp {
+  position: absolute;
+  top: 24px;
+  right: 26px;
+  transform: rotate(12deg);
+  pointer-events: none;
+  user-select: none;
+}
+
+.infra-stamp-ring {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 118px;
+  height: 118px;
+  padding: 10px;
+  border-radius: 50%;
+  border: 2px dashed rgb(110 158 162 / 0.78);
+  background: rgb(169 221 224 / 0.18);
+  color: #3f6369;
+  /* Font size lives here so the arc text and glyph scale with the ring at
+     every breakpoint instead of overrunning the circle. */
+  font-size: 8px;
+}
+
+.infra-stamp-ring::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px solid rgb(110 158 162 / 0.5);
+}
+
+.infra-stamp-arc {
+  font-family: var(--font-mono);
+  font-size: 1em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.infra-stamp-glyph {
+  width: 2.6em;
+  height: 2.6em;
+}
+
+.infra-stamp-ribbon {
+  padding: 0.28em 0.9em 0.36em;
+  border-radius: var(--radius-capsule);
+  background: #2c4649;
+  color: #fff;
+  font-size: 1em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.infra-cols {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4vw;
+  gap: 30px;
+  /* Keeps the last column clear of the stamp above it, with enough slack for
+     the longer English labels. */
+  padding-right: 152px;
 }
 
-.stat-value {
-  display: block;
-  font-size: clamp(2.8rem, 8vw, 9rem);
-  font-weight: 500;
-  letter-spacing: -0.06em;
-  line-height: 0.9;
-  color: var(--color-ink);
-}
-
-.stat-label {
-  display: block;
-  margin-top: 14px;
+.infra-col-title {
+  margin: 0 0 17px;
   font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-mist);
+  letter-spacing: 0.06em;
+  color: var(--color-haze);
 }
 
-.infra-foot {
-  margin: 10vh 0 0;
-  font-size: 15px;
+.infra-cols ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.infra-cols a,
+.infra-cols span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: color 200ms var(--ease-out-power3);
+}
+
+.infra-cols a:hover {
+  color: var(--color-ice-deep);
+}
+
+.infra-copy {
+  margin: 0;
+  padding-top: 22px;
+  border-top: 1px solid rgb(213 215 214 / 0.72);
+  font-size: 12px;
   color: var(--color-haze);
+}
+
+@media (max-width: 959px) {
+  .infra-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .infra-brand {
+    min-height: 320px;
+    padding: 32px 28px;
+  }
+
+  .infra-links {
+    padding: 32px 28px 26px;
+    gap: 34px;
+  }
+
+  .infra-cols {
+    padding-right: 150px;
+  }
+}
+
+@media (max-width: 639px) {
+  .infra-brand {
+    min-height: 0;
+    padding: 28px 22px;
+    gap: 24px;
+  }
+
+  .infra-brand-stats {
+    gap: 22px;
+  }
+
+  .infra-stat-value {
+    font-size: 0.95rem;
+  }
+
+  .infra-links {
+    padding: 26px 22px 22px;
+  }
+
+  /* At this width the panel is too narrow to run the columns beside the stamp,
+     so the stamp leaves absolute positioning and takes its own row. */
+  .infra-stamp {
+    position: static;
+    align-self: flex-end;
+    transform: rotate(8deg);
+    margin-bottom: -4px;
+  }
+
+  .infra-stamp-ring {
+    width: 94px;
+    height: 94px;
+    padding: 8px;
+    font-size: 6.6px;
+  }
+
+  .infra-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    padding-right: 0;
+  }
 }
 
 .reveal {
@@ -1014,16 +1433,14 @@
   background: rgb(255 255 255 / 0.55);
 }
 
-/* — Warp-tunnel section. A light-theme read of the prototype's hyperspace
-   band: streaks and particles shoot towards the viewer through a canvas that
-   stays transparent, so the page's own canvas colour shows through. Fog pulls
-   far-away geometry into that same tone instead of into a black void. */
+/* A lighter echo of the hero moon on a clear white canvas. */
 
 .warp {
   position: relative;
   z-index: 4;
   padding: 0 6vw;
   overflow: hidden;
+  background: transparent;
 }
 
 .warp-stage {
@@ -1032,141 +1449,158 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  isolation: isolate;
+  background: transparent;
 }
 
-.warp-canvas {
+.warp-stage::before,
+.warp-stage::after {
+  content: "";
   position: absolute;
   inset: 0;
-}
-
-.warp-canvas canvas {
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.warp-veil {
-  position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
-  height: 72px;
-  background: linear-gradient(
-    to bottom,
-    #f4f3ef 0%,
-    rgb(169 221 224 / 0.25) 40%,
-    rgb(110 158 162 / 0.18) 70%,
-    transparent 100%
-  );
+  z-index: 0;
   pointer-events: none;
-  z-index: 2;
 }
 
-.warp-veil-dots {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(circle, var(--color-ice-deep) 1.1px, transparent 1.2px);
-  background-size: 14px 14px;
-  background-position: 7px 7px;
-  opacity: 0.3;
+.warp-stage::before {
+  background:
+    radial-gradient(ellipse 38% 29% at 16% 68%, rgb(155 179 184 / 0.11), transparent 80%),
+    radial-gradient(ellipse 32% 25% at 83% 30%, rgb(196 206 204 / 0.12), transparent 82%),
+    radial-gradient(ellipse 45% 35% at 54% 94%, rgb(166 187 190 / 0.08), transparent 78%),
+    rgb(255 255 255 / 0.13);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
 }
 
-/* Two layered glows, one warm, one cool, that sit behind the headline and
-   anchor the streaks to the page instead of floating into nothing. */
-.warp-haze {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(110px);
-  opacity: 0.35;
-  z-index: 1;
-}
-
-.warp-haze-a {
-  width: 520px;
-  height: 320px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle,
-    rgb(79 110 247 / 0.28),
-    rgb(169 221 224 / 0.22) 55%,
-    transparent 75%
-  );
-}
-
-.warp-haze-b {
-  width: 360px;
-  height: 260px;
-  top: 38%;
-  left: 62%;
-  background: radial-gradient(
-    circle,
-    rgb(139 92 246 / 0.25),
-    transparent 70%
-  );
-}
-
-/* Lifts the headline off the streaks by laying a soft canvas-tinted disc
-   behind the copy — keeps glyphs sharp without masking the scene. */
-.warp-core {
-  position: absolute;
-  top: 52%;
-  left: 50%;
-  width: min(720px, 80vw);
-  height: 300px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    ellipse at center,
-    rgb(244 243 239 / 0.85) 0%,
-    rgb(244 243 239 / 0.35) 45%,
-    transparent 75%
-  );
-  pointer-events: none;
-  z-index: 3;
+.warp-stage::after {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.68' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+  mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 85%, transparent);
 }
 
 .warp-copy {
   position: relative;
-  z-index: 5;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 14px;
+  gap: 18px;
   padding: 48px 0;
   max-width: 960px;
   pointer-events: none;
 }
 
-.warp-kicker {
-  margin-bottom: 0;
+.warp-moon {
+  position: relative;
+  width: clamp(280px, 31vw, 440px);
+  aspect-ratio: 1;
+  margin: -14px auto -20px;
+  pointer-events: none;
 }
 
-.warp-badge {
-  pointer-events: auto;
-  display: inline-flex;
+.warp-moon::after {
+  content: "";
+  position: absolute;
+  left: 17%;
+  right: 17%;
+  bottom: 9%;
+  height: 9%;
+  border-radius: 50%;
+  background: rgb(100 142 151 / 0.12);
+  filter: blur(22px);
+  z-index: -1;
+}
+
+.warp-moon-fallback {
+  position: absolute;
+  inset: 17%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #faf9f5, #e4e5e3 38%, #b9c4c6 73%, #9eadb1);
+  box-shadow: inset -25px -20px 45px rgb(70 93 101 / 0.13);
+  transition: opacity 500ms ease;
+}
+
+.warp-moon-fallback.is-hidden {
+  opacity: 0;
+}
+
+.warp-moon canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* — Orbit ring. The wrap centers the moon + orbit as one unit. The ring is
+   wider than the moon so satellites clear it on every side. */
+
+.warp-moon-wrap {
+  position: relative;
+  display: flex;
   align-items: center;
-  padding: 9px 18px 10px;
-  border-radius: var(--radius-capsule);
-  background: rgb(255 255 255 / 0.78);
-  border: 1px solid rgb(213 215 214 / 0.55);
-  box-shadow: 0 6px 20px -8px rgb(110 158 162 / 0.22);
-  backdrop-filter: blur(10px);
-  margin-top: 4px;
+  justify-content: center;
+  width: clamp(380px, 44vw, 600px);
+  height: clamp(380px, 44vw, 600px);
+  margin: 0 auto;
 }
 
-/* Drop the headline into near-black so it reads against every hue the
-   streaks throw across it, with a hair of mist to keep the edges soft. */
+.warp-orbit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.warp-orbit-ring {
+  position: absolute;
+  inset: 0;
+  animation: warpOrbitSpin 48s linear infinite;
+}
+
+.warp-sat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  /* Place on the ring: rotate from center by --sat-angle, then push outward. */
+  transform:
+    rotate(var(--sat-angle))
+    translateY(min(-17vw, -240px));
+}
+
+.warp-sat-icon {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.88);
+  border: 1px solid rgb(213 215 214 / 0.45);
+  box-shadow: 0 4px 14px -4px rgb(110 158 162 / 0.18);
+  backdrop-filter: blur(6px);
+  /* Counter-rotate the icon so it stays upright while the ring spins. */
+  animation: warpOrbitCounter 48s linear infinite;
+}
+
+@keyframes warpOrbitSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes warpOrbitCounter {
+  to { transform: rotate(-360deg); }
+}
+
 .warp-title {
-  margin: 8px 0 0;
+  margin: 0;
   font-size: clamp(2rem, 4.6vw, 3.8rem);
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: #0b0d10;
-  text-shadow: 0 1px 0 rgb(255 255 255 / 0.9);
+  text-shadow: 0 2px 22px rgb(255 255 255 / 0.95);
   text-wrap: balance;
 }
 
@@ -1186,25 +1620,18 @@
 
 @media (max-width: 959px) {
   .warp-stage { min-height: min(56vh, 640px); }
-  .warp-haze-a { width: 380px; height: 240px; }
-  .warp-haze-b { width: 260px; height: 180px; }
-  .warp-core { width: min(560px, 86vw); height: 240px; }
+  .warp-moon-wrap { width: clamp(320px, 52vw, 480px); height: clamp(320px, 52vw, 480px); }
+  .warp-sat { width: 44px; height: 44px; margin: -22px 0 0 -22px; transform: rotate(var(--sat-angle)) translateY(min(-17vw, -200px)); }
   .warp-title { font-size: clamp(1.6rem, 5.2vw, 2.8rem); }
 }
 
 @media (max-width: 639px) {
   .warp-stage { min-height: 52vh; }
-  .warp-veil { height: 48px; }
-  .warp-haze-a { width: 260px; height: 180px; }
-  .warp-haze-b { width: 180px; height: 140px; }
-  .warp-core { width: 92vw; height: 200px; }
-  .warp-copy { gap: 10px; padding: 36px 0; }
-  .warp-badge { padding: 7px 14px 8px; }
+  .warp-copy { gap: 14px; padding: 48px 0; }
+  .warp-moon { width: min(84vw, 330px); margin: -12px auto -16px; }
+  .warp-moon-wrap { width: min(92vw, 380px); height: min(92vw, 380px); }
+  .warp-sat { width: 38px; height: 38px; margin: -19px 0 0 -19px; transform: rotate(var(--sat-angle)) translateY(min(-17vw, -150px)); }
   .warp-lede { font-size: 13px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .warp-veil-dots { background-image: none; }
 }
 
 .site-foot {
@@ -1606,6 +2033,33 @@
 
 .auth-error { margin: 0; color: #8a4a4a; font-size: 13px; }
 
+/* Dev/preview convenience: fills the form with the seeded demo credentials.
+   Rendered only when the seed ran, so a real deployment never shows it. */
+.auth-demo {
+  margin-top: 18px;
+  padding: 9px 16px 10px;
+  border: 1px dashed rgb(110 158 162 / 0.5);
+  border-radius: var(--radius-capsule);
+  background: rgb(169 221 224 / 0.14);
+  color: var(--color-mist);
+  font-size: 12.5px;
+  transition-property: background-color, border-color, color;
+  transition-duration: 240ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.auth-demo:hover {
+  background: rgb(169 221 224 / 0.26);
+  border-color: rgb(110 158 162 / 0.8);
+  color: var(--color-ink);
+}
+
+.auth-demo code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-ink);
+}
+
 .auth-skel {
   display: inline-block;
   width: 72px;
@@ -1614,23 +2068,210 @@
   background: rgb(17 18 20 / 0.06);
 }
 
-.user-chip {
-  display: flex;
-  align-items: center;
-  max-width: 220px;
+/* — Account control. The trigger is just an avatar; everything else lives in
+   `.user-card`, which is portalled to <body> and positioned fixed (see the
+   component for why: the glass navbar clips anything inside it). */
+
+.user-avatar-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid rgb(255 255 255 / 0.85);
+  border-radius: 50%;
+  background: var(--color-canvas-stone);
+  box-shadow: 0 6px 16px -8px rgb(70 93 101 / 0.55);
+  overflow: hidden;
+  cursor: pointer;
+  transition-property: transform, box-shadow;
+  transition-duration: 220ms;
+  transition-timing-function: var(--ease-out-power3);
 }
 
-.user-chip span,
-.user-chip button {
-  font-size: 12px;
-  letter-spacing: 0.02em;
+.user-avatar-btn:hover {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 10px 22px -10px rgb(70 93 101 / 0.6);
+}
+
+.user-avatar-btn img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.user-avatar-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(150deg, var(--color-ice), var(--color-ice-deep));
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.user-card {
+  position: fixed;
+  z-index: 90;
+  width: 288px;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgb(213 215 214 / 0.55);
+  background: #fff;
+  box-shadow: 0 30px 70px -28px rgb(17 18 20 / 0.28);
+  overflow: hidden;
+  animation: userCardIn 220ms var(--ease-out-power3);
+}
+
+@keyframes userCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* Gradient banner the avatar sits across, as in the reference card. The ice
+   glow keeps it in this site's palette instead of the reference's lime. */
+.user-card-head {
+  height: 76px;
+  background:
+    radial-gradient(ellipse at 82% 12%, rgb(169 221 224 / 0.45), transparent 58%),
+    linear-gradient(150deg, #15191d 0%, #223034 58%, #35484c 100%);
+}
+
+.user-card-body {
+  position: relative;
+  padding: 0 20px 18px;
+}
+
+.user-card-avatar {
+  width: 64px;
+  height: 64px;
+  margin-top: -32px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: var(--color-canvas-stone);
+  box-shadow: 0 10px 24px -12px rgb(17 18 20 / 0.4);
+  overflow: hidden;
+}
+
+.user-card-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.user-card-name {
+  margin: 12px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+}
+
+.user-card-email {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: var(--color-haze);
+  word-break: break-all;
+}
+
+.user-card-balance {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgb(213 215 214 / 0.55);
+  background: var(--color-canvas-warm);
+}
+
+.user-card-balance span {
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--color-haze);
+}
+
+.user-card-balance strong {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.user-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 14px;
+}
+
+.user-card-actions a,
+.user-card-actions button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition-property: background-color, color;
+  transition-duration: 160ms;
+}
+
+.user-card-actions a:hover {
+  background: rgb(169 221 224 / 0.24);
+}
+
+/* Sign-out sits below a rule and reads as the destructive option, matching the
+   reference card's red treatment — here in the site's own muted red. */
+.user-card-signout {
+  margin-top: 8px;
+  padding-top: 14px !important;
+  border-top: 1px solid rgb(213 215 214 / 0.6) !important;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
+  color: #a8443f !important;
+}
+
+.user-card-signout:hover {
+  background: rgb(168 68 63 / 0.09) !important;
+}
+
+.user-card-signout:disabled {
+  color: var(--color-haze) !important;
+  cursor: wait;
+}
+
+.user-card-signout:disabled:hover {
+  background: transparent !important;
+}
+
+@media (max-width: 639px) {
+  .user-card {
+    width: min(288px, calc(100vw - 32px));
+  }
 }
 
 .console-root {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 236px 1fr;
   min-height: 100vh;
-  background: #f5f5f2;
+  background:
+    radial-gradient(ellipse at 88% 4%, rgb(203 242 79 / 0.16), transparent 42%),
+    #f5f5f2;
   color: var(--color-ink);
 }
 
@@ -1652,36 +2293,244 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding: 28px 22px;
-  background: rgb(255 255 255 / 0.38);
-  border-right: 1px solid rgb(255 255 255 / 0.5);
+  gap: 26px;
+  padding: 26px 18px 22px;
+  background: rgb(255 255 255 / 0.42);
+  border-right: 1px solid rgb(255 255 255 / 0.55);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  z-index: 3;
+}
+
+.console-brand {
+  padding-inline: 8px;
 }
 
 .console-side nav {
   display: grid;
-  gap: 4px;
+  gap: 3px;
+  align-content: start;
   flex: 1;
 }
 
+.console-nav-label {
+  margin: 0 0 8px;
+  padding-inline: 10px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-haze);
+}
+
 .console-link {
-  padding: 10px 10px;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
   color: var(--color-mist);
   text-decoration: none;
   font-size: 14px;
+  transition-property: color, background-color;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-out-power3);
 }
 
-.console-link.is-on,
+.console-link svg {
+  flex: 0 0 auto;
+  opacity: 0.75;
+}
+
+.console-link.is-on {
+  color: var(--color-ink);
+  background: rgb(255 255 255 / 0.85);
+  box-shadow: 0 8px 18px -14px rgb(140 180 40 / 0.55);
+}
+
+.console-link.is-on svg {
+  opacity: 1;
+  color: var(--color-acid-ink);
+}
+
 .console-link:hover {
   color: var(--color-ink);
-  background: rgb(255 255 255 / 0.4);
+  background: rgb(255 255 255 / 0.5);
+}
+
+.console-side-foot {
+  padding-top: 4px;
+  border-top: 1px solid rgb(213 215 214 / 0.5);
 }
 
 .console-main {
   position: relative;
   z-index: 2;
-  padding: 56px 56px 80px;
+  padding: 52px 56px 88px;
+  max-width: 1340px;
+}
+
+/* — Panels. The console's one container primitive: everything on a page lives
+   in one, so the workspace reads as a stack of surfaces rather than loose text. */
+
+.console-panel {
+  border-radius: var(--radius-lg);
+  border: 1px solid rgb(255 255 255 / 0.7);
+  background: rgb(255 255 255 / 0.55);
+  box-shadow: 0 26px 54px -46px rgb(70 93 101 / 0.5);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+.console-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgb(213 215 214 / 0.45);
+}
+
+.console-panel-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.console-panel-sub {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--color-mist);
+}
+
+.console-panel-body {
+  padding: 22px 24px 24px;
+}
+
+/* Balance panel: the one dark surface in the workspace, so the number you came
+   to check carries the most weight on the page. */
+.console-hero-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 26px;
+  padding: 30px 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  color: #fff;
+  background:
+    radial-gradient(ellipse at 12% 8%, rgb(203 242 79 / 0.2), transparent 52%),
+    linear-gradient(150deg, #15191d 0%, #223034 52%, #35484c 100%);
+  box-shadow: 0 34px 62px -46px rgb(20 30 33 / 0.85);
+}
+
+.console-hero-label {
+  margin: 0 0 10px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.6);
+}
+
+.console-hero-value {
+  margin: 0;
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.console-hero-meta {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.66);
+}
+
+.console-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.console-hero-actions .btn-ink {
+  background: #fff;
+  color: #15191d;
+}
+
+.console-hero-actions .btn-ghost {
+  border-color: rgb(255 255 255 / 0.34);
+  color: #fff;
+}
+
+/* — Metric tiles */
+
+.console-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.console-metric {
+  padding: 18px 20px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgb(255 255 255 / 0.7);
+  background: rgb(255 255 255 / 0.62);
+  box-shadow: 0 20px 38px -36px rgb(70 93 101 / 0.55);
+}
+
+.console-metric dt {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--color-haze);
+}
+
+.console-metric dt svg {
+  color: var(--color-acid-ink);
+}
+
+.console-metric dd {
+  margin: 12px 0 0;
+  font-size: clamp(1.3rem, 1.9vw, 1.75rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status pills, shared by the key and billing tables. */
+.console-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 5px;
+  border-radius: var(--radius-capsule);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.console-pill i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.console-pill.is-ok {
+  color: var(--color-acid-ink);
+  background: var(--color-acid-tint);
+}
+
+.console-pill.is-off {
+  color: var(--color-mist);
+  background: rgb(17 18 20 / 0.06);
 }
 
 .console-kicker {
@@ -1699,16 +2548,39 @@
   letter-spacing: -0.04em;
 }
 
-.console-hello { font-size: clamp(2rem, 4vw, 3.2rem); }
+.console-hello { font-size: clamp(1.9rem, 3.4vw, 2.6rem); }
 
-.console-title { font-size: clamp(1.8rem, 3vw, 2.6rem); }
+.console-title { font-size: clamp(1.7rem, 2.8vw, 2.3rem); }
 
-.console-balance {
-  margin: 48px 0 8px;
-  font-size: clamp(3.2rem, 8vw, 6.5rem);
+.console-page-head {
+  margin-bottom: 30px;
+}
+
+/* Vertical rhythm for a console page: every block is one panel or metric row. */
+.console-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.console-link-inline {
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: -0.06em;
-  line-height: 0.9;
+  color: var(--color-acid-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.console-link-inline:hover {
+  text-decoration: underline;
+}
+
+.console-dim {
+  color: var(--color-mist);
+  font-size: 13px;
+}
+
+.console-num {
+  font-variant-numeric: tabular-nums;
 }
 
 .console-balance-label,
@@ -1802,7 +2674,7 @@
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-ice-deep);
+  color: var(--color-acid-ink);
 }
 
 .modal-layer {
@@ -1836,49 +2708,654 @@
   gap: 8px;
 }
 
-.wallet-page .btn-ink { margin-top: 28px; }
+/* ── Wallet. Restructured around the reference layout: a light balance panel
+   with the top-up action on its right, then three fixed packages, then a
+   top-up sheet. The console accent here is acid-lime (see --color-acid). */
 
-.amount-label { margin: 36px 0 12px; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
-
-.amount-track {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  max-width: 560px;
-  padding: 4px;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.35);
-  border: 1px solid var(--color-glass-border);
+.wallet-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.amount-liquid {
+.wallet-hero {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  padding: 30px 32px;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgb(255 255 255 / 0.75);
+  background:
+    radial-gradient(ellipse at 88% 10%, rgb(203 242 79 / 0.24), transparent 46%),
+    linear-gradient(160deg, #ffffff 0%, #f7f8f2 100%);
+  box-shadow: 0 30px 60px -46px rgb(70 93 101 / 0.55);
+}
+
+/* Soft sphere echoing the marketing site's moon — pure decoration, so it sits
+   behind everything and never intercepts a click. */
+.wallet-hero-orb {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 4px;
-  width: calc((100% - 8px) / 5);
-  border-radius: 999px;
-  background: rgb(255 255 255 / 0.7);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8);
-  transition-property: transform;
-  transition-duration: 420ms;
-  transition-timing-function: var(--ease-out-power3);
+  right: 22%;
+  top: 50%;
+  width: 190px;
+  height: 190px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle at 34% 30%, #ffffff 0%, #eef3ea 46%, #dfe7df 74%, #cfd9d2 100%);
+  opacity: 0.75;
 }
 
-.amount-btn {
+.wallet-hero-main {
   position: relative;
-  z-index: 1;
-  min-height: 44px;
-  border: 0;
-  background: transparent;
-  font: inherit;
-  font-size: 13px;
+  min-width: 0;
+}
+
+.wallet-hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 5px 12px 6px;
+  border-radius: var(--radius-capsule);
+  background: var(--color-acid-tint);
+  color: var(--color-acid-ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wallet-hero-label i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-acid-ink);
+}
+
+.wallet-hero-value {
+  margin: 0;
+  font-size: clamp(2.6rem, 5.4vw, 3.9rem);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.wallet-hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+}
+
+.wallet-hero-pills li {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 14px 9px;
+  border-radius: var(--radius-capsule);
+  border: 1px solid rgb(17 18 20 / 0.07);
+  background: rgb(255 255 255 / 0.8);
+  font-size: 12.5px;
+}
+
+.wallet-hero-pills span {
   color: var(--color-mist);
 }
 
-.amount-btn.is-on { color: var(--color-ink); }
+.wallet-hero-pills strong {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
 
-.wallet-note { margin-top: 16px; }
+.wallet-flash {
+  margin: 14px 0 0;
+  padding: 11px 16px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-acid-tint);
+  color: var(--color-acid-ink);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+/* — Packages */
+
+.wallet-plans-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 34px 0 16px;
+}
+
+.wallet-plans {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.wallet-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 460px;
+  padding: 34px 30px 30px;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgb(213 215 214 / 0.6);
+  background: #fff;
+  transition-property: transform, box-shadow;
+  transition-duration: 280ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+/* Name block at the top; the perks list below the price pushes the CTA to a
+   common baseline across cards, which is what makes the row read as a set. */
+.wallet-plan-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.wallet-plan-perks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin: 18px 0 0;
+  padding: 0;
+  font-size: 13.5px;
+  color: var(--color-mist);
+}
+
+.wallet-plan-perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  line-height: 1.45;
+}
+
+.wallet-plan-perks svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--color-acid-ink);
+}
+
+.wallet-plan.is-accent .wallet-plan-perks {
+  color: rgb(17 18 20 / 0.72);
+}
+
+.wallet-plan.is-accent .wallet-plan-perks svg {
+  color: rgb(17 18 20 / 0.8);
+}
+
+.wallet-plan.is-dark .wallet-plan-perks {
+  color: rgb(255 255 255 / 0.74);
+}
+
+.wallet-plan.is-dark .wallet-plan-perks svg {
+  color: var(--color-acid);
+}
+
+/* The CTA sits on the bottom edge whatever the perk count. */
+.wallet-plan-cta {
+  margin-top: auto;
+}
+
+.wallet-plan:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 50px -34px rgb(17 18 20 / 0.32);
+}
+
+/* The middle card carries the recommendation and the accent fill. */
+.wallet-plan.is-accent {
+  background: var(--color-acid);
+  border-color: transparent;
+  box-shadow: 0 30px 56px -34px rgb(140 180 40 / 0.7);
+}
+
+.wallet-plan.is-dark {
+  background: linear-gradient(160deg, #14181b 0%, #1d2427 100%);
+  border-color: transparent;
+  color: #fff;
+}
+
+.wallet-plan-badge {
+  position: absolute;
+  top: -12px;
+  left: 24px;
+  padding: 5px 13px 6px;
+  border-radius: var(--radius-capsule);
+  background: var(--color-ink);
+  color: var(--color-acid);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.wallet-plan-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-md);
+  background: rgb(17 18 20 / 0.05);
+  color: var(--color-ink);
+}
+
+.wallet-plan.is-accent .wallet-plan-icon {
+  background: rgb(255 255 255 / 0.55);
+}
+
+.wallet-plan.is-dark .wallet-plan-icon {
+  background: rgb(255 255 255 / 0.1);
+  color: var(--color-acid);
+}
+
+.wallet-plan h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.wallet-plan-desc {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--color-mist);
+}
+
+.wallet-plan.is-accent .wallet-plan-desc,
+.wallet-plan.is-dark .wallet-plan-desc {
+  color: rgb(17 18 20 / 0.62);
+}
+
+.wallet-plan.is-dark .wallet-plan-desc {
+  color: rgb(255 255 255 / 0.66);
+}
+
+.wallet-plan-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 22px 0 0;
+  font-size: clamp(2.2rem, 3.6vw, 2.9rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.wallet-plan-amount span {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--color-mist);
+}
+
+.wallet-plan.is-accent .wallet-plan-amount span {
+  color: rgb(17 18 20 / 0.6);
+}
+
+.wallet-plan.is-dark .wallet-plan-amount span {
+  color: rgb(255 255 255 / 0.6);
+}
+
+.wallet-plan-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgb(17 18 20 / 0.08);
+  font-size: 12.5px;
+  color: var(--color-mist);
+}
+
+.wallet-plan.is-accent .wallet-plan-note {
+  border-top-color: rgb(17 18 20 / 0.14);
+  color: rgb(17 18 20 / 0.68);
+}
+
+.wallet-plan.is-dark .wallet-plan-note {
+  border-top-color: rgb(255 255 255 / 0.14);
+  color: rgb(255 255 255 / 0.7);
+}
+
+.wallet-plan-cta {
+  padding: 14px 20px 15px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-ink);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition-property: background-color, transform;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.wallet-plan-cta:hover {
+  transform: translateY(-1px);
+  background: #000;
+}
+
+.wallet-plan.is-accent .wallet-plan-cta {
+  background: var(--color-ink);
+  color: var(--color-acid);
+}
+
+.wallet-plan.is-dark .wallet-plan-cta {
+  background: var(--color-acid);
+  color: var(--color-ink);
+}
+
+/* — Accent button, shared by the wallet hero and the top-up sheet */
+
+.btn-acid {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 22px 14px;
+  border: 0;
+  border-radius: var(--radius-capsule);
+  background: var(--color-ink);
+  color: var(--color-acid);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition-property: transform, box-shadow, background-color;
+  transition-duration: 220ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.btn-acid:hover {
+  transform: translateY(-2px);
+  background: #000;
+  box-shadow: 0 18px 34px -20px rgb(17 18 20 / 0.7);
+}
+
+.btn-acid:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* — Top-up sheet (modal) */
+
+.topup-sheet {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 30px 30px 26px;
+  border-radius: 28px;
+  border: 1px solid rgb(255 255 255 / 0.75);
+  background: #fff;
+  box-shadow: 0 40px 90px -40px rgb(17 18 20 / 0.45);
+  animation: userCardIn 220ms var(--ease-out-power3);
+}
+
+.topup-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-mist);
+  cursor: pointer;
+}
+
+.topup-close:hover {
+  background: rgb(17 18 20 / 0.06);
+  color: var(--color-ink);
+}
+
+.topup-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.topup-sub {
+  margin: 7px 0 0;
+  font-size: 13.5px;
+  color: var(--color-mist);
+}
+
+.topup-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid rgb(213 215 214 / 0.6);
+}
+
+.topup-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.topup-hint {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--color-haze);
+}
+
+.topup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.topup-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 104px;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid rgb(213 215 214 / 0.8);
+  background: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition-property: border-color, background-color, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.topup-option:hover {
+  border-color: var(--color-ink);
+}
+
+/* Selected reads as the lime fill, matching the recommended package card. */
+.topup-option.is-on {
+  border-color: var(--color-ink);
+  background: var(--color-acid-tint);
+  box-shadow: 0 18px 34px -26px rgb(140 180 40 / 0.8);
+}
+
+.topup-radio {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgb(17 18 20 / 0.22);
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+.topup-option.is-on .topup-radio {
+  border-color: var(--color-ink);
+  box-shadow: inset 0 0 0 4px var(--color-acid);
+}
+
+.topup-option-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.topup-option-amount em {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.topup-badge {
+  position: absolute;
+  top: -10px;
+  left: 18px;
+  padding: 4px 10px 5px;
+  border-radius: var(--radius-capsule);
+  background: #e8650f;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.topup-custom {
+  display: block;
+  padding: 18px 20px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgb(213 215 214 / 0.72);
+}
+
+.topup-custom-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-canvas-warm);
+}
+
+.topup-custom-field em {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--color-mist);
+}
+
+.topup-custom-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  outline: none;
+}
+
+.topup-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgb(213 215 214 / 0.72);
+  font-size: 14.5px;
+  color: var(--color-mist);
+}
+
+.topup-total em {
+  font-style: normal;
+}
+
+.topup-total strong {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.topup-pay {
+  width: 100%;
+  justify-content: center;
+  margin-top: 22px;
+  padding: 16px 22px 17px;
+  font-size: 15.5px;
+}
+
+.topup-secure {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-haze);
+}
+
+@media (max-width: 959px) {
+  .wallet-plans {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wallet-hero-orb {
+    right: -40px;
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 639px) {
+  .wallet-hero {
+    padding: 24px 20px;
+  }
+
+  .wallet-plan {
+    padding: 22px 18px 20px;
+  }
+
+  .topup-sheet {
+    padding: 24px 20px 22px;
+    border-radius: 24px;
+  }
+
+  .topup-option {
+    min-height: 92px;
+    padding: 16px;
+  }
+}
 
 .usage-chart {
   width: 100%;
@@ -1901,8 +3378,9 @@
 }
 
 @media (max-width: 959px) {
-  .models {
-    padding-left: 6vw;
+  .why-span-7,
+  .why-span-5 {
+    grid-column: span 6;
   }
 
   .api-panel-rig {
@@ -1911,11 +3389,6 @@
     bottom: auto;
     margin: 48px 0 0;
     transform: none;
-  }
-
-  .stat-list {
-    grid-template-columns: 1fr;
-    gap: 32px;
   }
 
   .orb-fallback {
@@ -1946,11 +3419,34 @@
     height: auto;
     flex-direction: row;
     flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-right: 0;
+    border-bottom: 1px solid rgb(255 255 255 / 0.55);
+  }
+
+  .console-side nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1 1 100%;
+  }
+
+  .console-nav-label { display: none; }
+
+  .console-side-foot {
+    padding-top: 0;
+    border-top: 0;
   }
 
   .console-main { padding: 32px 20px 64px; }
 
   .console-stats { grid-template-columns: 1fr 1fr; }
+
+  .console-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .console-hero-panel { padding: 24px 22px; }
 
   .model-tile.is-featured { grid-row: auto; min-height: 280px; }
 
@@ -1959,10 +3455,6 @@
   .terminal-rule {
     min-height: 1px;
     width: 100%;
-  }
-
-  .amount-track {
-    max-width: 100%;
   }
 }
 
@@ -2027,20 +3519,18 @@
     margin-top: 14px;
   }
 
-  .model-meta {
-    display: none;
+  .why-head {
+    margin-bottom: 32px;
   }
 
-  .model-row.is-open .model-meta {
-    display: flex;
-    width: 100%;
-    justify-content: flex-start;
-    margin-top: 10px;
+  .why-span-7,
+  .why-span-5,
+  .why-span-4 {
+    grid-column: span 12;
   }
 
-  .model-row button {
-    flex-direction: column;
-    align-items: flex-start;
+  .why-tile {
+    padding: 24px 20px 22px;
   }
 }
 
@@ -2050,10 +3540,12 @@
   .cursor-dot,
   .glass.is-interactive,
   .orb-fallback,
-  .amount-liquid,
   .page-veil,
   .model-tile,
-  .eco-card {
+  .eco-card,
+  .why-tile,
+  .warp-orbit-ring,
+  .warp-sat-icon {
     animation: none;
     transition: none;
     transform: none;

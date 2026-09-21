@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate } from "@tanstack/react-router";
 import { GROK_PROVIDERS, authClient, authEnabled, signIn } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { DEMO_ACCOUNT, DEMO_PASSWORD, ensureDemoAdmin, resolveAccountEmail } from "@/lib/demo-admin";
 import { Grain } from "@/components/layout/grain";
 import { OrbCanvas } from "@/components/orb/orb-canvas";
 import { PageVeil } from "@/components/layout/page-veil";
@@ -16,6 +17,26 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // True once we know the demo account exists — i.e. this is a PGLite workspace
+  // (local dev / live preview) rather than a deployment with a real database.
+  const [demoReady, setDemoReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void ensureDemoAdmin()
+      .then((result) => {
+        if (cancelled) return;
+        // Both PGLite outcomes mean the demo account is usable; only a managed
+        // database (a real deployment) reports it as unavailable.
+        setDemoReady(result.seeded || result.reason === "already-present");
+      })
+      .catch(() => {
+        /* seeding is a convenience — a failure just means no demo hint */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (isPending) {
     return (
@@ -44,7 +65,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     try {
       if (mode === "register") {
         const { error: err } = await authClient.signUp.email({
-          email,
+          email: resolveAccountEmail(email),
           password,
           name: email.split("@")[0] || "Builder",
           callbackURL: "/console",
@@ -52,7 +73,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         if (err) throw new Error(err.message);
       } else {
         const { error: err } = await authClient.signIn.email({
-          email,
+          email: resolveAccountEmail(email),
           password,
           callbackURL: "/console",
         });
@@ -83,12 +104,16 @@ export function AuthForm({ mode }: { mode: Mode }) {
           </h1>
           <form className="auth-form" onSubmit={onSubmit}>
             <label htmlFor="email">
-              Email
+              {mode === "login" ? "Account or email" : "Email"}
               <input
                 id="email"
                 className="glass-input"
-                type="email"
-                autoComplete="email"
+                /* Login accepts the bare demo account, which `type="email"` would
+                   reject before the request is ever sent. */
+                type={mode === "login" ? "text" : "email"}
+                inputMode={mode === "login" ? "text" : "email"}
+                autoComplete={mode === "login" ? "username" : "email"}
+                spellCheck={false}
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -102,7 +127,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
                 type="password"
                 autoComplete={mode === "login" ? "current-password" : "new-password"}
                 required
-                minLength={8}
+                /* Sign-in has no server-side length floor (only sign-up does), and
+                   the demo password is shorter than the sign-up minimum. */
+                minLength={mode === "register" ? 8 : 1}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -112,6 +139,19 @@ export function AuthForm({ mode }: { mode: Mode }) {
               {busy ? "Continuing…" : mode === "login" ? "Sign in" : "Create account"}
             </button>
           </form>
+          {mode === "login" && demoReady ? (
+            <button
+              type="button"
+              className="auth-demo"
+              data-cursor="hover"
+              onClick={() => {
+                setEmail(DEMO_ACCOUNT);
+                setPassword(DEMO_PASSWORD);
+              }}
+            >
+              Demo workspace — use <code>{DEMO_ACCOUNT}</code> / <code>{DEMO_PASSWORD}</code>
+            </button>
+          ) : null}
           {authEnabled ? (
             <div className="auth-alt">
               {GROK_PROVIDERS.map((p) => (

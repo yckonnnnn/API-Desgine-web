@@ -1,5 +1,8 @@
-import { useState, useSyncExternalStore, type ReactNode } from "react";
-import { Navigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { Link, Navigate } from "@tanstack/react-router";
+import { LogOut, Wallet } from "lucide-react";
+import { formatYuan } from "@/lib/format";
 import { GROK_PROVIDERS, authEnabled, signIn, signOut } from "./client";
 import { hasGateSessionMarker } from "./gate-session-marker";
 import { resolveSignInGateState } from "./sign-in-gate";
@@ -87,46 +90,222 @@ export function SignInButtons() {
  * gate-materialized — behind the gate the next request signs the viewer
  * straight back in, so a sign-out control there is a broken loop.
  */
-export function UserButton() {
+/**
+ * Signed-in identity control: an avatar that opens a profile card.
+ *
+ * The card is portalled to `document.body` and positioned `fixed`. That is not
+ * decoration — it is required. The navbar is a `.glass` surface, and `.glass`
+ * carries `overflow: hidden` (the effect clips its own inner highlight), so a
+ * card rendered inside the bar is cut off at the bar's edge. Portalling also
+ * lifts it above the fixed orb canvas, which otherwise paints over the menu.
+ *
+ * Panel order follows the reference profile card: gradient header with the
+ * avatar overlapping its lower edge, name + email, wallet balance, then the two
+ * actions. Sign-out is hidden when auth is disabled or the session is
+ * gate-materialized (behind the gate the next request signs you back in).
+ */
+export function UserButton({ language = "en" }: { language?: "zh" | "en" }) {
   const user = useCurrentUser();
-  // Sign-out can take a moment (and can fail when deployed), so the control
-  // shows it is working and cannot be fired twice.
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{
+    left: number;
+    top?: number;
+    bottom?: number;
+  } | null>(null);
   const [signingOut, setSigningOut] = useState(false);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [avatarFailed, setAvatarFailed] = useState(false);
   const gateSession = useSyncExternalStore(
     subscribeToNothing,
     hasGateSessionMarker,
     noGateSessionOnServer,
   );
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Anchor the card to the avatar, then pull it back inside the viewport on
+   * both axes. Right-aligning to the trigger only works while the trigger is
+   * on the right (the navbar); the console sidebar puts it at the far left,
+   * where the card has to hang off the other side instead.
+   */
+  const place = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const gap = 12;
+    const cardH = cardRef.current?.offsetHeight ?? 360;
+    const cardW = cardRef.current?.offsetWidth ?? 288;
+
+    // Horizontal: prefer right-aligned, else left-aligned, always clamped.
+    let left = r.right - cardW;
+    if (left < 16) left = r.left;
+    left = Math.min(Math.max(16, left), window.innerWidth - cardW - 16);
+
+    // Vertical: open downward unless the trigger is too close to the bottom.
+    const below = window.innerHeight - r.bottom;
+    const above = r.top;
+    const flip = below < cardH + gap + 16 && above > cardH + gap + 16;
+
+    setPos({
+      left,
+      ...(flip ? { bottom: window.innerHeight - r.top + gap } : { top: r.bottom + gap }),
+    });
+  }, []);
+
+  // Position and dismissal. The card renders hidden until `pos` is set, so it
+  // is measurable here on the first pass and never flashes at the corner.
+  useEffect(() => {
+    if (!open) {
+      setPos(null);
+      return;
+    }
+    place();
+    const onDoc = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (triggerRef.current?.contains(target) || cardRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("resize", place);
+    // Capture phase: the card is fixed, so any ancestor scroll moves it.
+    window.addEventListener("scroll", place, true);
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open, place]);
+
+  // Balance loads on open — a signed-in visitor browsing the marketing pages
+  // shouldn't pay for a server call they never look at.
+  useEffect(() => {
+    if (!open || balance != null) return;
+    void import("@/lib/fyt")
+      .then(({ getWallet }) => getWallet())
+      .then((w) => setBalance(w.balanceCents))
+      .catch(() => undefined);
+  }, [open, balance]);
+
   if (!user) return null;
-  const label = user.displayName ?? user.primaryEmail ?? "Account";
+
+  const zh = language === "zh";
+  const name = user.displayName ?? user.primaryEmail ?? "Account";
+  const email = user.primaryEmail ?? null;
+  const avatarSrc = avatarSource(user.profileImageUrl ?? null, name, avatarFailed);
+
   return (
-    <div className="flex items-center gap-2">
-      {user.profileImageUrl ? (
-        <img
-          src={user.profileImageUrl}
-          alt=""
-          className="h-8 w-8 rounded-full object-cover"
-        />
-      ) : (
-        <span className="grid h-8 w-8 place-items-center rounded-full bg-black/10 text-sm font-medium dark:bg-white/20">
-          {label.charAt(0).toUpperCase()}
-        </span>
-      )}
-      <span className="text-sm font-medium">{label}</span>
-      {authEnabled && !gateSession && (
-        <button
-          type="button"
-          disabled={signingOut}
-          onClick={() => {
-            setSigningOut(true);
-            // Success navigates away; on failure re-enable so it can be retried.
-            void signOut().catch(() => setSigningOut(false));
-          }}
-          className="cursor-pointer text-sm underline-offset-4 opacity-70 hover:underline disabled:cursor-wait disabled:no-underline"
-        >
-          {signingOut ? "Signing out…" : "Sign out"}
-        </button>
-      )}
-    </div>
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="user-avatar-btn"
+        data-cursor="hover"
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-label={zh ? "账户菜单" : "Account menu"}
+        onClick={() => setOpen((was) => !was)}
+      >
+        {avatarSrc ? (
+          <img src={avatarSrc} alt="" onError={() => setAvatarFailed(true)} />
+        ) : (
+          <span className="user-avatar-fallback" aria-hidden="true">
+            {name.charAt(0).toUpperCase()}
+          </span>
+        )}
+      </button>
+
+      {open && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="user-card"
+              role="menu"
+              ref={cardRef}
+              /* Kept mounted but invisible until `place()` has measured it —
+                 a fixed card needs its own height to decide up vs down. */
+              style={{ ...pos, visibility: pos ? "visible" : "hidden" }}
+            >
+              <div className="user-card-head" aria-hidden="true" />
+
+              <div className="user-card-body">
+                <div className="user-card-avatar">
+                  {avatarSrc ? (
+                    <img src={avatarSrc} alt="" onError={() => setAvatarFailed(true)} />
+                  ) : (
+                    <span className="user-avatar-fallback" aria-hidden="true">
+                      {name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+
+                <h3 className="user-card-name">{name}</h3>
+                {email ? <p className="user-card-email">{email}</p> : null}
+
+                <div className="user-card-balance">
+                  <span>{zh ? "钱包余额" : "Wallet balance"}</span>
+                  <strong>
+                    {balance == null
+                      ? "—"
+                      : formatYuan(balance)}
+                  </strong>
+                </div>
+
+                <div className="user-card-actions">
+                  <Link
+                    to="/console/wallet"
+                    role="menuitem"
+                    data-cursor="hover"
+                    onClick={() => setOpen(false)}
+                  >
+                    <Wallet size={15} strokeWidth={1.9} aria-hidden="true" />
+                    {zh ? "钱包" : "Wallet"}
+                  </Link>
+                  {authEnabled && !gateSession ? (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="user-card-signout"
+                      data-cursor="hover"
+                      disabled={signingOut}
+                      onClick={() => {
+                        setSigningOut(true);
+                        void signOut().catch(() => setSigningOut(false));
+                      }}
+                    >
+                      <LogOut size={15} strokeWidth={1.9} aria-hidden="true" />
+                      {signingOut ? (zh ? "退出中…" : "Signing out…") : zh ? "退出登录" : "Sign out"}
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   );
+}
+
+/**
+ * Avatar URL: the provider's image when there is one, otherwise a DiceBear
+ * cartoon seeded by the user's name. DiceBear is a third-party host, so a
+ * failure falls back to a monogram rather than a broken image.
+ */
+function avatarSource(
+  profileImageUrl: string | null,
+  name: string,
+  failed: boolean,
+): string | null {
+  if (failed) return null;
+  if (profileImageUrl) return profileImageUrl;
+  // Soft pastels, to sit beside the site's canvas rather than shout over it.
+  const bg = "b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf,d1f4d9";
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(
+    name,
+  )}&backgroundColor=${bg}`;
 }

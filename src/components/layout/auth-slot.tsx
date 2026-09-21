@@ -9,12 +9,7 @@ export function AuthSlot({ language = "en" }: { language?: "zh" | "en" }) {
   }
   return (
     <SignedIn>
-      <Link to="/console" className="nav-ghost" data-cursor="hover">
-        {language === "zh" ? "控制台" : "Console"}
-      </Link>
-      <div className="user-chip">
-        <UserButton />
-      </div>
+      <UserButton language={language} />
     </SignedIn>
   );
 }

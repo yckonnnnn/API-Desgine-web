@@ -119,10 +119,14 @@ export const getWallet = createServerFn({ method: "GET" })
   });
 
 export const addFunds = createServerFn({ method: "POST" })
+  // Whole yuan within a sane band. The wallet offers preset steps plus a custom
+  // field, so the previous fixed-list check rejected every custom amount.
   .validator((yuanAmount: number) => {
-    const allowed = [50, 100, 200, 500, 1000];
-    if (!allowed.includes(yuanAmount)) throw new Error("Invalid amount");
-    return yuanAmount;
+    const yuan = Math.floor(Number(yuanAmount));
+    if (!Number.isFinite(yuan) || yuan < 1 || yuan > 100_000) {
+      throw new Error("Invalid amount");
+    }
+    return yuan;
   })
   .middleware([authMiddleware])
   .handler(async ({ context, data: yuanAmount }) => {
