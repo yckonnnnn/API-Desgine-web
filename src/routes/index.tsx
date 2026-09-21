@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero } from "@/components/hero/hero";
 import { SiteChrome } from "@/components/layout/site-chrome";
+import { EcosystemSection } from "@/components/sections/ecosystem-section";
 import { InfraSection } from "@/components/sections/infra-section";
 import { ModelsSection } from "@/components/sections/models-section";
-import { OrbitSection } from "@/components/sections/orbit-section";
 import { PlaygroundSection } from "@/components/sections/playground-section";
 import { SiteFooter } from "@/components/sections/site-footer";
 
@@ -14,8 +14,8 @@ function Home() {
     <SiteChrome>
       <main className="site">
         <Hero />
+        <EcosystemSection />
         <ModelsSection />
-        <OrbitSection />
         <InfraSection />
         <PlaygroundSection />
         <SiteFooter />

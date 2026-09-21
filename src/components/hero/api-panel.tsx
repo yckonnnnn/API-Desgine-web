@@ -1,8 +1,11 @@
 import { useEffect, useRef } from "react";
 import { LiquidGlass } from "@/components/glass/liquid-glass";
 import { scene } from "@/lib/scene-state";
+import { useLanguage } from "@/lib/language";
 
 export function ApiPanel() {
+  const { language } = useLanguage();
+  const zh = language === "zh";
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,14 +33,14 @@ export function ApiPanel() {
           <span className="api-path">/v1/chat/completions</span>
         </div>
         <div className="api-grid">
-          <span>model</span>
+          <span>{zh ? "模型" : "model"}</span>
           <strong>gpt-5</strong>
-          <span>status</span>
+          <span>{zh ? "状态" : "status"}</span>
           <strong className="api-ok">
             <i />
             200 OK
           </strong>
-          <span>latency</span>
+          <span>{zh ? "延迟" : "latency"}</span>
           <strong>128 ms</strong>
         </div>
       </LiquidGlass>

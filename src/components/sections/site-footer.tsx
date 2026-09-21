@@ -1,19 +1,22 @@
 import { Link } from "@tanstack/react-router";
+import { FoytonBrand } from "@/components/layout/foyton-brand";
+import { useLanguage } from "@/lib/language";
 
 export function SiteFooter() {
+  const { language } = useLanguage();
+  const zh = language === "zh";
   return (
     <footer className="site-foot">
       <Link to="/" className="wordmark" data-cursor="hover">
-        <span className="wordmark-mark" aria-hidden="true" />
-        FYT
+        <FoytonBrand />
       </Link>
-      <p>AI infrastructure for production systems.</p>
+      <p>{zh ? "面向生产系统的 AI 基础设施。" : "AI infrastructure for production systems."}</p>
       <nav>
         <Link to="/models" data-cursor="hover">
-          Models
+          {zh ? "模型" : "Models"}
         </Link>
         <Link to="/login" data-cursor="hover">
-          Console
+          {zh ? "控制台" : "Console"}
         </Link>
       </nav>
     </footer>

@@ -6,6 +6,7 @@ import { Grain } from "@/components/layout/grain";
 import { OrbCanvas } from "@/components/orb/orb-canvas";
 import { PageVeil } from "@/components/layout/page-veil";
 import { CustomCursor } from "@/components/cursor/custom-cursor";
+import { FoytonBrand } from "@/components/layout/foyton-brand";
 
 type Mode = "login" | "register";
 
@@ -73,9 +74,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
       <main className="auth-page">
         <div className="auth-void" />
         <div className="auth-panel">
-          <Link to="/" className="wordmark" data-cursor="hover">
-            <span className="wordmark-mark" aria-hidden="true" />
-            FYT
+          <Link to="/" className="auth-brand" data-cursor="hover">
+            <FoytonBrand />
           </Link>
           <p className="section-kicker">{mode === "login" ? "Sign in" : "Create account"}</p>
           <h1 className="auth-title">

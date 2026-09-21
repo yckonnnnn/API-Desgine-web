@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { LiquidGlass } from "@/components/glass/liquid-glass";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/language";
 
 const SAMPLES = [
   {
@@ -22,15 +23,17 @@ const SAMPLES = [
 
 export function PlaygroundSection() {
   const [active, setActive] = useState<(typeof SAMPLES)[number]>(SAMPLES[0]);
+  const { language } = useLanguage();
+  const zh = language === "zh";
 
   return (
     <section id="playground" className="playground">
       <div className="playground-copy">
-        <p className="section-kicker">Section 05</p>
+        <p className="section-kicker">{zh ? "在线演示" : "Section 05"}</p>
         <h2 className="section-title">
-          Speak once.
+          {zh ? "发送一次。" : "Speak once."}
           <br />
-          Route everywhere.
+          {zh ? "路由到所有模型。" : "Route everywhere."}
         </h2>
         <div className="play-switch" role="tablist" aria-label="Playground model">
           {SAMPLES.map((sample) => (
@@ -50,7 +53,7 @@ export function PlaygroundSection() {
       </div>
       <LiquidGlass className="terminal" interactive={false}>
         <div className="terminal-pane">
-          <p className="terminal-label">Request</p>
+          <p className="terminal-label">{zh ? "请求" : "Request"}</p>
           <pre>
             <code>
               <span className="tok-ice">curl</span>{" "}
@@ -72,7 +75,7 @@ export function PlaygroundSection() {
         <div className="terminal-rule" aria-hidden="true" />
         <div className="terminal-pane">
           <p className="terminal-label">
-            Response
+            {zh ? "响应" : "Response"}
             <span className="api-ok">
               <i />
               200

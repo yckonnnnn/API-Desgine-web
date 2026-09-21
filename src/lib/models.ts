@@ -10,6 +10,7 @@ export type ModelCategory =
 export type ModelInfo = {
   name: string;
   full: string;
+  id: string;
   provider: string;
   category: Exclude<ModelCategory, "ALL">;
   latency: string;
@@ -35,6 +36,7 @@ export const MODELS: ModelInfo[] = [
   {
     name: "GPT",
     full: "GPT-5",
+    id: "gpt-5",
     provider: "OpenAI",
     category: "CHAT",
     latency: "128 ms",
@@ -48,6 +50,7 @@ export const MODELS: ModelInfo[] = [
   {
     name: "Claude",
     full: "Claude 4",
+    id: "claude-4-sonnet",
     provider: "Anthropic",
     category: "REASONING",
     latency: "142 ms",
@@ -60,6 +63,7 @@ export const MODELS: ModelInfo[] = [
   {
     name: "Gemini",
     full: "Gemini 2.5",
+    id: "gemini-2.5-pro",
     provider: "Google",
     category: "VISION",
     latency: "156 ms",
@@ -72,6 +76,7 @@ export const MODELS: ModelInfo[] = [
   {
     name: "DeepSeek",
     full: "DeepSeek V3",
+    id: "deepseek-v3",
     provider: "DeepSeek",
     category: "CODE",
     latency: "118 ms",
@@ -84,6 +89,7 @@ export const MODELS: ModelInfo[] = [
   {
     name: "Grok",
     full: "Grok 3",
+    id: "grok-3",
     provider: "xAI",
     category: "REASONING",
     latency: "121 ms",
@@ -97,6 +103,7 @@ export const MODELS: ModelInfo[] = [
   {
     name: "Qwen",
     full: "Qwen 3",
+    id: "qwen3-max",
     provider: "Alibaba",
     category: "CHAT",
     latency: "134 ms",
@@ -109,6 +116,7 @@ export const MODELS: ModelInfo[] = [
   {
     name: "Kimi",
     full: "Kimi K2",
+    id: "kimi-k2",
     provider: "Moonshot",
     category: "CHAT",
     latency: "148 ms",
@@ -121,6 +129,7 @@ export const MODELS: ModelInfo[] = [
   {
     name: "Flux",
     full: "Flux 1.1",
+    id: "flux-1.1-pro",
     provider: "Black Forest",
     category: "IMAGE",
     latency: "2.4 s",
@@ -133,6 +142,7 @@ export const MODELS: ModelInfo[] = [
   {
     name: "Whisper",
     full: "Whisper Large",
+    id: "whisper-large-v3",
     provider: "OpenAI",
     category: "AUDIO",
     latency: "890 ms",
@@ -143,13 +153,3 @@ export const MODELS: ModelInfo[] = [
     status: "Operational",
   },
 ];
-
-export const ORBIT_NODES = [
-  { name: "OpenAI", angle: 8 },
-  { name: "Anthropic", angle: 58 },
-  { name: "Google", angle: 110 },
-  { name: "DeepSeek", angle: 162 },
-  { name: "xAI", angle: 214 },
-  { name: "Qwen", angle: 266 },
-  { name: "Kimi", angle: 318 },
-] as const;
