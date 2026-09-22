@@ -1,0 +1,39 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "FYT API",
+      "hasCanvas": true,
+      "bodyTextLen": 968,
+      "bodyTextHash": "52a33fa8ba1eed1f6f8ae95e3b3074d3d253cff260ab79ebfc68d327344b793b",
+      "bodyTextPrefix": "Foyton API 主页 模型广场 控制台 文档 联系我们 中文 开始使用 FYT API AI 基础设施 一个接口。 所有智",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/Users/yckonnnn/Documents/ChatGPT/新项目（新前端审美）/screenshots/smoke-home.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "FYT API",
+      "hasCanvas": true,
+      "bodyTextLen": 947,
+      "bodyTextHash": "99ce4d7c4eec3674f0b2571f77034a6afe3af7001c3199225dfe98f9a962b3ed",
+      "bodyTextPrefix": "Foyton API 中文 开始使用 FYT API AI 基础设施 一个接口。 所有智能。 连接全球领先的 AI 模型只需一个",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/Users/yckonnnn/Documents/ChatGPT/新项目（新前端审美）/screenshots/smoke-home-mobile.png"
+    }
+  },
+  "brandWarnings": [
+    "BRAND WARNING: this looks like a game/canvas app but /workspace/public/og.jpg is missing. Games and visually rich apps must ship a custom 1200x630 share card built from the app's own art — the default og.grok.me placeholder card is not acceptable for them. You are not done: open /workspace/.grok/skills/og/SKILL.md and finish the brand-asset pass.",
+    "BRAND WARNING: this looks like a game/canvas app but src/lib/og/site.json is missing \"type\": \"x:game\". X uses og:type=x:game to present the unfurl as a game card — set it in /workspace/src/lib/og/site.json per /workspace/.grok/skills/og/SKILL.md. Do not invent x:type or overload twitter:card as the game signal."
+  ],
+  "authWarnings": [],
+  "verdictFile": "/Users/yckonnnn/Documents/ChatGPT/新项目（新前端审美）/screenshots/smoke-home.json"
+}
