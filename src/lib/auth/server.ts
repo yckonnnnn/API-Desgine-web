@@ -98,10 +98,15 @@ const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
 // Local `npm run dev` (port 8080 contract). Browsers may send Origin as any of
 // these for the same server — trusting only `localhost` rejects `127.0.0.1` and
 // breaks email/password with "Invalid origin".
+// 8081 is the built-output QA preview (`npm run preview:restart`); without it
+// every signed-in page is unreachable there, since sign-in 403s on origin.
 const LOCAL_DEV_ORIGINS: string[] = [
   "http://localhost:8080",
   "http://127.0.0.1:8080",
   "http://[::1]:8080",
+  "http://localhost:8081",
+  "http://127.0.0.1:8081",
+  "http://[::1]:8081",
 ];
 const baseURL = explicitBaseURL ?? {
   // Include loopback hosts so dynamic baseURL resolves for local email/password

@@ -2717,38 +2717,79 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
+  margin-bottom: 18px;
 }
 
 .wallet-hero {
   position: relative;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 26px;
-  padding: 30px 32px;
+  gap: 32px;
+  padding: 24px 30px;
   overflow: hidden;
   border-radius: var(--radius-xl);
   border: 1px solid rgb(255 255 255 / 0.75);
   background:
-    radial-gradient(ellipse at 88% 10%, rgb(203 242 79 / 0.24), transparent 46%),
-    linear-gradient(160deg, #ffffff 0%, #f7f8f2 100%);
-  box-shadow: 0 30px 60px -46px rgb(70 93 101 / 0.55);
+    linear-gradient(105deg, #ffffff 0%, #ffffff 67%, #f1fad7 100%);
+  box-shadow: 0 22px 48px -42px rgb(70 93 101 / 0.55);
 }
 
-/* Soft sphere echoing the marketing site's moon — pure decoration, so it sits
-   behind everything and never intercepts a click. */
-.wallet-hero-orb {
+.wallet-hero-art {
   position: absolute;
-  right: 22%;
   top: 50%;
-  width: 190px;
-  height: 190px;
+  right: 15%;
+  width: 246px;
+  height: 246px;
   transform: translateY(-50%);
-  border-radius: 50%;
   pointer-events: none;
-  background: radial-gradient(circle at 34% 30%, #ffffff 0%, #eef3ea 46%, #dfe7df 74%, #cfd9d2 100%);
-  opacity: 0.75;
+  opacity: 0.78;
+}
+
+.wallet-hero-art::before {
+  content: "";
+  position: absolute;
+  inset: 35px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(203 242 79 / 0.15), rgb(203 242 79 / 0) 72%);
+}
+
+.wallet-hero-orbit {
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgb(95 122 22 / 0.15);
+  border-left-color: rgb(95 122 22 / 0.42);
+  border-radius: 50%;
+  animation: walletOrbit 18s linear infinite;
+}
+
+.wallet-hero-orbit.is-inner {
+  inset: 39px;
+  border-color: rgb(95 122 22 / 0.12);
+  border-right-color: rgb(95 122 22 / 0.42);
+  animation-duration: 13s;
+  animation-direction: reverse;
+}
+
+.wallet-hero-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-acid-ink);
+  box-shadow: 0 0 0 7px rgb(203 242 79 / 0.25);
+  animation: walletSatellite 18s linear infinite;
+}
+
+@keyframes walletOrbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes walletSatellite {
+  from { transform: rotate(0deg) translateX(115px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(115px) rotate(-360deg); }
 }
 
 .wallet-hero-main {
@@ -2760,7 +2801,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   padding: 5px 12px 6px;
   border-radius: var(--radius-capsule);
   background: var(--color-acid-tint);
@@ -2778,7 +2819,7 @@
 
 .wallet-hero-value {
   margin: 0;
-  font-size: clamp(2.6rem, 5.4vw, 3.9rem);
+  font-size: clamp(2.5rem, 4.4vw, 3.4rem);
   font-weight: 600;
   letter-spacing: -0.05em;
   line-height: 1;
@@ -2791,7 +2832,7 @@
   flex-wrap: wrap;
   gap: 10px;
   list-style: none;
-  margin: 20px 0 0;
+  margin: 14px 0 0;
   padding: 0;
 }
 
@@ -2799,7 +2840,7 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  padding: 8px 14px 9px;
+  padding: 6px 12px 7px;
   border-radius: var(--radius-capsule);
   border: 1px solid rgb(17 18 20 / 0.07);
   background: rgb(255 255 255 / 0.8);
@@ -2814,6 +2855,10 @@
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--color-ink);
+}
+
+.wallet-hero > .btn-acid {
+  z-index: 1;
 }
 
 .wallet-flash {
@@ -2833,7 +2878,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  margin: 34px 0 16px;
+  margin: 24px 0 14px;
 }
 
 .wallet-plans {
@@ -2846,8 +2891,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 460px;
-  padding: 34px 30px 30px;
+  min-height: 352px;
+  padding: 24px 24px 22px;
   border-radius: var(--radius-xl);
   border: 1px solid rgb(213 215 214 / 0.6);
   background: #fff;
@@ -2868,10 +2913,10 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 11px;
-  margin: 18px 0 0;
+  gap: 7px;
+  margin: 14px 0 0;
   padding: 0;
-  font-size: 13.5px;
+  font-size: 12.5px;
   color: var(--color-mist);
 }
 
@@ -2929,8 +2974,8 @@
 
 .wallet-plan-badge {
   position: absolute;
-  top: -12px;
-  left: 24px;
+  top: 16px;
+  right: 18px;
   padding: 5px 13px 6px;
   border-radius: var(--radius-capsule);
   background: var(--color-ink);
@@ -2944,9 +2989,9 @@
 .wallet-plan-icon {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  margin-bottom: 12px;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 10px;
   border-radius: var(--radius-md);
   background: rgb(17 18 20 / 0.05);
   color: var(--color-ink);
@@ -2963,7 +3008,7 @@
 
 .wallet-plan h3 {
   margin: 0;
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -2987,8 +3032,8 @@
   display: flex;
   align-items: baseline;
   gap: 9px;
-  margin: 22px 0 0;
-  font-size: clamp(2.2rem, 3.6vw, 2.9rem);
+  margin: 16px 0 0;
+  font-size: clamp(2rem, 3vw, 2.5rem);
   font-weight: 600;
   letter-spacing: -0.045em;
   line-height: 1;
@@ -3014,8 +3059,8 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  margin: 20px 0 0;
-  padding-top: 16px;
+  margin: 14px 0 0;
+  padding-top: 12px;
   border-top: 1px solid rgb(17 18 20 / 0.08);
   font-size: 12.5px;
   color: var(--color-mist);
@@ -3032,7 +3077,9 @@
 }
 
 .wallet-plan-cta {
-  padding: 14px 20px 15px;
+  min-height: 44px;
+  margin-top: 16px;
+  padding: 10px 18px;
   border: 0;
   border-radius: var(--radius-md);
   background: var(--color-ink);
@@ -3097,31 +3144,82 @@
 
 /* — Top-up sheet (modal) */
 
+.wallet-modal-layer {
+  background: rgb(17 18 20 / 0.4);
+  animation: topupBackdrop 250ms var(--ease-out-power3);
+}
+
+@keyframes topupBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .topup-sheet {
   position: relative;
-  width: min(520px, 100%);
-  max-height: calc(100vh - 48px);
+  width: min(640px, calc(100vw - 32px));
+  max-height: min(850px, calc(100vh - 32px));
   overflow-y: auto;
-  padding: 30px 30px 26px;
-  border-radius: 28px;
-  border: 1px solid rgb(255 255 255 / 0.75);
+  padding: 0 30px 24px;
+  border-radius: 30px;
+  border: 1px solid rgb(255 255 255 / 0.9);
   background: #fff;
-  box-shadow: 0 40px 90px -40px rgb(17 18 20 / 0.45);
-  animation: userCardIn 220ms var(--ease-out-power3);
+  box-shadow: 0 46px 100px -36px rgb(17 18 20 / 0.34);
+  animation: topupEnter 250ms var(--ease-out-power3);
+}
+
+@keyframes topupEnter {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.topup-intro {
+  position: relative;
+  margin: 0 -30px;
+  padding: 26px 30px 24px;
+  overflow: hidden;
+  border-radius: 29px 29px 0 0;
+  background:
+    radial-gradient(circle at 90% -20%, rgb(203 242 79 / 0.7), transparent 47%),
+    linear-gradient(120deg, #f7faee 0%, #f2f8df 100%);
+}
+
+.topup-intro::after {
+  content: "";
+  position: absolute;
+  top: -98px;
+  right: -60px;
+  width: 260px;
+  height: 260px;
+  border: 1px solid rgb(95 122 22 / 0.15);
+  border-radius: 50%;
+  box-shadow: 0 0 0 28px rgb(255 255 255 / 0.14), 0 0 0 58px rgb(255 255 255 / 0.12);
+  pointer-events: none;
+}
+
+.topup-intro-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: var(--color-ink);
+  color: var(--color-acid);
 }
 
 .topup-close {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  z-index: 1;
+  top: 22px;
+  right: 26px;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  border: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgb(17 18 20 / 0.08);
   border-radius: 50%;
-  background: transparent;
-  color: var(--color-mist);
+  background: rgb(255 255 255 / 0.72);
+  color: var(--color-ink);
   cursor: pointer;
 }
 
@@ -3132,24 +3230,22 @@
 
 .topup-title {
   margin: 0;
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 600;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.045em;
 }
 
 .topup-sub {
-  margin: 7px 0 0;
-  font-size: 13.5px;
+  margin: 6px 0 0;
+  font-size: 13px;
   color: var(--color-mist);
 }
 
 .topup-body {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-top: 24px;
-  padding-top: 22px;
-  border-top: 1px solid rgb(213 215 214 / 0.6);
+  gap: 14px;
+  margin-top: 22px;
 }
 
 .topup-label-row {
@@ -3172,59 +3268,72 @@
 .topup-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 12px;
+  gap: 10px;
+  margin-top: 0;
 }
 
 .topup-option {
   position: relative;
   display: flex;
-  align-items: center;
-  min-height: 104px;
-  padding: 18px 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 92px;
+  padding: 14px 17px;
   border-radius: var(--radius-lg);
-  border: 1.5px solid rgb(213 215 214 / 0.8);
+  border: 1.5px solid rgb(213 215 214 / 0.9);
   background: #fff;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition-property: border-color, background-color, box-shadow;
-  transition-duration: 200ms;
+  transition-property: border-color, background-color, box-shadow, transform;
+  transition-duration: 180ms;
   transition-timing-function: var(--ease-out-power3);
 }
 
-.topup-option:hover {
-  border-color: var(--color-ink);
+@media (hover: hover) and (pointer: fine) {
+  .topup-option:hover { transform: translateY(-2px); border-color: var(--color-acid-ink); }
 }
 
-/* Selected reads as the lime fill, matching the recommended package card. */
 .topup-option.is-on {
-  border-color: var(--color-ink);
-  background: var(--color-acid-tint);
-  box-shadow: 0 18px 34px -26px rgb(140 180 40 / 0.8);
+  border-color: var(--color-acid-ink);
+  background: #f6fbe9;
+  box-shadow: inset 0 0 0 1px var(--color-acid-ink), 0 14px 26px -24px rgb(95 122 22 / 0.5);
+}
+
+.topup-option-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-mist);
 }
 
 .topup-radio {
   position: absolute;
-  top: 16px;
+  top: 14px;
   right: 16px;
-  width: 18px;
-  height: 18px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  border: 1.5px solid rgb(17 18 20 / 0.22);
-  transition: border-color 200ms, box-shadow 200ms;
+  border: 1px solid rgb(17 18 20 / 0.2);
+  color: var(--color-ink);
+  transition: background-color 180ms ease, border-color 180ms ease;
 }
 
 .topup-option.is-on .topup-radio {
-  border-color: var(--color-ink);
-  box-shadow: inset 0 0 0 4px var(--color-acid);
+  border-color: var(--color-acid);
+  background: var(--color-acid);
 }
 
 .topup-option-amount {
   display: flex;
   align-items: baseline;
   gap: 2px;
-  font-size: 30px;
+  font-size: 27px;
   font-weight: 600;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
@@ -3238,31 +3347,34 @@
 }
 
 .topup-badge {
-  position: absolute;
-  top: -10px;
-  left: 18px;
-  padding: 4px 10px 5px;
+  padding: 2px 7px 3px;
   border-radius: var(--radius-capsule);
-  background: #e8650f;
-  color: #fff;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  background: var(--color-acid-tint);
+  color: var(--color-acid-ink);
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .topup-custom {
   display: block;
-  padding: 18px 20px 20px;
+  padding: 13px 16px;
   border-radius: var(--radius-lg);
   border: 1px solid rgb(213 215 214 / 0.72);
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.topup-custom:focus-within,
+.topup-custom.is-on {
+  border-color: var(--color-acid-ink);
+  background: #fafff0;
 }
 
 .topup-custom-field {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
-  padding: 12px 16px;
+  margin-top: 8px;
+  padding: 8px 12px;
   border-radius: var(--radius-md);
   background: var(--color-canvas-warm);
 }
@@ -3285,26 +3397,42 @@
   font-variant-numeric: tabular-nums;
   color: var(--color-ink);
   outline: none;
+  appearance: textfield;
+}
+
+.topup-custom-field input::-webkit-inner-spin-button,
+.topup-custom-field input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
 }
 
 .topup-total {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 18px 20px;
+  display: grid;
+  gap: 9px;
+  padding: 14px 18px;
   border-radius: var(--radius-lg);
-  border: 1px solid rgb(213 215 214 / 0.72);
-  font-size: 14.5px;
+  border: 1px solid rgb(95 122 22 / 0.16);
+  background: #f9fbee;
+  font-size: 13px;
   color: var(--color-mist);
 }
 
-.topup-total em {
-  font-style: normal;
+.topup-total-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topup-total-row.is-payable {
+  padding-top: 9px;
+  border-top: 1px solid rgb(95 122 22 / 0.15);
+  color: var(--color-ink);
+  font-weight: 600;
 }
 
 .topup-total strong {
-  font-size: 26px;
+  font-size: 23px;
   font-weight: 600;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
@@ -3314,13 +3442,13 @@
 .topup-pay {
   width: 100%;
   justify-content: center;
-  margin-top: 22px;
-  padding: 16px 22px 17px;
-  font-size: 15.5px;
+  margin-top: 17px;
+  padding: 13px 22px 14px;
+  font-size: 15px;
 }
 
 .topup-secure {
-  margin: 14px 0 0;
+  margin: 10px 0 0;
   text-align: center;
   font-size: 12px;
   color: var(--color-haze);
@@ -3331,30 +3459,69 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .wallet-hero-orb {
-    right: -40px;
-    opacity: 0.5;
+  .wallet-plan {
+    min-height: 0;
   }
+
+  .wallet-hero-art { right: 9%; }
 }
 
 @media (max-width: 639px) {
   .wallet-hero {
-    padding: 24px 20px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 22px 20px;
+  }
+
+  .wallet-hero .btn-acid {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .wallet-hero-art {
+    right: -100px;
+    opacity: 0.42;
   }
 
   .wallet-plan {
-    padding: 22px 18px 20px;
+    padding: 22px 20px 20px;
   }
 
   .topup-sheet {
-    padding: 24px 20px 22px;
+    padding: 0 18px 20px;
     border-radius: 24px;
   }
 
-  .topup-option {
-    min-height: 92px;
-    padding: 16px;
+  .topup-intro {
+    margin: 0 -18px;
+    padding: 22px 18px 20px;
+    border-radius: 23px 23px 0 0;
   }
+
+  .topup-title { font-size: 24px; }
+
+  .topup-close { top: 18px; right: 18px; }
+
+  .topup-option {
+    min-height: 82px;
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wallet-hero-orbit,
+  .wallet-hero-spark {
+    animation: none;
+  }
+
+  .wallet-modal-layer,
+  .topup-sheet {
+    animation-duration: 150ms;
+  }
+
+  .topup-sheet { animation-name: topupBackdrop; }
+
+  .topup-option { transition-property: border-color, background-color, box-shadow; }
 }
 
 .usage-chart {
@@ -3551,5 +3718,877 @@
     transform: none;
     filter: none;
     opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Ops workspace — the refactored console. A fresh `ops-*` namespace so the
+   wallet page keeps rendering on the legacy `console-*` classes untouched;
+   the shell and the four workspace pages (overview / keys / usage / billing)
+   live here.
+
+   Motion doctrine: transform + opacity only, strong ease-out entrances,
+   sub-300ms UI motion, press feedback on buttons, hover gated behind
+   (hover:hover), reduced motion keeps fades and drops movement.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.ops-root {
+  --ops-ease-inout: cubic-bezier(0.77, 0, 0.175, 1);
+  --ops-line: rgb(17 18 20 / 0.07);
+  --ops-line-soft: rgb(17 18 20 / 0.05);
+
+  display: grid;
+  grid-template-columns: 248px 1fr;
+  /* Named areas, not auto-placement: the chrome mounts decoration and a toast
+     host alongside the two structural columns, and auto-placement would let
+     any one of them claim the first cell. */
+  grid-template-areas: "side main";
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 86% -8%, rgb(169 221 224 / 0.16), transparent 46%),
+    linear-gradient(180deg, #f7f7f4 0%, #f1f2ef 100%);
+  color: var(--color-ink);
+}
+
+/* Toast host: fixed, so it is out of flow and never becomes a grid item.
+   Sonner positions its own list fixed at the viewport corner; this box only
+   keeps the library's static root <section> away from the grid. The z-index
+   lifts toasts over the modal layer (60) — `.ops-main` sets its own z-index,
+   which would otherwise paint the working column on top of them. */
+.ops-toast-host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  pointer-events: none;
+}
+
+.ops-toast-host [data-sonner-toast] {
+  pointer-events: auto;
+}
+
+/* Ambient sphere echoing the marketing orb — decoration, never clickable. */
+.ops-orb {
+  position: fixed;
+  right: -9vw;
+  bottom: -14vh;
+  width: min(40vw, 500px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.06;
+  background: radial-gradient(circle at 34% 30%, #fff, #dfe4e2 42%, #b9c6c9 78%);
+}
+
+/* — Sidebar — */
+
+.ops-side {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 248px;
+  grid-area: side;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 16px 18px;
+  background: rgb(255 255 255 / 0.5);
+  border-right: 1px solid var(--ops-line);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  z-index: 3;
+}
+
+.ops-brand {
+  padding: 4px 10px;
+}
+
+.ops-side nav {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  flex: 1;
+}
+
+.ops-nav-label {
+  margin: 0 0 8px;
+  padding-inline: 10px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-haze);
+}
+
+.ops-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--color-mist);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 450;
+  transition-property: color, background-color, box-shadow;
+  transition-duration: 180ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.ops-link svg {
+  flex: 0 0 auto;
+  opacity: 0.78;
+  transition: opacity 180ms var(--ease-out-power3);
+}
+
+.ops-link:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-ice-deep) 65%, transparent);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ops-link:hover {
+    color: var(--color-ink);
+    background: rgb(17 18 20 / 0.045);
+  }
+
+  .ops-link:hover svg {
+    opacity: 1;
+  }
+}
+
+.ops-link.is-on {
+  color: var(--color-ink);
+  background: rgb(255 255 255 / 0.92);
+  box-shadow:
+    inset 0 0 0 1px var(--ops-line),
+    0 8px 18px -14px rgb(70 93 101 / 0.6);
+}
+
+.ops-link.is-on svg {
+  opacity: 1;
+  color: var(--color-acid-ink);
+}
+
+.ops-side-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ops-line-soft);
+}
+
+.ops-foot-user {
+  margin-left: auto;
+}
+
+/* Language toggle — the same pill pattern as the segmented control below. */
+.ops-lang {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--radius-capsule);
+  background: rgb(17 18 20 / 0.05);
+}
+
+.ops-lang button {
+  padding: 4px 10px 5px;
+  border: 0;
+  border-radius: var(--radius-capsule);
+  background: transparent;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--color-mist);
+  transition-property: color, background-color, box-shadow;
+  transition-duration: 180ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.ops-lang button.is-on {
+  color: var(--color-ink);
+  background: rgb(255 255 255 / 0.95);
+  box-shadow: 0 1px 3px rgb(17 18 20 / 0.1);
+}
+
+/* — Main column — */
+
+.ops-main {
+  position: relative;
+  z-index: 2;
+  grid-area: main;
+  padding: 46px 48px 88px;
+  max-width: 1300px;
+  min-width: 0;
+}
+
+.ops-page {
+  min-width: 0;
+}
+
+.ops-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.ops-kicker {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-haze);
+}
+
+.ops-title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.ops-head-sub {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  color: var(--color-mist);
+}
+
+/* Entrance: one quiet rise per block, staggered 50ms — near-imperceptible on
+   a page visited daily, just enough that nothing teleports in. */
+@keyframes ops-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ops-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ops-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+.ops-rise {
+  animation: ops-rise 320ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--ops-i, 0) * 50ms);
+}
+
+.ops-stack {
+  display: grid;
+  gap: 14px;
+}
+
+/* — Panels. One container primitive; everything on a page lives in one. — */
+
+.ops-panel {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--ops-line);
+  background: rgb(255 255 255 / 0.72);
+  box-shadow:
+    0 1px 2px rgb(17 18 20 / 0.03),
+    0 26px 52px -44px rgb(70 93 101 / 0.4);
+  overflow: hidden;
+}
+
+.ops-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--ops-line-soft);
+}
+
+.ops-panel-title {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.ops-panel-sub {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--color-mist);
+}
+
+.ops-panel-body {
+  padding: 20px 22px 22px;
+}
+
+.ops-link-inline {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-acid-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: 4px;
+}
+
+.ops-link-inline:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-acid-ink) 45%, transparent);
+  outline-offset: 3px;
+}
+
+.ops-link-inline:hover {
+  text-decoration: underline;
+}
+
+/* — Balance hero. The one dark surface in the workspace: the number you came
+     to check carries the most weight on the page. — */
+
+.ops-hero {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 30px 32px;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  color: var(--color-pearl);
+  background:
+    radial-gradient(ellipse at 12% 0%, rgb(203 242 79 / 0.14), transparent 50%),
+    linear-gradient(150deg, #14171a 0%, #202b2f 55%, #33474c 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 36px 64px -46px rgb(20 30 33 / 0.9);
+}
+
+.ops-hero-label {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.55);
+}
+
+.ops-hero-value {
+  margin: 0;
+  font-size: clamp(2.5rem, 5vw, 3.7rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ops-hero-meta {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.62);
+  font-variant-numeric: tabular-nums;
+}
+
+.ops-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ops-hero .btn-ink {
+  background: #fff;
+  color: #14171a;
+}
+
+.ops-hero .btn-ink:hover {
+  background: rgb(255 255 255 / 0.88);
+  transform: translateY(-1px);
+}
+
+.ops-hero .btn-ghost {
+  border-color: rgb(255 255 255 / 0.28);
+  color: #fff;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.ops-hero .btn-ghost:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+/* — Metric tiles — */
+
+.ops-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ops-metric {
+  padding: 16px 18px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--ops-line);
+  background: rgb(255 255 255 / 0.72);
+  box-shadow: 0 20px 38px -36px rgb(70 93 101 / 0.5);
+}
+
+.ops-metric dt {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--color-haze);
+}
+
+.ops-metric dt svg {
+  color: var(--color-acid-ink);
+}
+
+.ops-metric dd {
+  margin: 11px 0 0;
+  font-size: clamp(1.3rem, 1.9vw, 1.7rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* — Segmented control. Equal grid columns so the thumb can translate by
+     exactly one column per step — pure transform, no layout reads. — */
+
+.ops-seg {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding: 3px;
+  border-radius: var(--radius-capsule);
+  background: rgb(17 18 20 / 0.05);
+}
+
+.ops-seg-thumb {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / var(--ops-seg-count, 3));
+  border-radius: var(--radius-capsule);
+  background: rgb(255 255 255 / 0.95);
+  box-shadow:
+    inset 0 0 0 1px rgb(17 18 20 / 0.04),
+    0 1px 4px rgb(17 18 20 / 0.12);
+  transform: translateX(calc(var(--ops-seg-i, 0) * 100%));
+  transition: transform 220ms var(--ops-ease-inout);
+}
+
+.ops-seg button {
+  position: relative;
+  z-index: 1;
+  padding: 6px 14px 7px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-mist);
+  transition: color 180ms var(--ease-out-power3);
+}
+
+.ops-seg button.is-on {
+  color: var(--color-ink);
+}
+
+.ops-seg button:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-ice-deep) 65%, transparent);
+  outline-offset: -2px;
+  border-radius: var(--radius-capsule);
+}
+
+/* — Tables — */
+
+.ops-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ops-table {
+  width: 100%;
+  min-width: 660px;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.ops-table th {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--ops-line-soft);
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-haze);
+}
+
+.ops-table td {
+  padding: 13px 14px;
+  border-top: 1px solid var(--ops-line-soft);
+  vertical-align: middle;
+}
+
+.ops-table th:first-child,
+.ops-table td:first-child {
+  padding-left: 22px;
+}
+
+.ops-table th:last-child,
+.ops-table td:last-child {
+  padding-right: 22px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ops-table tbody tr {
+    transition: background-color 150ms ease;
+  }
+
+  .ops-table tbody tr:hover td {
+    background: rgb(255 255 255 / 0.6);
+  }
+}
+
+.ops-table .is-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ops-dim {
+  color: var(--color-mist);
+  font-size: 13px;
+}
+
+/* Status pills, shared by the key and billing tables. */
+.ops-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 4px;
+  border-radius: var(--radius-capsule);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.ops-pill i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ops-pill.is-ok {
+  color: var(--color-acid-ink);
+  background: var(--color-acid-tint);
+}
+
+.ops-pill.is-off {
+  color: var(--color-mist);
+  background: rgb(17 18 20 / 0.06);
+}
+
+/* Row actions — quiet text buttons that answer hover and press. */
+.ops-rowbtn {
+  padding: 5px 9px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-mist);
+  transition-property: color, background-color, transform;
+  transition-duration: 150ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.ops-rowbtn:active {
+  transform: scale(0.96);
+}
+
+.ops-rowbtn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-ice-deep) 65%, transparent);
+  outline-offset: 1px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ops-rowbtn:hover {
+    color: var(--color-ink);
+    background: rgb(17 18 20 / 0.05);
+  }
+
+  .ops-rowbtn.is-danger:hover {
+    color: #a8443f;
+    background: rgb(168 68 63 / 0.08);
+  }
+}
+
+/* — Modal. Center-origin by design (not anchored to a trigger); enters at
+     scale(0.96), exits the way it came in through the closing state. — */
+
+@keyframes ops-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+}
+
+@keyframes ops-pop-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateY(4px);
+  }
+}
+
+.ops-modal-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(236 237 234 / 0.52);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  animation: ops-fade 200ms ease both;
+}
+
+.ops-modal {
+  width: min(480px, 100%);
+  padding: 26px;
+  border-radius: 20px;
+  border: 1px solid rgb(255 255 255 / 0.8);
+  background: rgb(255 255 255 / 0.92);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.8),
+    0 40px 80px -40px rgb(17 18 20 / 0.4);
+  animation: ops-pop 260ms var(--ease-out-power4) both;
+}
+
+.ops-modal-layer.is-closing {
+  animation: ops-fade-out 180ms ease both;
+}
+
+.ops-modal-layer.is-closing .ops-modal {
+  animation: ops-pop-out 180ms ease both;
+}
+
+.ops-field {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-mist);
+}
+
+.ops-input {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 7px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgb(17 18 20 / 0.12);
+  background: rgb(255 255 255 / 0.85);
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-ink);
+  transition-property: border-color, box-shadow;
+  transition-duration: 160ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.ops-input:focus {
+  outline: none;
+  border-color: var(--color-ice-deep);
+  box-shadow: 0 0 0 3px rgb(169 221 224 / 0.35);
+}
+
+.ops-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.ops-error {
+  margin: 0;
+  font-size: 13px;
+  color: #8a4a4a;
+}
+
+/* Freshly-minted secret: one chance to copy it. */
+.ops-fresh {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgb(95 122 22 / 0.25);
+  background: rgb(203 242 79 / 0.12);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  word-break: break-all;
+}
+
+.ops-modal-note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-mist);
+}
+
+/* — Loading skeletons. Constant motion, so linear; drop under reduced motion. — */
+
+.ops-skel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgb(17 18 20 / 0.05);
+}
+
+.ops-skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.7), transparent);
+  animation: ops-shimmer 1.5s linear infinite;
+}
+
+@keyframes ops-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.ops-empty {
+  padding: 44px 24px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--color-mist);
+}
+
+.ops-chart {
+  width: 100%;
+  height: 280px;
+}
+
+.ops-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.ops-input-table {
+  min-height: 34px;
+  max-width: 220px;
+  margin-top: 0;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+/* — Responsive — */
+
+@media (max-width: 959px) {
+  .ops-root {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "side"
+      "main";
+  }
+
+  .ops-side {
+    position: relative;
+    width: auto;
+    height: auto;
+    overflow-y: visible;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--ops-line);
+  }
+
+  .ops-side nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    flex: 1 1 100%;
+  }
+
+  .ops-nav-label {
+    display: none;
+  }
+
+  .ops-side-foot {
+    padding-top: 0;
+    border-top: 0;
+    margin-left: auto;
+  }
+
+  .ops-main {
+    padding: 30px 20px 64px;
+  }
+
+  .ops-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ops-hero {
+    padding: 24px 22px;
+  }
+}
+
+/* — Reduced motion: gentler, not zero — fades stay, movement goes. — */
+
+@media (prefers-reduced-motion: reduce) {
+  .ops-rise {
+    animation: ops-fade 200ms ease both;
+    animation-delay: 0ms;
+  }
+
+  .ops-modal-layer {
+    animation: ops-fade 200ms ease both;
+  }
+
+  .ops-modal {
+    animation: ops-fade 200ms ease both;
+  }
+
+  .ops-modal-layer.is-closing,
+  .ops-modal-layer.is-closing .ops-modal {
+    animation: ops-fade-out 150ms ease both;
+  }
+
+  .ops-skel::after {
+    animation: none;
+  }
+
+  .ops-seg-thumb {
+    transition-duration: 0ms;
   }
 }

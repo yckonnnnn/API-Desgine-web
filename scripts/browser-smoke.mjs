@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { checkedOutputPath, checkedUrl } from "./browser-guard.mjs";
 import { computeBrandWarnings } from "./brand-check.mjs";
@@ -20,6 +21,10 @@ import {
   parseSmokeArgs,
 } from "./browser-smoke-verdict.mjs";
 
+// Writes are scoped to the project itself (screenshots/, verdict JSON) rather
+// than a hard-coded sandbox path, so the smoke pass runs anywhere the repo lives.
+const PROJECT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+
 const args = parseSmokeArgs(process.argv.slice(2), process.env);
 if (args.error) {
   console.error(JSON.stringify({ ok: false, error: args.error }, null, 2));
@@ -27,10 +32,10 @@ if (args.error) {
 }
 
 const url = checkedUrl(args.url);
-const outPng = checkedOutputPath(args.outPng, ["/workspace"]);
+const outPng = checkedOutputPath(args.outPng, [PROJECT_ROOT]);
 const derived = derivedPaths(outPng);
-const mobilePng = checkedOutputPath(derived.mobilePng, ["/workspace"]);
-const outJson = checkedOutputPath(derived.verdictJson, ["/workspace"], "verdict JSON");
+const mobilePng = checkedOutputPath(derived.mobilePng, [PROJECT_ROOT]);
+const outJson = checkedOutputPath(derived.verdictJson, [PROJECT_ROOT], "verdict JSON");
 
 const MAX_BASELINE_BYTES = 1024 * 1024;
 const baselineRequested = Boolean(args.baseline);
@@ -38,7 +43,7 @@ let baselinePath = null;
 let baselineResolveError = null;
 if (baselineRequested) {
   try {
-    baselinePath = checkedOutputPath(realpathSync(args.baseline), ["/workspace"], "baseline");
+    baselinePath = checkedOutputPath(realpathSync(args.baseline), [PROJECT_ROOT], "baseline");
   } catch (err) {
     baselineResolveError = err?.code ?? "unresolvable path";
   }
