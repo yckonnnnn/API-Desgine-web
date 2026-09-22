@@ -87,12 +87,7 @@ export function InfraSection() {
   return (
     <section id="infrastructure" className="infra" ref={root}>
       <div className="infra-card">
-        {/* Left: brand panel. The prototype's cloud photograph is replaced by a
-            deep ink-to-slate gradient lit with the site's ice tone, so the panel
-            carries the same weight without borrowing an unrelated photo. */}
         <div className="infra-brand">
-          <span className="infra-brand-glow" aria-hidden="true" />
-
           <div className="infra-brand-top">
             <FoytonBrand />
           </div>
@@ -136,11 +131,6 @@ export function InfraSection() {
           </div>
         </div>
 
-        {/* Right: links panel. The stamp used to float top-right, which forced a
-            152px reserve on the columns and left the panel's lower half empty.
-            It now anchors the bottom rule beside the copyright, so the columns
-            get the full width and the badge fills the space instead of clearing
-            it. */}
         <div className="infra-links">
           <div className="infra-cols">
             {COLUMNS.map((column) => (

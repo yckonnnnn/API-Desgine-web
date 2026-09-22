@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type Re
 import { createPortal } from "react-dom";
 import { Link, Navigate } from "@tanstack/react-router";
 import { LogOut, Wallet } from "lucide-react";
-import { formatYuan } from "@/lib/format";
+import { formatUsd } from "@/lib/format";
+import { PLANS, findPlan } from "@/lib/plans";
 import { GROK_PROVIDERS, authEnabled, signIn, signOut } from "./client";
 import { hasGateSessionMarker } from "./gate-session-marker";
 import { resolveSignInGateState } from "./sign-in-gate";
@@ -114,6 +115,7 @@ export function UserButton({ language = "en" }: { language?: "zh" | "en" }) {
   } | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
+  const [planId, setPlanId] = useState<string | null | undefined>(undefined);
   const [avatarFailed, setAvatarFailed] = useState(false);
   const gateSession = useSyncExternalStore(
     subscribeToNothing,
@@ -182,15 +184,23 @@ export function UserButton({ language = "en" }: { language?: "zh" | "en" }) {
     };
   }, [open, place]);
 
-  // Balance loads on open — a signed-in visitor browsing the marketing pages
+  // Balance + plan load on open — a signed-in visitor browsing the marketing pages
   // shouldn't pay for a server call they never look at.
   useEffect(() => {
-    if (!open || balance != null) return;
-    void import("@/lib/fyt")
-      .then(({ getWallet }) => getWallet())
-      .then((w) => setBalance(w.balanceCents))
-      .catch(() => undefined);
-  }, [open, balance]);
+    if (!open) return;
+    if (balance == null) {
+      void import("@/lib/fyt")
+        .then(({ getWallet }) => getWallet())
+        .then((w) => setBalance(w.balanceCents))
+        .catch(() => undefined);
+    }
+    if (planId === undefined) {
+      void import("@/lib/fyt")
+        .then(({ getUserPlan }) => getUserPlan())
+        .then((p) => setPlanId(p.planId))
+        .catch(() => setPlanId(null));
+    }
+  }, [open, balance, planId]);
 
   if (!user) return null;
 
@@ -198,6 +208,17 @@ export function UserButton({ language = "en" }: { language?: "zh" | "en" }) {
   const name = user.displayName ?? user.primaryEmail ?? "Account";
   const email = user.primaryEmail ?? null;
   const avatarSrc = avatarSource(user.profileImageUrl ?? null, name, avatarFailed);
+
+  // Tier: plan name if subscribed, Plus if balance > 0, Free otherwise.
+  const activePlan = planId ? findPlan(planId) : null;
+  const tierLabel = activePlan
+    ? activePlan.name
+    : balance != null && balance > 0
+      ? (zh ? "Plus" : "Plus")
+      : (zh ? "免费" : "Free");
+  const tierAction = activePlan
+    ? (zh ? "升级" : "Upgrade")
+    : (zh ? "充值" : "Top up");
 
   return (
     <>
@@ -230,7 +251,20 @@ export function UserButton({ language = "en" }: { language?: "zh" | "en" }) {
                  a fixed card needs its own height to decide up vs down. */
               style={{ ...pos, visibility: pos ? "visible" : "hidden" }}
             >
-              <div className="user-card-head" aria-hidden="true" />
+              <div className="user-card-head">
+                <span className="user-card-tier">
+                  <span className="user-card-tier-label">{tierLabel}</span>
+                  <Link
+                    to="/console/wallet"
+                    search={activePlan ? {} : { topup: true }}
+                    className="user-card-tier-btn"
+                    data-cursor="hover"
+                    onClick={() => setOpen(false)}
+                  >
+                    {tierAction}
+                  </Link>
+                </span>
+              </div>
 
               <div className="user-card-body">
                 <div className="user-card-avatar">
@@ -251,7 +285,7 @@ export function UserButton({ language = "en" }: { language?: "zh" | "en" }) {
                   <strong>
                     {balance == null
                       ? "—"
-                      : formatYuan(balance)}
+                      : formatUsd(balance)}
                   </strong>
                 </div>
 

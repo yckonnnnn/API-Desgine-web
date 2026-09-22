@@ -286,25 +286,197 @@
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
 }
 
-.language-toggle {
+.language-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 32px;
-  padding: 0 10px;
+  min-width: 32px;
+  padding: 0 8px;
   border: 1px solid color-mix(in oklab, var(--color-ink) 12%, transparent);
   border-radius: var(--radius-capsule);
   background: rgb(255 255 255 / 0.24);
   color: var(--color-mist);
-  font: inherit;
-  font-size: 11px;
-  letter-spacing: 0.08em;
   cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 220ms;
+  transition-timing-function: var(--ease-out-power3);
 }
 
-.language-toggle:hover {
+.language-dropdown-trigger:hover {
   color: var(--color-ink);
   background: rgb(255 255 255 / 0.52);
+}
+
+/* Radix DropdownMenu content for language switcher. */
+.language-dropdown-content {
+  z-index: 100;
+  min-width: 180px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgb(17 18 20 / 0.12), 0 1px 4px rgb(17 18 20 / 0.06);
+  opacity: 1;
+  transform: translateY(0);
+  animation-duration: 160ms;
+  animation-timing-function: var(--ease-out-power3);
+  animation-fill-mode: both;
+}
+
+.language-dropdown-content[data-side="top"] {
+  animation-name: slide-down;
+}
+
+.language-dropdown-content[data-side="bottom"] {
+  animation-name: slide-up;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Radio item rows. */
+.language-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--color-ink);
+  cursor: pointer;
+  outline: none;
+  transition-property: background-color;
+  transition-duration: 140ms;
+}
+
+.language-dropdown-item:hover,
+.language-dropdown-item[data-highlighted] {
+  background: rgb(17 18 20 / 0.05);
+}
+
+.language-dropdown-label {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.language-dropdown-name {
+  font-weight: 500;
+}
+
+.language-dropdown-sub {
+  font-size: 11px;
+  color: var(--color-mist);
+}
+
+/* Notification bell trigger — matches the language icon button. */
+.notification-bell-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0 8px;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 12%, transparent);
+  border-radius: var(--radius-capsule);
+  background: rgb(255 255 255 / 0.24);
+  color: var(--color-mist);
+  cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 220ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.notification-bell-trigger:hover {
+  color: var(--color-ink);
+  background: rgb(255 255 255 / 0.52);
+}
+
+/* Radix DropdownMenu content for notification bell. */
+.notification-dropdown-content {
+  z-index: 100;
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgb(17 18 20 / 0.12), 0 1px 4px rgb(17 18 20 / 0.06);
+  opacity: 1;
+  transform: translateY(0);
+  animation-duration: 160ms;
+  animation-timing-function: var(--ease-out-power3);
+  animation-fill-mode: both;
+}
+
+.notification-dropdown-content[data-side="top"] {
+  animation-name: slide-down;
+}
+
+.notification-dropdown-content[data-side="bottom"] {
+  animation-name: slide-up;
+}
+
+/* Notice card inside the dropdown. */
+.notification-item {
+  display: flex;
+  gap: 10px;
+}
+
+.notification-icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.notification-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.notification-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.notification-text {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--color-haze);
+  line-height: 1.5;
+}
+
+.notification-contact {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-haze);
+  overflow-wrap: anywhere;
+}
+
+.notification-link {
+  color: var(--color-ink);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.notification-link:hover {
+  text-decoration: underline;
 }
 
 .nav-ghost,
@@ -1080,17 +1252,8 @@
   }
 }
 
-/* — Infrastructure card. A rounded two-panel card: an ice-tinted brand panel on
-   the left, a warm link panel on the right, with a dashed stamp badge. Structure
-   follows the reference footer; the cloud photograph is replaced by a pearl
-   wash lit with the site's ice tone, and the stamp keeps the site's palette
-   instead of the reference's violet.
-
-   Both panels stay light: on a pearl-white page a dark slab reads as a second
-   visual language, so the panel separates from the link side by temperature
-   (cool ice vs. warm paper) rather than by weight. Ink is spent only on the
-   small elements inside it — the API pill, the stamp ribbon — the way the
-   reference reserves its dark chips for actions. */
+/* A single translucent plane keeps the pearl visible behind the footer. The
+   brand and directory are separated by a hairline, not by opaque fills. */
 
 .infra {
   display: flex;
@@ -1114,24 +1277,21 @@
 .infra-card {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  isolation: isolate;
   overflow: hidden;
   border-radius: var(--radius-xl);
-  border: 1px solid rgb(199 203 203 / 0.75);
-  background: #fcfbf7;
-  /* Softer and wider than the old dark-panel shadow: a light card has to earn
-     its float from the shadow alone, since it no longer has tonal contrast. */
+  border: 1px solid rgb(255 255 255 / 0.72);
+  background: rgb(255 255 255 / 0.14);
+  -webkit-backdrop-filter: blur(11px) saturate(115%);
+  backdrop-filter: blur(11px) saturate(115%);
   box-shadow:
-    0 2px 4px -2px rgb(70 93 101 / 0.08),
-    0 34px 70px -44px rgb(70 93 101 / 0.42);
+    inset 0 1px 0 rgb(255 255 255 / 0.78),
+    0 0 0 1px rgb(70 93 101 / 0.11),
+    0 28px 64px -38px rgb(70 93 101 / 0.3);
 }
 
-/* — Left: brand panel. A cool porcelain wash, not a slab: white specular in the
-   top-left corner, an ice bloom rising from the bottom-right, over a pale aqua
-   base. The bloom's ellipse is oversized and centred past the corner so its
-   falloff finishes inside the panel instead of arcing across the bottom edge.
-   No warm note in here — mixed with the aqua it turned the middle khaki, and
-   the temperature split against the right panel is the whole point. */
+/* A restrained ice wash gives the brand an anchor without hiding the scene. */
 
 .infra-brand {
   position: relative;
@@ -1139,32 +1299,11 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 30px;
-  /* Was 400px, which set a card tall enough that the links panel had ~170px it
-     could not fill. This is the panel's own content height plus a little air. */
   min-height: 344px;
   padding: 38px 36px;
-  overflow: hidden;
   color: var(--color-ink);
   background:
-    radial-gradient(ellipse 46% 32% at -4% -14%, rgb(255 255 255 / 0.62), transparent 68%),
-    radial-gradient(ellipse 104% 82% at 100% 106%, rgb(169 221 224 / 0.46), transparent 64%),
-    linear-gradient(158deg, #eaf3f2 0%, #dfeeee 46%, #d2e6e8 100%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9);
-}
-
-/* Light falling from above, so the top edge sits a touch brighter than the base
-   wash already does. */
-.infra-brand-glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.42), transparent 24%);
-}
-
-.infra-brand-top,
-.infra-brand-mid,
-.infra-brand-foot {
-  position: relative;
+    linear-gradient(142deg, rgb(255 255 255 / 0.24), rgb(169 221 224 / 0.12) 72%, rgb(169 221 224 / 0.2));
 }
 
 .infra-brand-mid {
@@ -1198,7 +1337,7 @@
   padding: 20px 0 0;
   display: flex;
   gap: 30px;
-  border-top: 1px solid rgb(17 18 20 / 0.1);
+  border-top: 1px solid rgb(17 18 20 / 0.15);
 }
 
 .infra-brand-stats li {
@@ -1259,22 +1398,21 @@
 .infra-social a {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
-  border: 1px solid rgb(255 255 255 / 0.9);
-  background: rgb(255 255 255 / 0.6);
+  border: 1px solid rgb(255 255 255 / 0.72);
+  background: rgb(255 255 255 / 0.16);
   color: var(--color-ink);
-  box-shadow: 0 12px 22px -16px rgb(70 93 101 / 0.6);
-  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.62), 0 0 0 1px rgb(70 93 101 / 0.07);
   transition-property: background-color, border-color, color, transform;
   transition-duration: 240ms;
   transition-timing-function: var(--ease-out-power3);
 }
 
 .infra-social a:hover {
-  background: #fff;
-  border-color: color-mix(in oklab, var(--color-ice) 72%, white);
+  background: rgb(255 255 255 / 0.48);
+  border-color: rgb(110 158 162 / 0.4);
   color: var(--color-ice-deep);
   transform: translateY(-2px);
 }
@@ -1286,12 +1424,6 @@
 
 /* — Right: links panel */
 
-/* Warm paper against the ice panel; the hairline is the seam between the two
-   temperatures, which a tonal split alone doesn't resolve at low contrast. */
-/* The stamp is a grid cell beside the columns rather than an absolutely
-   positioned badge. Pinned top-right it forced a 152px reserve on the columns,
-   which emptied the panel's lower half; as a cell it just occupies the corner
-   it was always covering, and the columns centre against it. */
 .infra-links {
   position: relative;
   display: grid;
@@ -1299,8 +1431,8 @@
   grid-template-rows: minmax(0, 1fr) auto;
   column-gap: 44px;
   padding: 40px 44px 30px;
-  background: #fcfbf7;
-  border-left: 1px solid rgb(17 18 20 / 0.07);
+  background: transparent;
+  border-left: 1px solid rgb(70 93 101 / 0.18);
 }
 
 .infra-stamp {
@@ -1325,7 +1457,7 @@
   padding: 10px;
   border-radius: 50%;
   border: 2px dashed rgb(110 158 162 / 0.78);
-  background: rgb(169 221 224 / 0.18);
+  background: rgb(255 255 255 / 0.12);
   color: #3f6369;
   /* Font size lives here so the arc text and glyph scale with the ring at
      every breakpoint instead of overrunning the circle. */
@@ -1408,7 +1540,7 @@
   grid-row: 2;
   margin: 0;
   padding-top: 20px;
-  border-top: 1px solid rgb(213 215 214 / 0.72);
+  border-top: 1px solid rgb(70 93 101 / 0.18);
   font-size: 12px;
   color: var(--color-haze);
 }
@@ -1423,12 +1555,11 @@
     padding: 32px 28px;
   }
 
-  /* Stacked: the panels meet along a horizontal edge, so the seam rotates. */
   .infra-links {
     padding: 32px 28px 26px;
     gap: 34px;
     border-left: 0;
-    border-top: 1px solid rgb(17 18 20 / 0.06);
+    border-top: 1px solid rgb(70 93 101 / 0.18);
   }
 
 }
@@ -1503,7 +1634,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 80;
+  z-index: 120;
   width: 6px;
   height: 6px;
   margin: -3px 0 0 -3px;
@@ -1524,6 +1655,12 @@
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
+}
+
+.cursor-dot.on-menu.is-hover {
+  background: rgb(17 18 20 / 0.1);
+  border-color: rgb(17 18 20 / 0.24);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.55);
 }
 
 @keyframes lineReveal {
@@ -2486,10 +2623,49 @@
 /* Gradient banner the avatar sits across, as in the reference card. The ice
    glow keeps it in this site's palette instead of the reference's lime. */
 .user-card-head {
+  position: relative;
   height: 76px;
   background:
     radial-gradient(ellipse at 82% 12%, rgb(169 221 224 / 0.45), transparent 58%),
     linear-gradient(150deg, #15191d 0%, #223034 58%, #35484c 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0 16px 10px;
+}
+
+.user-card-head .user-card-tier {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-card-head .user-card-tier-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgb(255 255 255 / 0.7);
+  letter-spacing: 0.02em;
+}
+
+.user-card-head .user-card-tier-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #cbf24f;
+  color: #1a1f13;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition-property: background-color, transform;
+  transition-duration: 160ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.user-card-head .user-card-tier-btn:hover {
+  background: #b8e040;
+  transform: scale(1.04);
 }
 
 .user-card-body {
@@ -5613,36 +5789,6 @@
   color: #25330f;
 }
 
-/* 中 / EN segmented control. */
-.ops-lang {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: var(--radius-capsule);
-  background: rgb(17 18 20 / 0.05);
-}
-
-.ops-lang button {
-  padding: 4px 9px 5px;
-  border: 0;
-  border-radius: var(--radius-capsule);
-  background: transparent;
-  font: inherit;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--color-mist);
-  cursor: pointer;
-  transition-property: color, background-color, box-shadow;
-  transition-duration: 180ms;
-  transition-timing-function: var(--ease-out-power3);
-}
-
-.ops-lang button.is-on {
-  color: var(--color-ink);
-  background: rgb(255 255 255 / 0.95);
-  box-shadow: 0 1px 3px rgb(17 18 20 / 0.1);
-}
-
 /* The slim bar the drawer opens from; desktop never sees it. */
 .ops-topbar,
 .ops-drawer-close {
@@ -5747,18 +5893,24 @@
 /* Phones: the navbar's trailing actions must stay on one line. Once the bar is
    narrow the grid squeezes its auto columns, and the CJK labels break in half
    ("中/文", "开始/使用"), so the pills get nowrap and a tighter box to keep
-   brand + avatar + language + CTA on a single row. */
+   brand + avatar + language icon on a single row. */
 @media (max-width: 700px) {
   .site-nav { padding: 12px 14px 0; }
 
   .site-nav .nav-bar { gap: 10px; }
 
-  .nav-actions { gap: 4px; }
+  .nav-actions { gap: 6px; }
 
-  .language-toggle {
-    padding: 0 8px;
-    font-size: 12px;
-    white-space: nowrap;
+  .language-dropdown-trigger {
+    min-height: 28px;
+    min-width: 28px;
+    padding: 0 6px;
+  }
+
+  .notification-bell-trigger {
+    min-height: 28px;
+    min-width: 28px;
+    padding: 0 6px;
   }
 
   .nav-cta {

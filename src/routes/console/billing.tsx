@@ -2,7 +2,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Coins, Hash, ReceiptText, Scale } from "lucide-react";
 import { getBilling } from "@/lib/fyt";
-import { formatNumber, formatYuan, maskKey } from "@/lib/format";
+import { formatNumber, formatUsd, maskKey } from "@/lib/format";
 import { useLanguage } from "@/lib/language";
 import { cn } from "@/lib/utils";
 
@@ -68,7 +68,7 @@ function BillingPage() {
                 <Coins size={13} strokeWidth={2} aria-hidden="true" />
                 {zh ? "累计消费" : "Total charged"}
               </dt>
-              <dd>{formatYuan(total)}</dd>
+              <dd>{formatUsd(total)}</dd>
             </div>
             <div className="ops-metric ops-rise" style={rise(3)}>
               <dt>
@@ -82,7 +82,7 @@ function BillingPage() {
                 <Scale size={13} strokeWidth={2} aria-hidden="true" />
                 {zh ? "单次均价" : "Average per call"}
               </dt>
-              <dd>{rows.length ? formatYuan(Math.round(total / rows.length)) : "—"}</dd>
+              <dd>{rows.length ? formatUsd(Math.round(total / rows.length)) : "—"}</dd>
             </div>
           </dl>
 
@@ -119,7 +119,7 @@ function BillingPage() {
                         <td className="mono">{maskKey(row.api_key_last4)}</td>
                         <td className="is-num">{formatNumber(row.input_tokens)}</td>
                         <td className="is-num">{formatNumber(row.output_tokens)}</td>
-                        <td className="is-num">{formatYuan(row.cost_cents)}</td>
+                        <td className="is-num">{formatUsd(row.cost_cents)}</td>
                         <td>
                           <span className={cn("ops-pill", row.status === "ok" ? "is-ok" : "is-off")}>
                             <i aria-hidden="true" />

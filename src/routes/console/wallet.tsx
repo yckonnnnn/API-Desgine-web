@@ -3,22 +3,22 @@ import { createPortal } from "react-dom";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowUpRight, Activity, Check, Coins, Eye, EyeOff, Plus, Wallet, X } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip } from "recharts";
-import { addFunds, getDashboard, getUsage, getWallet } from "@/lib/fyt";
-import { formatNumber, formatYuan } from "@/lib/format";
+import { addFunds, getDashboard, getUserPlan, getUsage, getWallet, subscribePlan } from "@/lib/fyt";
+import { formatNumber, formatUsd } from "@/lib/format";
 import { useLanguage } from "@/lib/language";
 import { PLANS, findPlan, isFeaturedPlan, type Plan, type PlanId } from "@/lib/plans";
 import { cn } from "@/lib/utils";
 
 /**
- * `?plan=<id>` is how the marketing page hands a chosen plan over: the credit
- * pack you click there opens this page with that plan's checkout already up, so
- * arriving from the homepage doesn't just dump you on a generic top-up form.
+ * `?plan=<id>` opens a specific plan checkout; `?topup=true` opens the amount
+ * picker when the visitor comes from the profile card.
  * Unknown ids resolve to nothing rather than throwing — the param is typeable.
  */
 export const Route = createFileRoute("/console/wallet")({
-  validateSearch: (search: Record<string, unknown>): { plan?: PlanId } => {
+  validateSearch: (search: Record<string, unknown>): { plan?: PlanId; topup?: boolean } => {
     const plan = findPlan(typeof search.plan === "string" ? search.plan : undefined);
-    return plan ? { plan: plan.id } : {};
+    if (plan) return { plan: plan.id };
+    return search.topup === true || search.topup === "true" ? { topup: true } : {};
   },
   component: WalletPage,
 });
@@ -27,7 +27,7 @@ const QUICK_AMOUNTS = [100, 200, 500, 1000] as const;
 const MIN_AMOUNT = 1;
 
 /**
- * `¥4,999.50` → `¥********`. Every character of the number is redacted, commas
+ * `$4,999.50` → `$********`. Every character of the number is redacted, commas
  * and decimal point included: keeping them would still spell out the amount's
  * shape (four digits here, two decimals there), which is exactly what the eye
  * toggle is meant to hide. Same length in, same length out, so the balance
@@ -62,7 +62,7 @@ function PlanCheckoutSheet({
   onPay: () => void;
 }) {
   const Icon = plan.icon;
-  const price = formatYuan(plan.amount * 100);
+  const price = formatUsd(plan.amount * 100);
 
   return (
     <div
@@ -124,7 +124,7 @@ function PlanCheckoutSheet({
           <div className="topup-total">
             <div className="topup-total-row">
               <span>{zh ? "当前余额" : "Current balance"}</span>
-              <span>{balance == null ? "—" : formatYuan(balance)}</span>
+              <span>{balance == null ? "—" : formatUsd(balance)}</span>
             </div>
             <div className="topup-total-row">
               <span>{zh ? "套餐额度" : "Package credit"}</span>
@@ -165,7 +165,7 @@ function WalletPage() {
   const { language } = useLanguage();
   const zh = language === "zh";
   const navigate = useNavigate();
-  const { plan: planParam } = Route.useSearch();
+  const { plan: planParam, topup: topupParam } = Route.useSearch();
 
   const [balance, setBalance] = useState<number | null>(null);
   const [requests, setRequests] = useState<number | null>(null);
@@ -209,11 +209,11 @@ function WalletPage() {
       if (event.key !== "Escape") return;
       setOpen(false);
       setCheckout(null);
-      if (planParam) void navigate({ to: "/console/wallet", search: {}, replace: true });
+      if (planParam || topupParam) void navigate({ to: "/console/wallet", search: {}, replace: true });
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, checkout, planParam, navigate]);
+  }, [open, checkout, planParam, topupParam, navigate]);
 
   // Arriving with a plan chosen — from a credit pack on the marketing page —
   // opens its checkout on the first pass. `planParam` is already validated
@@ -222,6 +222,10 @@ function WalletPage() {
     const plan = findPlan(planParam);
     if (plan) setCheckout(plan);
   }, [planParam]);
+
+  useEffect(() => {
+    if (topupParam) setOpen(true);
+  }, [topupParam]);
 
   const active = custom.trim() ? Number(custom) : amount;
   const valid = Number.isFinite(active) && active >= MIN_AMOUNT;
@@ -233,6 +237,11 @@ function WalletPage() {
     }
     setNote(null);
     setOpen(true);
+  }
+
+  function closeTopUp() {
+    setOpen(false);
+    if (topupParam) void navigate({ to: "/console/wallet", search: {}, replace: true });
   }
 
   function openCheckout(plan: Plan) {
@@ -257,9 +266,9 @@ function WalletPage() {
     void addFunds({ data: active })
       .then((w) => {
         setBalance(w.balanceCents);
-        setOpen(false);
+        closeTopUp();
         setCustom("");
-        setNote(zh ? `已充值 ${formatYuan(active * 100)}` : `Added ${formatYuan(active * 100)} to your balance.`);
+        setNote(zh ? `已充值 ${formatUsd(active * 100)}` : `Added ${formatUsd(active * 100)} to your balance.`);
       })
       .catch(() => setNote(zh ? "充值失败，请稍后再试。" : "Unable to complete the top-up."))
       .finally(() => setBusy(false));
@@ -270,10 +279,10 @@ function WalletPage() {
   function submitCheckout() {
     if (!checkout || busy) return;
     const plan = checkout;
-    const paid = formatYuan(plan.amount * 100);
+    const paid = formatUsd(plan.amount * 100);
     setBusy(true);
     setNote(null);
-    void addFunds({ data: plan.amount })
+    void subscribePlan({ data: { dollarAmount: plan.amount, planId: plan.id } })
       .then((w) => {
         setBalance(w.balanceCents);
         closeCheckout();
@@ -355,8 +364,8 @@ function WalletPage() {
                 {balance == null
                   ? "—"
                   : hidden
-                    ? redactAmount(formatYuan(balance))
-                    : formatYuan(balance)}
+                    ? redactAmount(formatUsd(balance))
+                    : formatUsd(balance)}
               </p>
             </div>
           </div>
@@ -374,7 +383,7 @@ function WalletPage() {
                 <Coins size={16} strokeWidth={1.9} />
               </span>
               <dt>{zh ? "总用量" : "Total spend"}</dt>
-              <dd>{totalSpend == null ? "—" : formatYuan(totalSpend)}</dd>
+              <dd>{totalSpend == null ? "—" : formatUsd(totalSpend)}</dd>
             </div>
             <div>
               <span className="wallet-stat-icon" aria-hidden="true">
@@ -401,7 +410,7 @@ function WalletPage() {
                       active && payload?.[0] ? (
                         <div className="wallet-spark-tip">
                           <span>{label}</span>
-                          <strong>{formatYuan(Number(payload[0].value))}</strong>
+                          <strong>{formatUsd(Number(payload[0].value))}</strong>
                         </div>
                       ) : null
                     }
@@ -460,7 +469,7 @@ function WalletPage() {
               </header>
 
               <p className="wallet-plan-amount">
-                {formatYuan(plan.amount * 100)}
+                {formatUsd(plan.amount * 100)}
                 <span>{zh ? "套餐额度" : "credit"}</span>
               </p>
 
@@ -512,7 +521,7 @@ function WalletPage() {
           aria-modal="true"
           aria-label={zh ? "充值余额" : "Top up balance"}
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setOpen(false);
+            if (event.target === event.currentTarget) closeTopUp();
           }}
         >
           <div className="topup-sheet">
@@ -523,7 +532,7 @@ function WalletPage() {
                 className="topup-close"
                 aria-label={zh ? "关闭" : "Close"}
                 data-cursor="hover"
-                onClick={() => setOpen(false)}
+                onClick={closeTopUp}
               >
                 <X size={18} strokeWidth={2} aria-hidden="true" />
               </button>
@@ -536,7 +545,7 @@ function WalletPage() {
             <div className="topup-body">
               <div className="topup-label-row">
                 <span>{zh ? "选择充值金额" : "Choose an amount"}</span>
-                <span className="topup-hint">{zh ? "人民币结算" : "Billed in CNY"}</span>
+                <span className="topup-hint">{zh ? "美元结算" : "Billed in USD"}</span>
               </div>
 
               <div className="topup-grid">
@@ -559,7 +568,7 @@ function WalletPage() {
                         {item === 200 ? <span className="topup-badge">{zh ? "常用" : "Popular"}</span> : null}
                       </span>
                       <span className="topup-option-amount">
-                        <em>¥</em>
+                        <em>$</em>
                         {item}
                       </span>
                       <span className="topup-radio" aria-hidden="true">{on ? <Check size={13} strokeWidth={3} /> : null}</span>
@@ -572,11 +581,11 @@ function WalletPage() {
                 <span className="topup-label-row">
                   <span>{zh ? "自定义金额" : "Custom amount"}</span>
                   <span className="topup-hint">
-                    {zh ? `最低 ¥${MIN_AMOUNT}` : `Min ¥${MIN_AMOUNT}`}
+                    {zh ? `最低 $${MIN_AMOUNT}` : `Min $${MIN_AMOUNT}`}
                   </span>
                 </span>
                 <span className="topup-custom-field">
-                  <em>¥</em>
+                  <em>$</em>
                   <input
                     type="number"
                     min={MIN_AMOUNT}
@@ -591,11 +600,11 @@ function WalletPage() {
               <div className="topup-total">
                 <div className="topup-total-row">
                   <span>{zh ? "当前余额" : "Current balance"}</span>
-                  <span>{balance == null ? "—" : formatYuan(balance)}</span>
+                  <span>{balance == null ? "—" : formatUsd(balance)}</span>
                 </div>
                 <div className="topup-total-row is-payable">
                   <span>{zh ? "实际支付" : "You pay"}</span>
-                  <strong>{valid ? formatYuan(active * 100) : "—"}</strong>
+                  <strong>{valid ? formatUsd(active * 100) : "—"}</strong>
                 </div>
               </div>
             </div>
@@ -607,7 +616,7 @@ function WalletPage() {
               disabled={!valid || busy}
               onClick={submit}
             >
-              {busy ? (zh ? "处理中…" : "Processing…") : zh ? `支付 ${valid ? formatYuan(active * 100) : "—"}` : `Pay ${valid ? formatYuan(active * 100) : "—"}`}
+              {busy ? (zh ? "处理中…" : "Processing…") : zh ? `支付 ${valid ? formatUsd(active * 100) : "—"}` : `Pay ${valid ? formatUsd(active * 100) : "—"}`}
               <ArrowUpRight size={16} strokeWidth={2.2} aria-hidden="true" />
             </button>
             <p className="topup-secure">

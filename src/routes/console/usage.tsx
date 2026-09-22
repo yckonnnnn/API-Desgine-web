@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDownRight, ArrowUpRight, Coins, Activity } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { getUsage } from "@/lib/fyt";
-import { formatNumber, formatTokens, formatYuan } from "@/lib/format";
+import { formatNumber, formatTokens, formatUsd } from "@/lib/format";
 import { useLanguage } from "@/lib/language";
 import { cn } from "@/lib/utils";
 
@@ -118,7 +118,7 @@ function UsagePage() {
                 <Coins size={13} strokeWidth={2} aria-hidden="true" />
                 {zh ? "消费" : "Cost"}
               </dt>
-              <dd>{formatYuan(data.cost)}</dd>
+              <dd>{formatUsd(data.cost)}</dd>
             </div>
           </dl>
 
@@ -221,7 +221,7 @@ function UsagePage() {
                       <td className="is-num">{formatNumber(day.input_tokens)}</td>
                       <td className="is-num">{formatNumber(day.output_tokens)}</td>
                       <td className="is-num">{formatNumber(day.input_tokens + day.output_tokens)}</td>
-                      <td className="is-num">{formatYuan(day.cost_cents)}</td>
+                      <td className="is-num">{formatUsd(day.cost_cents)}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -24,7 +24,7 @@ import {
 } from "recharts";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import { getBilling, getDashboard, getUsage, listKeys } from "@/lib/fyt";
-import { formatNumber, formatTokens, formatYuan, maskKey } from "@/lib/format";
+import { formatNumber, formatTokens, formatUsd, maskKey } from "@/lib/format";
 import { useLanguage } from "@/lib/language";
 
 export const Route = createFileRoute("/console/")({ component: Overview });
@@ -265,7 +265,7 @@ function Overview() {
                     <Coins size={17} />
                     {zh ? "今日消费" : "Spent today"}
                   </span>
-                  <strong>{formatYuan(data.todaySpendCents)}</strong>
+                  <strong>{formatUsd(data.todaySpendCents)}</strong>
                   <small>{zh ? "今日累计费用" : "Today's charges"}</small>
                 </section>
                 <section className="overview-mini-card">
@@ -282,7 +282,7 @@ function Overview() {
               <section className="overview-balance overview-card ops-rise" style={rise(3)}>
                 <div className="overview-balance-orbit" aria-hidden="true" />
                 <p>{zh ? "可用余额" : "Available balance"}</p>
-                <strong>{formatYuan(data.balanceCents)}</strong>
+                <strong>{formatUsd(data.balanceCents)}</strong>
                 <div className="overview-balance-actions">
                   <Link to="/console/wallet">
                     <span>
@@ -467,7 +467,7 @@ function Overview() {
                         tickLine={false}
                         axisLine={false}
                         tick={{ fill: "#92969D", fontSize: 11 }}
-                        tickFormatter={(value: number) => formatYuan(value)}
+                        tickFormatter={(value: number) => formatUsd(value)}
                         width={54}
                       />
                       <Tooltip
@@ -475,7 +475,7 @@ function Overview() {
                           active && payload?.[0] ? (
                             <div className="overview-chart-tip">
                               <span>{label}</span>
-                              <strong>{formatYuan(Number(payload[0].value))}</strong>
+                              <strong>{formatUsd(Number(payload[0].value))}</strong>
                             </div>
                           ) : null
                         }
@@ -537,7 +537,7 @@ function Overview() {
                         <td className="is-num">
                           {formatNumber(row.input_tokens + row.output_tokens)}
                         </td>
-                        <td className="is-num">{formatYuan(row.cost_cents)}</td>
+                        <td className="is-num">{formatUsd(row.cost_cents)}</td>
                       </tr>
                     ))}
                   </tbody>

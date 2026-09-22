@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Activity, House, LayoutDashboard, Menu, Receipt, Wallet, X } from "lucide-react";
-import { StartCta } from "@/components/layout/auth-slot";
 import { FoytonBrand } from "@/components/layout/foyton-brand";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { NotificationBell } from "@/components/ui/notification-bell";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { useLanguage } from "@/lib/language";
@@ -34,7 +35,7 @@ export function ConsoleSidebar({
   /** False while the session is still resolving — no tab claims to be current yet. */
   ready: boolean;
 }) {
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { isPending } = useCurrentUserState();
   const zh = language === "zh";
   const [open, setOpen] = useState(false);
@@ -134,27 +135,8 @@ export function ConsoleSidebar({
           </Link>
 
           <div className="ops-side-user">
-            <div className="ops-lang" role="group" aria-label={zh ? "界面语言" : "Language"}>
-              <button
-                type="button"
-                className={cn(zh && "is-on")}
-                data-cursor="hover"
-                aria-pressed={zh}
-                onClick={() => setLanguage("zh")}
-              >
-                中
-              </button>
-              <button
-                type="button"
-                className={cn(!zh && "is-on")}
-                data-cursor="hover"
-                aria-pressed={!zh}
-                onClick={() => setLanguage("en")}
-              >
-                EN
-              </button>
-            </div>
-            <StartCta className="ops-cta" language={language} />
+            <NotificationBell />
+            <LanguageSwitcher />
             <span className="ops-foot-user">
               {isPending ? <span className="auth-skel" aria-hidden="true" /> : <UserButton language={language} />}
             </span>

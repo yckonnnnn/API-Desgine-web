@@ -119,22 +119,22 @@ export const getWallet = createServerFn({ method: "GET" })
   });
 
 export const addFunds = createServerFn({ method: "POST" })
-  // Whole yuan within a sane band. The wallet offers preset steps plus a custom
-  // field, so the previous fixed-list check rejected every custom amount.
-  .validator((yuanAmount: number) => {
-    const yuan = Math.floor(Number(yuanAmount));
-    if (!Number.isFinite(yuan) || yuan < 1 || yuan > 100_000) {
+  // Whole dollars within a sane band. The wallet offers preset steps plus a
+  // custom field, so the previous fixed-list check rejected every custom amount.
+  .validator((dollarAmount: number) => {
+    const dollars = Math.floor(Number(dollarAmount));
+    if (!Number.isFinite(dollars) || dollars < 1 || dollars > 100_000) {
       throw new Error("Invalid amount");
     }
-    return yuan;
+    return dollars;
   })
   .middleware([authMiddleware])
-  .handler(async ({ context, data: yuanAmount }) => {
+  .handler(async ({ context, data: dollarAmount }) => {
     const { ensureAccount } = await import("./fyt-data.server.ts");
     const { getSql } = await import("@/lib/db");
     await ensureAccount(context.userId);
     const sql = await getSql();
-    const cents = yuanAmount * 100;
+    const cents = dollarAmount * 100;
     await sql`
       update wallets
       set balance_cents = balance_cents + ${cents}
@@ -144,6 +144,48 @@ export const addFunds = createServerFn({ method: "POST" })
       select balance_cents from wallets where user_id = ${context.userId}
     `;
     return { balanceCents: row?.balance_cents ?? 0 };
+  });
+
+/** Returns the user's active plan id, or null if they have none. */
+export const getUserPlan = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const { ensureAccount } = await import("./fyt-data.server.ts");
+    const { getSql } = await import("@/lib/db");
+    await ensureAccount(context.userId);
+    const sql = await getSql();
+    const [row] = await sql<{ plan_id: string | null }>`
+      select plan_id from wallets where user_id = ${context.userId}
+    `;
+    return { planId: row?.plan_id ?? null };
+  });
+
+/**
+ * Subscribe to a named plan: credits the plan amount AND records the plan id
+ * on the wallet. Distinct from `addFunds` — a plain top-up must not flip the
+ * plan, only an explicit plan checkout should.
+ */
+export const subscribePlan = createServerFn({ method: "POST" })
+  .validator((input: { dollarAmount: number; planId: string }) => ({
+    dollarAmount: Math.floor(Number(input.dollarAmount)),
+    planId: String(input.planId),
+  }))
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    const { ensureAccount } = await import("./fyt-data.server.ts");
+    const { getSql } = await import("@/lib/db");
+    await ensureAccount(context.userId);
+    const sql = await getSql();
+    const cents = data.dollarAmount * 100;
+    await sql`
+      update wallets
+      set balance_cents = balance_cents + ${cents}, plan_id = ${data.planId}
+      where user_id = ${context.userId}
+    `;
+    const [row] = await sql<{ balance_cents: number; plan_id: string | null }>`
+      select balance_cents, plan_id from wallets where user_id = ${context.userId}
+    `;
+    return { balanceCents: row?.balance_cents ?? 0, planId: row?.plan_id ?? null };
   });
 
 export const getUsage = createServerFn({ method: "GET" })

@@ -1,7 +1,17 @@
-export function formatYuan(cents: number) {
-  return new Intl.NumberFormat("zh-CN", {
+/**
+ * Money is stored everywhere as integer cents; this is the only place it
+ * becomes a string. USD, because billing is priced and settled in dollars —
+ * the site sells to overseas teams, and the model square already quotes per-1M
+ * rates in the same currency.
+ *
+ * `en-US` grouping rather than the page's language: a Chinese-language reader
+ * looking at a dollar price expects `$1,248.50`, not a localised separator that
+ * would read as a different number.
+ */
+export function formatUsd(cents: number) {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "CNY",
+    currency: "USD",
     minimumFractionDigits: 2,
   }).format(cents / 100);
 }

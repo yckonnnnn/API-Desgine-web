@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { LiquidGlass } from "@/components/glass/liquid-glass";
-import { AuthSlot, StartCta } from "@/components/layout/auth-slot";
+import { AuthSlot } from "@/components/layout/auth-slot";
 import { FoytonBrand } from "@/components/layout/foyton-brand";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { NotificationBell } from "@/components/ui/notification-bell";
 import { useLanguage } from "@/lib/language";
 
 const LINKS = [
@@ -13,10 +15,10 @@ const LINKS = [
 ];
 
 export function Navbar() {
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const copy = language === "zh"
-    ? { home: "主页", models: "模型广场", console: "控制台", docs: "文档", contact: "联系我们", language: "中文", signIn: "登录", start: "开始使用" }
-    : { home: "Home", models: "Models", console: "Console", docs: "Docs", contact: "Contact", language: "EN", signIn: "Sign in", start: "Start building" };
+    ? { home: "主页", models: "模型广场", console: "控制台", docs: "文档", contact: "联系我们", signIn: "登录" }
+    : { home: "Home", models: "Models", console: "Console", docs: "Docs", contact: "Contact", signIn: "Sign in" };
 
   const labelMap: Record<string, string> = {
     "主页": copy.home,
@@ -47,10 +49,8 @@ export function Navbar() {
         </nav>
         <div className="nav-actions">
           <AuthSlot language={language} />
-          <button type="button" className="language-toggle" onClick={toggleLanguage} aria-label="切换语言">
-            {copy.language}
-          </button>
-          <StartCta className="nav-cta" language={language} />
+          <NotificationBell />
+          <LanguageSwitcher />
         </div>
       </LiquidGlass>
     </header>

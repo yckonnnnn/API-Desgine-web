@@ -5,6 +5,7 @@ export function CustomCursor() {
   const dot = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
   const [hover, setHover] = useState(false);
+  const [overMenu, setOverMenu] = useState(false);
 
   useEffect(() => {
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -37,6 +38,7 @@ export function CustomCursor() {
       const target = event.target;
       if (target instanceof Element) {
         setHover(Boolean(target.closest("[data-cursor='hover']")));
+        setOverMenu(Boolean(target.closest(".user-card, .language-dropdown-content")));
       }
     };
 
@@ -61,7 +63,7 @@ export function CustomCursor() {
   return (
     <div
       ref={dot}
-      className={cn("cursor-dot", hover && "is-hover")}
+      className={cn("cursor-dot", hover && "is-hover", overMenu && "on-menu")}
       aria-hidden="true"
     />
   );

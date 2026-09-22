@@ -18,7 +18,7 @@ export const PLANS = [
   {
     id: "pro",
     name: "Pro",
-    /** Whole yuan. This is the amount charged, and the credit granted. */
+    /** Whole dollars. This is the amount charged, and the credit granted. */
     amount: 100,
     tone: "light",
     badge: null,

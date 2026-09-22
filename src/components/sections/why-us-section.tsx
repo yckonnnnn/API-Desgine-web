@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { useLanguage } from "@/lib/language";
 import { PLANS, isFeaturedPlan, planCheckoutHref, type Plan } from "@/lib/plans";
-import { formatYuan } from "@/lib/format";
+import { formatUsd } from "@/lib/format";
 
 /**
  * Value props, not a feature list: each row names the thing you stop doing.
@@ -130,7 +130,7 @@ function TierCard({ plan, zh, signedIn }: { plan: Plan; zh: boolean; signedIn: b
         <p className="tier-tagline">{zh ? plan.desc.zh : plan.desc.en}</p>
 
         <p className="tier-price">
-          <span className="tier-price-amount">{formatYuan(plan.amount * 100)}</span>
+          <span className="tier-price-amount">{formatUsd(plan.amount * 100)}</span>
           <span className="tier-price-unit">{zh ? "套餐额度" : "credit"}</span>
         </p>
 
