@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { Activity, KeyRound, LayoutDashboard, Receipt, Wallet } from "lucide-react";
+import { Activity, LayoutDashboard, Receipt, Wallet } from "lucide-react";
 import { Toaster } from "sonner";
-import { RedirectToSignIn, UserButton } from "@/lib/auth/gates";
+import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { Navbar } from "@/components/layout/navbar";
 import { Grain } from "@/components/layout/grain";
 import { PageVeil } from "@/components/layout/page-veil";
 import { CustomCursor } from "@/components/cursor/custom-cursor";
@@ -19,11 +20,10 @@ import { cn } from "@/lib/utils";
  * stay on the legacy `console-*` classes untouched.
  */
 const NAV = [
-  { to: "/console" as const, label: "Overview", zh: "概览", icon: LayoutDashboard },
-  { to: "/console/keys" as const, label: "API Keys", zh: "密钥", icon: KeyRound },
-  { to: "/console/wallet" as const, label: "Wallet", zh: "钱包", icon: Wallet },
+  { to: "/console" as const, label: "Overview", zh: "概况", icon: LayoutDashboard },
   { to: "/console/usage" as const, label: "Usage", zh: "用量", icon: Activity },
   { to: "/console/billing" as const, label: "Billing", zh: "账单", icon: Receipt },
+  { to: "/console/wallet" as const, label: "Wallet", zh: "钱包", icon: Wallet },
 ];
 
 /** One Toaster for the whole workspace, styled to match the ops surfaces.
@@ -57,7 +57,7 @@ function ConsoleFrame({
   ready?: boolean;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const zh = language === "zh";
 
   return (
@@ -67,14 +67,9 @@ function ConsoleFrame({
       <CustomCursor />
       <div className="ops-orb" aria-hidden="true" />
       <OpsToaster />
-      <aside className="ops-side">
-        <Link to="/" className="wordmark ops-brand" data-cursor="hover">
-          <span className="wordmark-mark" aria-hidden="true" />
-          FYT
-        </Link>
-
-        <nav aria-label={zh ? "工作台" : "Console"}>
-          <p className="ops-nav-label">{zh ? "工作台" : "Workspace"}</p>
+      <Navbar />
+      <div className="ops-main">
+        <nav className="ops-console-nav" aria-label={zh ? "工作台" : "Console"}>
           {NAV.map((item) => {
             const Icon = item.icon;
             const on =
@@ -84,7 +79,7 @@ function ConsoleFrame({
               <Link
                 key={item.to}
                 to={item.to}
-                className={cn("ops-link", on && "is-on")}
+                className={cn("ops-console-link", on && "is-on")}
                 data-cursor="hover"
                 aria-current={on ? "page" : undefined}
               >
@@ -94,34 +89,8 @@ function ConsoleFrame({
             );
           })}
         </nav>
-
-        <div className="ops-side-foot">
-          <div className="ops-lang" role="group" aria-label={zh ? "界面语言" : "Language"}>
-            <button
-              type="button"
-              className={cn(zh && "is-on")}
-              data-cursor="hover"
-              aria-pressed={zh}
-              onClick={() => setLanguage("zh")}
-            >
-              中
-            </button>
-            <button
-              type="button"
-              className={cn(!zh && "is-on")}
-              data-cursor="hover"
-              aria-pressed={!zh}
-              onClick={() => setLanguage("en")}
-            >
-              EN
-            </button>
-          </div>
-          <div className="ops-foot-user">
-            {ready ? <UserButton language={language} /> : <span className="auth-skel" aria-hidden="true" />}
-          </div>
-        </div>
-      </aside>
-      <div className="ops-main">{children}</div>
+        {children}
+      </div>
     </div>
   );
 }
