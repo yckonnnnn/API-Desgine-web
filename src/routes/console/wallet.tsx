@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Check, Layers, Plus, Sparkles, X, Zap } from "lucide-react";
+import { ArrowUpRight, Activity, Check, Coins, Eye, EyeOff, Layers, Plus, Sparkles, Wallet, X, Zap } from "lucide-react";
+import { Bar, BarChart, ResponsiveContainer, Tooltip } from "recharts";
 import { addFunds, getDashboard, getUsage, getWallet } from "@/lib/fyt";
 import { formatNumber, formatYuan } from "@/lib/format";
 import { useLanguage } from "@/lib/language";
@@ -65,6 +66,17 @@ const PLANS = [
 const QUICK_AMOUNTS = [100, 200, 500, 1000] as const;
 const MIN_AMOUNT = 1;
 
+/**
+ * `¥4,999.50` → `¥********`. Every character of the number is redacted, commas
+ * and decimal point included: keeping them would still spell out the amount's
+ * shape (four digits here, two decimals there), which is exactly what the eye
+ * toggle is meant to hide. Same length in, same length out, so the balance
+ * never shifts the card when it is toggled.
+ */
+function redactAmount(formatted: string) {
+  return formatted.replace(/[\d.,]/g, "*");
+}
+
 function WalletPage() {
   const { language } = useLanguage();
   const zh = language === "zh";
@@ -72,6 +84,10 @@ function WalletPage() {
   const [balance, setBalance] = useState<number | null>(null);
   const [requests, setRequests] = useState<number | null>(null);
   const [totalSpend, setTotalSpend] = useState<number | null>(null);
+  const [spend, setSpend] = useState<{ day: string; cost: number }[]>([]);
+  /** Masking the balance is a shoulder-surfing guard, not a setting — it is
+   *  deliberately not persisted, so it never comes back hidden by surprise. */
+  const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState(200);
   const [custom, setCustom] = useState("");
@@ -86,7 +102,10 @@ function WalletPage() {
       .then((d) => setRequests(d.requests))
       .catch(() => undefined);
     void getUsage()
-      .then((u) => setTotalSpend(u.cost))
+      .then((u) => {
+        setTotalSpend(u.cost);
+        setSpend(u.days.slice(-14).map((d) => ({ day: d.day.slice(5), cost: d.cost_cents })));
+      })
       .catch(() => undefined);
   };
 
@@ -138,33 +157,135 @@ function WalletPage() {
       </header>
 
       <div className="wallet-hero">
-        <div className="wallet-hero-art" aria-hidden="true">
-          <span className="wallet-hero-orbit" />
-          <span className="wallet-hero-orbit is-inner" />
-          <span className="wallet-hero-spark" />
+        <div className="wallet-card-stack">
+          <div className="wallet-card">
+            <div className="wallet-card-top">
+              <div className="wallet-card-id">
+                <span className="wallet-card-brand">
+                  Foyton<span>Wallet</span>
+                </span>
+                <span className="wallet-card-mark" aria-hidden="true">
+                  <Wallet size={17} strokeWidth={1.9} />
+                </span>
+              </div>
+              <button
+                type="button"
+                className="wallet-card-topup"
+                data-cursor="hover"
+                onClick={() => openTopUp()}
+              >
+                <Plus size={14} strokeWidth={2.7} className="wallet-card-topup-plus" aria-hidden="true" />
+                {zh ? "充值" : "Top up"}
+                {/* Two arrows in one clipped frame: the one on screen leaves
+                    and the one behind it takes its place, so the button points
+                    onward instead of just sitting there. */}
+                <span className="wallet-card-topup-go" aria-hidden="true">
+                  <ArrowUpRight size={14} strokeWidth={2.4} className="wallet-card-topup-arrow" />
+                  <ArrowUpRight size={14} strokeWidth={2.4} className="wallet-card-topup-arrow is-trailing" />
+                </span>
+              </button>
+            </div>
+            <div className="wallet-card-body">
+              <p className="wallet-card-label">
+                {zh ? "可用余额" : "Available balance"}
+                <button
+                  type="button"
+                  className="wallet-card-eye"
+                  data-cursor="hover"
+                  aria-pressed={hidden}
+                  aria-label={
+                    hidden
+                      ? zh
+                        ? "显示余额"
+                        : "Show balance"
+                      : zh
+                        ? "隐藏余额"
+                        : "Hide balance"
+                  }
+                  onClick={() => setHidden((was) => !was)}
+                >
+                  {hidden ? (
+                    <EyeOff size={15} strokeWidth={2.1} aria-hidden="true" />
+                  ) : (
+                    <Eye size={15} strokeWidth={2.1} aria-hidden="true" />
+                  )}
+                </button>
+              </p>
+              <p className="wallet-card-value">
+                {balance == null
+                  ? "—"
+                  : hidden
+                    ? redactAmount(formatYuan(balance))
+                    : formatYuan(balance)}
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="wallet-hero-main">
-          <p className="wallet-hero-label">
-            <i aria-hidden="true" />
-            {zh ? "可用余额" : "Available balance"}
+
+        <div className="wallet-side">
+          <div className="wallet-side-head">
+            <h2>{zh ? "账户概览" : "Account"}</h2>
+            <span>{zh ? "近 14 天消费" : "Last 14 days"}</span>
+          </div>
+
+          <dl className="wallet-stats">
+            <div>
+              <span className="wallet-stat-icon" aria-hidden="true">
+                <Coins size={16} strokeWidth={1.9} />
+              </span>
+              <dt>{zh ? "总用量" : "Total spend"}</dt>
+              <dd>{totalSpend == null ? "—" : formatYuan(totalSpend)}</dd>
+            </div>
+            <div>
+              <span className="wallet-stat-icon" aria-hidden="true">
+                <Activity size={16} strokeWidth={1.9} />
+              </span>
+              <dt>{zh ? "API 请求" : "API requests"}</dt>
+              <dd>{requests == null ? "—" : formatNumber(requests)}</dd>
+            </div>
+          </dl>
+
+          <div className="wallet-spark">
+            {spend.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={spend} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+                  <defs>
+                    <linearGradient id="walletSpendBar" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#cbf24f" />
+                      <stop offset="100%" stopColor="#93c22a" />
+                    </linearGradient>
+                  </defs>
+                  <Tooltip
+                    cursor={{ fill: "rgb(17 18 20 / 0.05)" }}
+                    content={({ active, payload, label }) =>
+                      active && payload?.[0] ? (
+                        <div className="wallet-spark-tip">
+                          <span>{label}</span>
+                          <strong>{formatYuan(Number(payload[0].value))}</strong>
+                        </div>
+                      ) : null
+                    }
+                  />
+                  <Bar
+                    dataKey="cost"
+                    isAnimationActive={false}
+                    fill="url(#walletSpendBar)"
+                    maxBarSize={16}
+                    radius={[5, 5, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : null}
+          </div>
+
+          {/* The top-up action now lives on the card itself, so the panel closes
+              on the note alone — the last line of its own story. */}
+          <p className="wallet-side-note">
+            {zh
+              ? "充值后额度立即到账，按实际用量扣费。"
+              : "Credit lands straight away, and is spent as you use it."}
           </p>
-          <p className="wallet-hero-value">{balance == null ? "—" : formatYuan(balance)}</p>
-          <ul className="wallet-hero-pills">
-            <li>
-              <span>{zh ? "总用量" : "Total spend"}</span>
-              <strong>{totalSpend == null ? "—" : formatYuan(totalSpend)}</strong>
-            </li>
-            <li>
-              <span>{zh ? "API 请求" : "API requests"}</span>
-              <strong>{requests == null ? "—" : formatNumber(requests)}</strong>
-            </li>
-          </ul>
         </div>
-        <button type="button" className="btn-acid" data-cursor="hover" onClick={() => openTopUp()}>
-          <Plus size={16} strokeWidth={2.4} aria-hidden="true" />
-          {zh ? "充值" : "Top up"}
-          <ArrowUpRight size={15} strokeWidth={2.2} aria-hidden="true" />
-        </button>
       </div>
 
       {note ? <p className="wallet-flash">{note}</p> : null}

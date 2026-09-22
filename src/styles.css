@@ -2720,145 +2720,369 @@
   margin-bottom: 18px;
 }
 
+/* — Wallet: the balance lives on a card — */
+/* The card carries the balance itself: brand and wallet mark top-left, the
+   top-up action top-right, and the amount with a mask toggle below. */
 .wallet-hero {
+  display: grid;
+  /* Equal columns: the card and the panel are one pair of surfaces, and the
+     row only reads as a pair if their boxes match. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 30px;
+}
+
+/* The stack exists so the card can take the row's full height: the card's own
+   aspect ratio sets the floor, and the panel sets the height past it — the two
+   bottom edges stay level either way. */
+.wallet-card-stack {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 32px;
-  padding: 24px 30px;
+  grid-template-rows: minmax(0, 1fr);
+  width: 100%;
+}
+
+.wallet-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  /* The ratio is the card's shape when it is alone on its row. Where the panel
+     opposite is taller, the explicit height is what lets the card take that
+     height — a stretched grid item with a ratio keeps the ratio instead. */
+  aspect-ratio: 1.5;
+  height: 100%;
+  padding: 24px 26px;
   overflow: hidden;
-  border-radius: var(--radius-xl);
-  border: 1px solid rgb(255 255 255 / 0.75);
+  border-radius: 24px;
   background:
-    linear-gradient(105deg, #ffffff 0%, #ffffff 67%, #f1fad7 100%);
-  box-shadow: 0 22px 48px -42px rgb(70 93 101 / 0.55);
+    radial-gradient(120% 90% at 0% 0%, rgb(255 255 255 / 0.4), transparent 58%),
+    radial-gradient(circle at 100% 0%, #d6fe6a 0, transparent 52%),
+    linear-gradient(135deg, #c7f14a, #a9dd30 72%, #8ac018);
+  color: #21310e;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    inset 0 0 0 1px rgb(255 255 255 / 0.16),
+    0 30px 52px -32px rgb(91 136 24 / 0.55),
+    0 10px 20px -14px rgb(91 136 24 / 0.35);
 }
 
-.wallet-hero-art {
-  position: absolute;
-  top: 50%;
-  right: 15%;
-  width: 246px;
-  height: 246px;
-  transform: translateY(-50%);
-  pointer-events: none;
-  opacity: 0.78;
-}
-
-.wallet-hero-art::before {
+.wallet-card::after {
   content: "";
   position: absolute;
-  inset: 35px;
+  top: -115px;
+  right: -90px;
+  width: 300px;
+  height: 300px;
+  border: 1px solid rgb(35 61 9 / 0.18);
   border-radius: 50%;
-  background: radial-gradient(circle, rgb(203 242 79 / 0.15), rgb(203 242 79 / 0) 72%);
+  box-shadow:
+    0 0 0 40px rgb(255 255 255 / 0.09),
+    0 0 0 80px rgb(255 255 255 / 0.07);
+  pointer-events: none;
 }
 
-.wallet-hero-orbit {
-  position: absolute;
-  inset: 8px;
-  border: 1px solid rgb(95 122 22 / 0.15);
-  border-left-color: rgb(95 122 22 / 0.42);
-  border-radius: 50%;
-  animation: walletOrbit 18s linear infinite;
-}
-
-.wallet-hero-orbit.is-inner {
-  inset: 39px;
-  border-color: rgb(95 122 22 / 0.12);
-  border-right-color: rgb(95 122 22 / 0.42);
-  animation-duration: 13s;
-  animation-direction: reverse;
-}
-
-.wallet-hero-spark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-acid-ink);
-  box-shadow: 0 0 0 7px rgb(203 242 79 / 0.25);
-  animation: walletSatellite 18s linear infinite;
-}
-
-@keyframes walletOrbit {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes walletSatellite {
-  from { transform: rotate(0deg) translateX(115px) rotate(0deg); }
-  to { transform: rotate(360deg) translateX(115px) rotate(-360deg); }
-}
-
-.wallet-hero-main {
+.wallet-card-top {
   position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Brand and wallet mark as one signature: the mark is the wordmark's glyph, so
+   they travel together rather than anchoring opposite corners. */
+.wallet-card-id {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   min-width: 0;
 }
 
-.wallet-hero-label {
+.wallet-card-brand {
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+
+.wallet-card-brand span {
+  padding-left: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  vertical-align: 4px;
+}
+
+.wallet-card-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: rgb(35 61 9 / 0.1);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.34);
+}
+
+/* The card's own top-up action, in the corner the wallet mark used to hold.
+   Dark pill against the lime so it reads as the card's one control — the
+   hover is a lift, a small pop on the plus, and the arrow handing off to the
+   one behind it. */
+.wallet-card-topup {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 0 10px;
-  padding: 5px 12px 6px;
+  gap: 7px;
+  padding: 9px 15px 10px;
+  border: 0;
   border-radius: var(--radius-capsule);
-  background: var(--color-acid-tint);
-  color: var(--color-acid-ink);
-  font-size: 12px;
-  font-weight: 600;
+  background: var(--color-ink);
+  color: var(--color-acid);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 10px 22px -16px rgb(17 18 20 / 0.55);
+  transition-property: transform, box-shadow, background-color;
+  transition-duration: 240ms;
+  transition-timing-function: var(--ease-out-power3);
 }
 
-.wallet-hero-label i {
-  width: 6px;
-  height: 6px;
+.wallet-card-topup svg {
+  flex: 0 0 auto;
+  transition: transform 320ms var(--ease-out-power4);
+}
+
+.wallet-card-topup-plus {
+  transition-duration: 200ms;
+}
+
+/* One arrow's worth of frame; the second arrow waits outside it. The travel
+   clears the glyph's own bounds, not just the frame's, so no corner of the
+   waiting arrow can show through at rest. */
+.wallet-card-topup-go {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  overflow: hidden;
+}
+
+.wallet-card-topup-go svg {
+  grid-area: 1 / 1;
+  transition:
+    transform 360ms var(--ease-out-power4),
+    opacity 200ms linear;
+}
+
+.wallet-card-topup-arrow.is-trailing {
+  transform: translate(-12px, 12px);
+  opacity: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wallet-card-topup:hover {
+    transform: translateY(-2px);
+    background: #000;
+    box-shadow: 0 18px 32px -16px rgb(17 18 20 / 0.6);
+  }
+
+  .wallet-card-topup:hover .wallet-card-topup-plus {
+    transform: scale(1.18);
+  }
+
+  .wallet-card-topup:hover .wallet-card-topup-arrow {
+    transform: translate(12px, -12px);
+    opacity: 0;
+  }
+
+  .wallet-card-topup:hover .wallet-card-topup-arrow.is-trailing {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.wallet-card-topup:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Auto margins keep the balance where it has always sat — vertically centred,
+   under the brand — now that the card no longer carries a footer line. */
+.wallet-card-body {
+  position: relative;
+  z-index: 1;
+  margin-block: auto;
+}
+
+.wallet-card-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 9px;
+  color: rgb(33 49 14 / 0.66);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.wallet-card-eye {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
-  background: var(--color-acid-ink);
+  background: rgb(35 61 9 / 0.08);
+  color: inherit;
+  cursor: pointer;
+  transition-property: background-color;
+  transition-duration: 160ms;
+  transition-timing-function: var(--ease-out-power3);
 }
 
-.wallet-hero-value {
+@media (hover: hover) and (pointer: fine) {
+  .wallet-card-eye:hover {
+    background: rgb(35 61 9 / 0.18);
+  }
+}
+
+.wallet-card-value {
   margin: 0;
-  font-size: clamp(2.5rem, 4.4vw, 3.4rem);
-  font-weight: 600;
-  letter-spacing: -0.05em;
+  font-size: clamp(1.95rem, 3.4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.055em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  color: var(--color-ink);
 }
 
-.wallet-hero-pills {
+/* The panel: lit from the top-left, with a stacked shadow so it lifts off the
+   canvas instead of sitting flush against it. */
+.wallet-side {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  list-style: none;
-  margin: 14px 0 0;
-  padding: 0;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 24px 20px;
+  border-radius: 24px;
+  background: linear-gradient(168deg, #ffffff 0%, #fafcef 100%);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    inset 0 0 0 1px rgb(17 18 20 / 0.05),
+    0 26px 52px -42px rgb(70 93 101 / 0.6),
+    0 3px 8px -6px rgb(17 18 20 / 0.07);
 }
 
-.wallet-hero-pills li {
-  display: inline-flex;
+.wallet-side-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wallet-side-head h2 {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.wallet-side-head span {
+  color: var(--color-haze);
+  font-size: 11px;
+}
+
+.wallet-stats {
+  display: grid;
+  margin: 0;
+}
+
+.wallet-stats > div {
+  display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 6px 12px 7px;
-  border-radius: var(--radius-capsule);
-  border: 1px solid rgb(17 18 20 / 0.07);
-  background: rgb(255 255 255 / 0.8);
+  gap: 11px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--ops-line-soft);
+}
+
+.wallet-stats > div:first-child {
+  padding-top: 2px;
+}
+
+.wallet-stats > div:last-child {
+  padding-bottom: 2px;
+  border-bottom: 0;
+}
+
+.wallet-stat-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(160deg, #f1f9dc, #e5f3c0);
+  color: #5f7a16;
+  box-shadow: inset 0 0 0 1px rgb(95 122 22 / 0.09);
+}
+
+.wallet-stats dt {
+  flex: 1;
+  color: var(--color-mist);
   font-size: 12.5px;
 }
 
-.wallet-hero-pills span {
-  color: var(--color-mist);
-}
-
-.wallet-hero-pills strong {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+.wallet-stats dd {
+  margin: 0;
   color: var(--color-ink);
+  font-size: 15px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
 }
 
-.wallet-hero > .btn-acid {
-  z-index: 1;
+/* The chart is the panel's elastic part: it grows into whatever height the
+   card opposite sets, so the panel never closes with a band of dead space. */
+.wallet-spark {
+  flex: 1 1 74px;
+  min-height: 74px;
+  margin-top: 2px;
+}
+
+.wallet-spark-tip {
+  display: grid;
+  gap: 2px;
+  padding: 7px 10px;
+  border-radius: 11px;
+  background: rgb(255 255 255 / 0.97);
+  box-shadow:
+    0 0 0 1px rgb(17 18 20 / 0.07),
+    0 14px 26px -18px rgb(17 18 20 / 0.45);
+  font-size: 11px;
+}
+
+.wallet-spark-tip span {
+  color: var(--color-haze);
+}
+
+.wallet-spark-tip strong {
+  color: var(--color-ink);
+  font-size: 12px;
+}
+
+/* The panel's closing line. It stays on the bottom edge, level with the card's,
+   however much the stats above it weigh. */
+.wallet-side-note {
+  margin: auto 0 0;
+  color: var(--color-mist);
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .wallet-flash {
@@ -2896,6 +3120,12 @@
   border-radius: var(--radius-xl);
   border: 1px solid rgb(213 215 214 / 0.6);
   background: #fff;
+  /* Same lift as the wallet card: a lit top edge over a stacked shadow, so the
+     tier row doesn't read as three flat rectangles under a dimensional hero. */
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 20px 40px -34px rgb(70 93 101 / 0.5),
+    0 2px 6px -5px rgb(17 18 20 / 0.08);
   transition-property: transform, box-shadow;
   transition-duration: 280ms;
   transition-timing-function: var(--ease-out-power3);
@@ -2963,13 +3193,18 @@
 .wallet-plan.is-accent {
   background: var(--color-acid);
   border-color: transparent;
-  box-shadow: 0 30px 56px -34px rgb(140 180 40 / 0.7);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    0 30px 56px -34px rgb(140 180 40 / 0.7);
 }
 
 .wallet-plan.is-dark {
   background: linear-gradient(160deg, #14181b 0%, #1d2427 100%);
   border-color: transparent;
   color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.09),
+    0 28px 48px -34px rgb(17 18 20 / 0.65);
 }
 
 .wallet-plan-badge {
@@ -3123,6 +3358,9 @@
   font: inherit;
   font-size: 14.5px;
   font-weight: 600;
+  /* A squeezed flex row must shrink the text around the button, never the
+     button's own label — "充值" broken across two lines reads as a bug. */
+  white-space: nowrap;
   cursor: pointer;
   transition-property: transform, box-shadow, background-color;
   transition-duration: 220ms;
@@ -3462,27 +3700,23 @@
   .wallet-plan {
     min-height: 0;
   }
+}
 
-  .wallet-hero-art { right: 9%; }
+/* Below this the card and the panel stop coexisting on one row: at half the
+   content width the card can no longer hold its header on one line. */
+@media (max-width: 1080px) {
+  .wallet-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+
+  /* Full-bleed here would make the card absurdly tall for its width. */
+  .wallet-card-stack {
+    max-width: 460px;
+  }
 }
 
 @media (max-width: 639px) {
-  .wallet-hero {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
-    padding: 22px 20px;
-  }
-
-  .wallet-hero .btn-acid {
-    justify-content: center;
-    width: 100%;
-  }
-
-  .wallet-hero-art {
-    right: -100px;
-    opacity: 0.42;
-  }
-
   .wallet-plan {
     padding: 22px 20px 20px;
   }
@@ -3509,11 +3743,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wallet-hero-orbit,
-  .wallet-hero-spark {
-    animation: none;
-  }
-
   .wallet-modal-layer,
   .topup-sheet {
     animation-duration: 150ms;
@@ -3522,6 +3751,29 @@
   .topup-sheet { animation-name: topupBackdrop; }
 
   .topup-option { transition-property: border-color, background-color, box-shadow; }
+
+  /* The lift and the arrow hand-off go; the colour change stays, so the button
+     still answers the pointer. The hand-off is resolved rather than frozen —
+     the arrow has to stay put and stay visible. */
+  .wallet-card-topup,
+  .wallet-card-topup svg {
+    transition: none;
+  }
+
+  .wallet-card-topup:hover,
+  .wallet-card-topup:active,
+  .wallet-card-topup:hover .wallet-card-topup-plus {
+    transform: none;
+  }
+
+  .wallet-card-topup-arrow.is-trailing {
+    display: none;
+  }
+
+  .wallet-card-topup:hover .wallet-card-topup-arrow {
+    transform: none;
+    opacity: 1;
+  }
 }
 
 .usage-chart {
@@ -3737,7 +3989,10 @@
   --ops-line: rgb(17 18 20 / 0.07);
   --ops-line-soft: rgb(17 18 20 / 0.05);
 
-  display: block;
+  /* The 248px column is the fixed sidebar's footprint — the sidebar itself is
+     `position: fixed`, so the column only reserves the space it covers. */
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
   min-height: 100vh;
   background:
     radial-gradient(ellipse at 86% -8%, rgb(169 221 224 / 0.16), transparent 46%),
@@ -3780,9 +4035,11 @@
 .ops-main {
   position: relative;
   z-index: 2;
-  width: min(100%, 1396px);
+  grid-column: 2;
+  width: min(100%, 1320px);
   margin: 0 auto;
-  padding: 126px 48px 88px;
+  /* No top bar to clear any more — the workspace starts just below the top. */
+  padding: 46px 48px 88px;
   min-width: 0;
 }
 
@@ -4610,14 +4867,20 @@
 .overview-card-heading h2 { margin: 0; color: #232622; font-size: 17px; font-weight: 650; letter-spacing: -.035em; }
 .overview-card-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 12px; background: #f5f7ef; color: #536d1a; }
 .overview-workspace { display: flex; flex-direction: column; padding: 25px; }
-.overview-key-visual { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 190px; margin: 22px 0 18px; padding: 23px 24px 21px; overflow: hidden; border-radius: 22px; background: radial-gradient(circle at 100% 0%, #d6fe6a 0, transparent 52%), linear-gradient(135deg, #c7f14a, #a9dd30 72%, #8ac018); color: #21310e; box-shadow: 0 15px 24px -23px #5b8818; }
-.overview-key-visual::after { content: ""; position: absolute; width: 280px; height: 280px; right: -80px; top: -105px; border: 1px solid rgb(35 61 9 / .18); border-radius: 50%; box-shadow: 0 0 0 37px rgb(255 255 255 / .09), 0 0 0 75px rgb(255 255 255 / .07); }
-.overview-key-visual-brand { position: relative; z-index: 1; font-size: 20px; font-weight: 850; letter-spacing: -.05em; }
-.overview-key-visual-brand span { padding-left: 3px; font-size: 10px; font-weight: 600; letter-spacing: .18em; vertical-align: 4px; }
-.overview-key-visual-mark { position: absolute; top: 22px; right: 23px; z-index: 1; display: grid; grid-template-columns: repeat(2, 9px); gap: 3px; transform: rotate(-18deg); }
-.overview-key-visual-mark span { width: 9px; height: 9px; border-radius: 4px; background: #233714; }
-.overview-key-visual-foot { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 10px; align-items: end; font-size: 14px; font-weight: 650; letter-spacing: .13em; white-space: nowrap; }
-.overview-key-visual-foot span { font-size: 8px; letter-spacing: .1em; }
+/* The workspace card's key block. The lime card that used to sit here moved to
+   the wallet (where it carries the real balance); this is the functional
+   version — the account's live key, read off the same list the keys page uses. */
+.overview-key { display: flex; flex-direction: column; min-height: 190px; margin: 22px 0 18px; padding: 20px 22px 18px; border: 1px solid #eef0ea; border-radius: 22px; background: linear-gradient(160deg, #fbfcf6 0%, #f3f8e4 100%); }
+.overview-key-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 12px; color: #9aa094; font-size: 10px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; }
+.overview-key-label span { color: #aab0a3; font-size: 10px; letter-spacing: .06em; text-transform: none; }
+.overview-key-value { margin: 0; color: #1e2a10; font-family: var(--font-mono); font-size: 16px; font-weight: 500; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.overview-key-meta { display: flex; align-items: center; gap: 7px; margin: 10px 0 0; color: #858b7d; font-size: 11px; }
+.overview-key-dot { flex: 0 0 auto; width: 6px; height: 6px; border-radius: 50%; background: #bcbfb6; }
+.overview-key-dot.is-live { background: #7fae23; box-shadow: 0 0 0 3px rgb(127 174 35 / .16); }
+.overview-key-date { color: #9aa094; }
+.overview-key-empty { margin: 0; color: #858a80; font-size: 12px; }
+.overview-key-action { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; min-height: 36px; margin-top: auto; padding: 8px 15px; border-radius: var(--radius-capsule); background: #1c1e1b; color: #d8f77a; font-size: 12px; font-weight: 600; text-decoration: none; transition-property: background-color, transform; transition-duration: 180ms; transition-timing-function: var(--ease-out-power3); }
+.overview-key-action:hover { background: #34401c; transform: translateY(-1px); }
 .overview-workspace-links { display: grid; gap: 7px; margin-top: auto; }
 .overview-workspace-links a { display: flex; align-items: center; gap: 12px; min-width: 0; min-height: 62px; padding: 9px 11px; border-radius: 17px; background: #f7f8f6; color: #20231f; text-decoration: none; transition: background .18s ease, transform .18s ease; }
 .overview-workspace-links a:hover { background: #eef5dc; transform: translateX(2px); }
@@ -4685,7 +4948,7 @@
   .overview-dashboard-grid { grid-template-columns: 1fr; gap: 14px; }
   .overview-workspace, .overview-right-stack { grid-row: auto; grid-column: auto; }
   .overview-workspace, .overview-pocket { padding: 21px; }
-  .overview-key-visual { min-height: 160px; }
+  .overview-key { min-height: 160px; }
   .overview-pocket { min-height: 335px; }
   .overview-donut { width: 170px; }
   .overview-mini-card strong { font-size: 21px; }
@@ -4693,18 +4956,324 @@
   .overview-chart { height: 260px; }
 }
 
-/* The public navigation stays above the workspace; console sections sit below it. */
-.ops-console-nav { display: flex; align-items: center; justify-content: flex-start; gap: 6px; width: 100%; min-height: 64px; margin: 0 0 34px; padding: 8px 12px; border: 1px solid #f0f1ed; border-radius: 24px; background: #fff; box-shadow: 0 18px 42px -38px #5d6650; }
-.ops-console-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 43px; padding: 10px 18px; border-radius: 23px; background: #f6f7f8; color: #51574d; font-size: 12px; font-weight: 600; text-decoration: none; white-space: nowrap; transition: background .18s ease, color .18s ease, transform .18s ease; }
-.ops-console-link:hover { transform: translateY(-1px); background: #e9f2cf; color: #25330f; }
-.ops-console-link.is-on { background: #1c1e1b; color: #fff; }
-.ops-console-link:focus-visible { outline: 2px solid #688825; outline-offset: 2px; }
-@media (max-width: 959px) {
-  .ops-main { width: 100%; padding: 112px 20px 64px; }
+/* — Sidebar: the workspace's only navigation —
+   Everything the workspace needs lives in one fixed left column: the sections,
+   the way back to the marketing site, the language control and the account.
+   The pills are the tab treatment the workspace already used, stacked — dark
+   for the current page, soft grey for the rest. Below 1024px the whole thing
+   leaves the flow and becomes a drawer behind a slim bar, so a phone still
+   shows exactly one navigation row. */
+.ops-side {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 248px;
+  height: 100dvh;
+  padding: 22px 16px 18px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: rgb(255 255 255 / 0.5);
+  border-right: 1px solid var(--ops-line);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
+
+.ops-brand {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px 0;
+  text-decoration: none;
+}
+
+.ops-nav {
+  display: grid;
+  gap: 5px;
+  align-content: start;
+  flex: 1;
+}
+
+.ops-nav-label {
+  margin: 0 0 7px;
+  padding-inline: 14px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-haze);
+}
+
+.ops-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 43px;
+  padding: 10px 15px;
+  border-radius: 23px;
+  background: #f6f7f8;
+  color: #51574d;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition-property: background-color, color, transform;
+  transition-duration: 180ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.ops-link svg {
+  flex: 0 0 auto;
+}
+
+.ops-link:focus-visible {
+  outline: 2px solid #688825;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ops-link:hover {
+    background: #e9f2cf;
+    color: #25330f;
+    transform: translateY(-1px);
+  }
+}
+
+.ops-link.is-on,
+.ops-link.is-on:hover {
+  background: #1c1e1b;
+  color: #fff;
+}
+
+.ops-side-foot {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ops-line-soft);
+}
+
+.ops-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--ops-line);
+  border-radius: var(--radius-capsule);
+  background: rgb(255 255 255 / 0.72);
+  color: var(--color-mist);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition-property: color, background-color, border-color;
+  transition-duration: 180ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.ops-back:hover {
+  color: var(--color-ink);
+  background: #fff;
+  border-color: color-mix(in oklab, var(--color-ink) 16%, transparent);
+}
+
+.ops-side-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ops-foot-user {
+  display: inline-flex;
+  margin-left: auto;
+}
+
+.ops-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-capsule);
+  background: #f6f7f8;
+  color: #51574d;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition-property: background-color, color;
+  transition-duration: 180ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.ops-cta:hover {
+  background: #e9f2cf;
+  color: #25330f;
+}
+
+/* 中 / EN segmented control. */
+.ops-lang {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--radius-capsule);
+  background: rgb(17 18 20 / 0.05);
+}
+
+.ops-lang button {
+  padding: 4px 9px 5px;
+  border: 0;
+  border-radius: var(--radius-capsule);
+  background: transparent;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--color-mist);
+  cursor: pointer;
+  transition-property: color, background-color, box-shadow;
+  transition-duration: 180ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.ops-lang button.is-on {
+  color: var(--color-ink);
+  background: rgb(255 255 255 / 0.95);
+  box-shadow: 0 1px 3px rgb(17 18 20 / 0.1);
+}
+
+/* The slim bar the drawer opens from; desktop never sees it. */
+.ops-topbar,
+.ops-drawer-close {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .ops-root {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ops-main {
+    grid-column: 1;
+    padding: 82px 16px 64px;
+  }
+
+  .ops-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgb(255 255 255 / 0.82);
+    border-bottom: 1px solid var(--ops-line);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  .ops-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--ops-line);
+    border-radius: var(--radius-sm);
+    background: rgb(255 255 255 / 0.7);
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  .ops-topbar-brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  /* The drawer carries its own brand and account row; the bar already shows both. */
+  .ops-side {
+    z-index: 20;
+    /* Far more opaque than the desktop rail: it sits over live page content
+       rather than the shell's flat backdrop, and has to stay readable. */
+    background: rgb(252 252 250 / 0.95);
+    transform: translateX(-102%);
+    box-shadow: 0 24px 60px -30px rgb(17 18 20 / 0.45);
+    transition: transform 260ms var(--ease-out-power3);
+  }
+
+  .ops-side.is-open {
+    transform: none;
+  }
+
+  .ops-side .ops-brand,
+  .ops-side .ops-foot-user {
+    display: none;
+  }
+
+  .ops-drawer-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--ops-line);
+    border-radius: var(--radius-sm);
+    background: rgb(255 255 255 / 0.8);
+    color: var(--color-mist);
+    cursor: pointer;
+  }
+
+  .ops-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    background: rgb(17 18 20 / 0.38);
+    animation: opsScrimIn 200ms var(--ease-out-power3) both;
+  }
+
+  @keyframes opsScrimIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+/* Phones: the navbar's trailing actions must stay on one line. Once the bar is
+   narrow the grid squeezes its auto columns, and the CJK labels break in half
+   ("中/文", "开始/使用"), so the pills get nowrap and a tighter box to keep
+   brand + avatar + language + CTA on a single row. */
 @media (max-width: 700px) {
-  .ops-main { padding: 104px 15px 60px; }
-  .ops-console-nav { min-height: 56px; gap: 3px; margin-bottom: 26px; padding: 5px; border-radius: 19px; }
-  .ops-console-link { flex: 1; min-height: 43px; gap: 5px; padding: 8px 5px; font-size: 11px; }
-  .ops-console-link svg { width: 14px; height: 14px; }
+  .site-nav { padding: 12px 14px 0; }
+
+  .site-nav .nav-bar { gap: 10px; }
+
+  .nav-actions { gap: 4px; }
+
+  .language-toggle {
+    padding: 0 8px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .nav-cta {
+    min-height: 36px;
+    padding: 0 11px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+}
+
+/* Below this the brand text no longer fits beside the actions — the cat mark
+   carries the way home on its own. */
+@media (max-width: 370px) {
+  .foyton-brand-name,
+  .foyton-brand-api {
+    display: none;
+  }
 }

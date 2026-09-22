@@ -23,7 +23,7 @@ import {
   YAxis,
 } from "recharts";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
-import { getBilling, getDashboard, getUsage } from "@/lib/fyt";
+import { getBilling, getDashboard, getUsage, listKeys } from "@/lib/fyt";
 import { formatNumber, formatTokens, formatYuan, maskKey } from "@/lib/format";
 import { useLanguage } from "@/lib/language";
 
@@ -41,6 +41,7 @@ function Overview() {
   const [data, setData] = useState<Awaited<ReturnType<typeof getDashboard>> | null>(null);
   const [usage, setUsage] = useState<Awaited<ReturnType<typeof getUsage>> | null>(null);
   const [activity, setActivity] = useState<Awaited<ReturnType<typeof getBilling>> | null>(null);
+  const [keys, setKeys] = useState<Awaited<ReturnType<typeof listKeys>> | null>(null);
   const [failed, setFailed] = useState(false);
   const [usageFailed, setUsageFailed] = useState(false);
   const [billingFailed, setBillingFailed] = useState(false);
@@ -56,6 +57,10 @@ function Overview() {
     void getBilling()
       .then(setActivity)
       .catch(() => setBillingFailed(true));
+    // Failure here only leaves the key card blank; the page keeps working.
+    void listKeys()
+      .then(setKeys)
+      .catch(() => setKeys([]));
   }, []);
 
   const firstName = user?.displayName?.split(" ")[0];
@@ -73,6 +78,12 @@ function Overview() {
     })) ?? [];
 
   const locale = zh ? "zh-CN" : "en-US";
+  /**
+   * The key the card shows: a live one when there is one, otherwise the most
+   * recent — the block is honest about the state rather than always showing a
+   * key that no longer works.
+   */
+  const primaryKey = keys?.find((k) => !k.disabled) ?? keys?.[0] ?? null;
   const inputTokens = usage?.days.reduce((sum, day) => sum + day.input_tokens, 0) ?? 0;
   const outputTokens = usage?.days.reduce((sum, day) => sum + day.output_tokens, 0) ?? 0;
   const periodTokens = inputTokens + outputTokens;
@@ -128,19 +139,42 @@ function Overview() {
                   <KeyRound size={17} />
                 </span>
               </div>
-              <div className="overview-key-visual" aria-hidden="true">
-                <span className="overview-key-visual-brand">
-                  FYT<span>API</span>
-                </span>
-                <span className="overview-key-visual-mark">
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                </span>
-                <span className="overview-key-visual-foot">
-                  •••• •••• •••• <span>YOUR WORKSPACE</span>
-                </span>
+              <div className="overview-key">
+                {primaryKey ? (
+                  <>
+                    <p className="overview-key-label">
+                      {zh ? "当前密钥" : "Active key"}
+                      <span>{zh ? `共 ${keys?.length ?? 0} 个` : `${keys?.length ?? 0} total`}</span>
+                    </p>
+                    <p className="overview-key-value">{maskKey(primaryKey.last4)}</p>
+                    <p className="overview-key-meta">
+                      <i
+                        className={primaryKey.disabled ? "overview-key-dot" : "overview-key-dot is-live"}
+                        aria-hidden="true"
+                      />
+                      {primaryKey.name}
+                      <span aria-hidden="true">·</span>
+                      <span className="overview-key-date">
+                        {new Date(primaryKey.created_at).toLocaleDateString(locale)}
+                      </span>
+                    </p>
+                  </>
+                ) : (
+                  <p className="overview-key-empty">
+                    {keys === null
+                      ? zh
+                        ? "正在载入密钥…"
+                        : "Loading keys…"
+                      : zh
+                        ? "还没有密钥，先去创建一个。"
+                        : "No keys yet — create your first one."}
+                  </p>
+                )}
+                <Link to="/console/keys" className="overview-key-action" data-cursor="hover">
+                  <KeyRound size={15} strokeWidth={1.9} aria-hidden="true" />
+                  {zh ? "管理密钥" : "Manage keys"}
+                  <ArrowRight size={15} strokeWidth={1.9} aria-hidden="true" />
+                </Link>
               </div>
               <div className="overview-workspace-links">
                 <Link to="/console/keys">
