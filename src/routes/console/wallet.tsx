@@ -1,67 +1,27 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Activity, Check, Coins, Eye, EyeOff, Layers, Plus, Sparkles, Wallet, X, Zap } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowUpRight, Activity, Check, Coins, Eye, EyeOff, Plus, Wallet, X } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip } from "recharts";
 import { addFunds, getDashboard, getUsage, getWallet } from "@/lib/fyt";
 import { formatNumber, formatYuan } from "@/lib/format";
 import { useLanguage } from "@/lib/language";
+import { PLANS, findPlan, isFeaturedPlan, type Plan, type PlanId } from "@/lib/plans";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/console/wallet")({ component: WalletPage });
-
 /**
- * Top-up tiers. Three fixed steps rather than a free-form amount, so a purchase
- * is one click — the custom field in the sheet covers everything else.
- *
- * `tone` picks the card treatment: `light` is a plain white card, `accent` is
- * the lime one that carries the "Most popular" badge, `dark` is the inverse
- * card that closes the row.
+ * `?plan=<id>` is how the marketing page hands a chosen plan over: the credit
+ * pack you click there opens this page with that plan's checkout already up, so
+ * arriving from the homepage doesn't just dump you on a generic top-up form.
+ * Unknown ids resolve to nothing rather than throwing — the param is typeable.
  */
-const PLANS = [
-  {
-    id: "pro",
-    name: "Pro",
-    tone: "light" as const,
-    amount: 100,
-    icon: Zap,
-    desc: { zh: "个人项目与轻量开发", en: "Personal projects and light development" },
-    perks: [
-      { zh: "全部模型可用", en: "Every model available" },
-      { zh: "标准路由通道", en: "Standard routing" },
-      { zh: "用量与成本明细", en: "Usage and cost breakdown" },
-    ],
+export const Route = createFileRoute("/console/wallet")({
+  validateSearch: (search: Record<string, unknown>): { plan?: PlanId } => {
+    const plan = findPlan(typeof search.plan === "string" ? search.plan : undefined);
+    return plan ? { plan: plan.id } : {};
   },
-  {
-    id: "max",
-    name: "Max",
-    tone: "accent" as const,
-    amount: 200,
-    icon: Layers,
-    badge: { zh: "最受欢迎", en: "Most popular" },
-    desc: { zh: "日常产品开发", en: "Everyday product work" },
-    perks: [
-      { zh: "包含 Pro 全部权益", en: "Everything in Pro" },
-      { zh: "优先路由通道", en: "Priority routing" },
-      { zh: "更高的并发额度", en: "Higher concurrency" },
-      { zh: "邮件支持", en: "Email support" },
-    ],
-  },
-  {
-    id: "business",
-    name: "Business",
-    tone: "dark" as const,
-    amount: 500,
-    icon: Sparkles,
-    desc: { zh: "团队与高频调用", en: "Teams and high call volume" },
-    perks: [
-      { zh: "包含 Max 全部权益", en: "Everything in Max" },
-      { zh: "独立通道与更高并发", en: "Dedicated channel, higher limits" },
-      { zh: "多密钥与团队管理", en: "Multiple keys and team access" },
-      { zh: "优先技术支持", en: "Priority support" },
-    ],
-  },
-];
+  component: WalletPage,
+});
 
 const QUICK_AMOUNTS = [100, 200, 500, 1000] as const;
 const MIN_AMOUNT = 1;
@@ -77,9 +37,135 @@ function redactAmount(formatted: string) {
   return formatted.replace(/[\d.,]/g, "*");
 }
 
+/**
+ * Checkout for one named plan.
+ *
+ * Deliberately NOT the top-up sheet with an amount pre-filled. Arriving here
+ * from a credit pack on the marketing page has to read as buying *that plan*,
+ * so this shows an order — what the plan includes, what it costs, what you pay
+ * — and carries no amount picker at all. The amount grid stays where it belongs,
+ * behind the wallet card's own top-up button.
+ */
+function PlanCheckoutSheet({
+  plan,
+  zh,
+  busy,
+  balance,
+  onClose,
+  onPay,
+}: {
+  plan: Plan;
+  zh: boolean;
+  busy: boolean;
+  balance: number | null;
+  onClose: () => void;
+  onPay: () => void;
+}) {
+  const Icon = plan.icon;
+  const price = formatYuan(plan.amount * 100);
+
+  return (
+    <div
+      className="modal-layer wallet-modal-layer"
+      role="dialog"
+      aria-modal="true"
+      aria-label={zh ? `订阅 ${plan.name}` : `Subscribe to ${plan.name}`}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="topup-sheet plan-sheet">
+        <div className="topup-intro">
+          <span className="topup-intro-mark" aria-hidden="true">
+            <Icon size={17} strokeWidth={2.2} />
+          </span>
+          <button
+            type="button"
+            className="topup-close"
+            aria-label={zh ? "关闭" : "Close"}
+            data-cursor="hover"
+            onClick={onClose}
+          >
+            <X size={18} strokeWidth={2} aria-hidden="true" />
+          </button>
+          <h2 className="topup-title">
+            {zh ? `订阅 ${plan.name} 套餐` : `Subscribe to ${plan.name}`}
+          </h2>
+          <p className="topup-sub">
+            {zh
+              ? "一次性付款，额度直接充入钱包，用完再充。"
+              : "One-time payment — the credit lands in your wallet straight away."}
+          </p>
+        </div>
+
+        <div className="topup-body">
+          <div className="plan-order">
+            <header className="plan-order-head">
+              <span className="plan-order-icon" aria-hidden="true">
+                <Icon size={19} strokeWidth={1.9} />
+              </span>
+              <div className="plan-order-id">
+                <h3>{plan.name}</h3>
+                <p>{zh ? plan.desc.zh : plan.desc.en}</p>
+              </div>
+              <span className="plan-order-price">{price}</span>
+            </header>
+
+            <ul className="plan-order-perks">
+              {plan.perks.map((perk) => (
+                <li key={perk.en}>
+                  <Check size={15} strokeWidth={2.6} aria-hidden="true" />
+                  {zh ? perk.zh : perk.en}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="topup-total">
+            <div className="topup-total-row">
+              <span>{zh ? "当前余额" : "Current balance"}</span>
+              <span>{balance == null ? "—" : formatYuan(balance)}</span>
+            </div>
+            <div className="topup-total-row">
+              <span>{zh ? "套餐额度" : "Package credit"}</span>
+              <span>{price}</span>
+            </div>
+            <div className="topup-total-row is-payable">
+              <span>{zh ? "应付金额" : "You pay"}</span>
+              <strong>{price}</strong>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="btn-acid topup-pay"
+          data-cursor="hover"
+          disabled={busy}
+          onClick={onPay}
+        >
+          {busy
+            ? zh
+              ? "处理中…"
+              : "Processing…"
+            : zh
+              ? `确认支付 ${price}`
+              : `Pay ${price}`}
+          <ArrowUpRight size={16} strokeWidth={2.2} aria-hidden="true" />
+        </button>
+        <p className="topup-secure">
+          {zh ? "加密传输 · 支付后实时到账" : "Encrypted in transit · Credited instantly"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function WalletPage() {
   const { language } = useLanguage();
   const zh = language === "zh";
+  const navigate = useNavigate();
+  const { plan: planParam } = Route.useSearch();
 
   const [balance, setBalance] = useState<number | null>(null);
   const [requests, setRequests] = useState<number | null>(null);
@@ -89,6 +175,9 @@ function WalletPage() {
    *  deliberately not persisted, so it never comes back hidden by surprise. */
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
+  /** The plan being checked out, when a specific one was chosen. Distinct from
+   *  `open`: the top-up sheet is "pick an amount", this is "buy this plan". */
+  const [checkout, setCheckout] = useState<Plan | null>(null);
   const [amount, setAmount] = useState(200);
   const [custom, setCustom] = useState("");
   const [busy, setBusy] = useState(false);
@@ -111,14 +200,28 @@ function WalletPage() {
 
   useEffect(load, []);
 
+  // Escape closes whichever sheet is up. Inlined rather than calling
+  // `closeCheckout` so the effect doesn't depend on a function rebuilt every
+  // render — its dependencies already fire exactly when the target changes.
   useEffect(() => {
-    if (!open) return;
+    if (!open && !checkout) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      setCheckout(null);
+      if (planParam) void navigate({ to: "/console/wallet", search: {}, replace: true });
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+  }, [open, checkout, planParam, navigate]);
+
+  // Arriving with a plan chosen — from a credit pack on the marketing page —
+  // opens its checkout on the first pass. `planParam` is already validated
+  // against the plan list by the route, so there is nothing to verify here.
+  useEffect(() => {
+    const plan = findPlan(planParam);
+    if (plan) setCheckout(plan);
+  }, [planParam]);
 
   const active = custom.trim() ? Number(custom) : amount;
   const valid = Number.isFinite(active) && active >= MIN_AMOUNT;
@@ -130,6 +233,21 @@ function WalletPage() {
     }
     setNote(null);
     setOpen(true);
+  }
+
+  function openCheckout(plan: Plan) {
+    setNote(null);
+    setCheckout(plan);
+  }
+
+  /**
+   * Dismissing the checkout also drops `?plan=` from the URL. Without that the
+   * sheet comes back on every refresh and on every back-navigation, which reads
+   * as the page refusing to let you leave the purchase.
+   */
+  function closeCheckout() {
+    setCheckout(null);
+    if (planParam) void navigate({ to: "/console/wallet", search: {}, replace: true });
   }
 
   function submit() {
@@ -144,6 +262,28 @@ function WalletPage() {
         setNote(zh ? `已充值 ${formatYuan(active * 100)}` : `Added ${formatYuan(active * 100)} to your balance.`);
       })
       .catch(() => setNote(zh ? "充值失败，请稍后再试。" : "Unable to complete the top-up."))
+      .finally(() => setBusy(false));
+  }
+
+  /** Same endpoint as the top-up — a plan is a fixed amount of the same credit —
+   *  but the confirmation names the plan, because that is what was bought. */
+  function submitCheckout() {
+    if (!checkout || busy) return;
+    const plan = checkout;
+    const paid = formatYuan(plan.amount * 100);
+    setBusy(true);
+    setNote(null);
+    void addFunds({ data: plan.amount })
+      .then((w) => {
+        setBalance(w.balanceCents);
+        closeCheckout();
+        setNote(
+          zh ? `${plan.name} 套餐已开通，${paid} 已到账。` : `${plan.name} is active — ${paid} added to your wallet.`,
+        );
+      })
+      .catch(() =>
+        setNote(zh ? "支付失败，请稍后再试。" : "Payment could not be completed. Please try again."),
+      )
       .finally(() => setBusy(false));
   }
 
@@ -342,14 +482,28 @@ function WalletPage() {
                 type="button"
                 className="wallet-plan-cta"
                 data-cursor="hover"
-                onClick={() => openTopUp(plan.amount)}
+                onClick={() => openCheckout(plan)}
               >
-                {zh ? "立即充值" : "Top up now"}
+                {zh ? "立即订阅" : "Subscribe"}
               </button>
             </article>
           );
         })}
       </div>
+
+      {checkout && typeof document !== "undefined"
+        ? createPortal(
+            <PlanCheckoutSheet
+              plan={checkout}
+              zh={zh}
+              busy={busy}
+              balance={balance}
+              onClose={closeCheckout}
+              onPay={submitCheckout}
+            />,
+            document.body,
+          )
+        : null}
 
       {open && typeof document !== "undefined" ? createPortal(
         <div

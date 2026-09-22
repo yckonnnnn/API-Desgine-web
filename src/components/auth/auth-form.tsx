@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, Navigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { GROK_PROVIDERS, authClient, authEnabled, signIn } from "@/lib/auth/client";
+import { splitRedirect } from "@/lib/auth/redirect";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { DEMO_ACCOUNT, DEMO_PASSWORD, ensureDemoAdmin, resolveAccountEmail } from "@/lib/demo-admin";
 import { Grain } from "@/components/layout/grain";
@@ -11,7 +12,14 @@ import { FoytonBrand } from "@/components/layout/foyton-brand";
 
 type Mode = "login" | "register";
 
-export function AuthForm({ mode }: { mode: Mode }) {
+/**
+ * `redirect` is where to go once signed in, already validated as a same-origin
+ * path by the route (see `readRedirect`). It carries a plan choice through the
+ * sign-in detour: a visitor who picked a credit pack on the marketing page
+ * lands on that pack's checkout, not on the console overview.
+ */
+export function AuthForm({ mode, redirect }: { mode: Mode; redirect?: string }) {
+  const navigate = useNavigate();
   const { user, isPending } = useCurrentUserState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +46,17 @@ export function AuthForm({ mode }: { mode: Mode }) {
     };
   }, []);
 
-  if (isPending) {
+  // Already signed in — this is the second half of the marketing page's plan
+  // handoff, for a visitor whose session resolved after they were sent here.
+  // A client-side navigation keeps the query intact; `<Navigate to="…?plan=x">`
+  // would swallow it into the pathname.
+  useEffect(() => {
+    if (!user) return;
+    const target = splitRedirect(redirect ?? "/console");
+    void navigate({ to: target.to, search: target.search, replace: true });
+  }, [user, redirect, navigate]);
+
+  if (isPending || user) {
     return (
       <>
         <Grain />
@@ -54,9 +72,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
       </>
     );
   }
-  if (user) {
-    return <Navigate to="/console" />;
-  }
+  /** Where the session lands: the carried redirect, or the console. */
+  const destination = redirect ?? "/console";
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -68,18 +85,20 @@ export function AuthForm({ mode }: { mode: Mode }) {
           email: resolveAccountEmail(email),
           password,
           name: email.split("@")[0] || "Builder",
-          callbackURL: "/console",
+          callbackURL: destination,
         });
         if (err) throw new Error(err.message);
       } else {
         const { error: err } = await authClient.signIn.email({
           email: resolveAccountEmail(email),
           password,
-          callbackURL: "/console",
+          callbackURL: destination,
         });
         if (err) throw new Error(err.message);
       }
-      window.location.href = "/console";
+      // A full reload, not a router navigation: the session cookie was just set
+      // by this request, and the gates read it on a fresh boot.
+      window.location.href = destination;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to continue");
       setBusy(false);
@@ -160,7 +179,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
                   type="button"
                   className="btn-ghost auth-oauth"
                   data-cursor="hover"
-                  onClick={() => signIn(p.providerId, { callbackURL: "/console" })}
+                  onClick={() => signIn(p.providerId, { callbackURL: destination })}
                 >
                   Continue with {p.label}
                 </button>

@@ -136,18 +136,12 @@ export function InfraSection() {
           </div>
         </div>
 
-        {/* Right: links panel with the rubber-stamp badge. */}
+        {/* Right: links panel. The stamp used to float top-right, which forced a
+            152px reserve on the columns and left the panel's lower half empty.
+            It now anchors the bottom rule beside the copyright, so the columns
+            get the full width and the badge fills the space instead of clearing
+            it. */}
         <div className="infra-links">
-          <div className="infra-stamp" aria-hidden="true">
-            <span className="infra-stamp-ring">
-              <span className="infra-stamp-arc">★ FOYTON API ★</span>
-              <svg className="infra-stamp-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" />
-              </svg>
-              <span className="infra-stamp-ribbon">{zh ? "生产就绪" : "Production ready"}</span>
-            </span>
-          </div>
-
           <div className="infra-cols">
             {COLUMNS.map((column) => (
               <div key={column.title.en}>
@@ -167,6 +161,16 @@ export function InfraSection() {
                 </ul>
               </div>
             ))}
+          </div>
+
+          <div className="infra-stamp" aria-hidden="true">
+            <span className="infra-stamp-ring">
+              <span className="infra-stamp-arc">★ FOYTON API ★</span>
+              <svg className="infra-stamp-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" />
+              </svg>
+              <span className="infra-stamp-ribbon">{zh ? "生产就绪" : "Production ready"}</span>
+            </span>
           </div>
 
           <p className="infra-copy">

@@ -545,18 +545,45 @@
 .infra {
   position: relative;
   z-index: 4;
-  min-height: 100vh;
-  padding: 18vh 6vw 12vh;
 }
 
+/* These were both 100vh blocks with 18vh/12vh of padding, which stacked into
+   roughly 360px of dead space between the reasons and the card. The break is
+   now a single deliberate beat: the reason rows run out, a rule closes them,
+   and the card follows. */
+.why {
+  padding: 18vh 6vw 7vh;
+}
+
+.infra {
+  padding: 7vh 6vw 11vh;
+}
+
+/* Two-column editorial header — title left, lede set against its baseline on the
+   right. Same shape as `.market-intro`, so the page keeps one header rhythm. */
 .why-head {
-  max-width: 46rem;
-  margin-bottom: 56px;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  column-gap: 56px;
+  margin-bottom: 52px;
+}
+
+.why-head .section-kicker {
+  grid-column: 1;
+  grid-row: 1;
+  margin-bottom: 20px;
+}
+
+.why-head .section-title {
+  grid-column: 1;
+  grid-row: 2;
 }
 
 .why-lede {
-  margin: 22px 0 0;
-  max-width: 38rem;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: end;
+  margin: 0;
   font-size: 15px;
   line-height: 1.65;
   color: var(--color-mist);
@@ -573,190 +600,483 @@
   text-wrap: balance;
 }
 
-/* — Scenario bento. An asymmetric 12-column grid rather than the ecosystem
-   section's uniform cards, so the two read as different blocks. Each tile
-   carries a cursor-tracking spotlight: `--spot-x/y` are written on pointermove
-   and the gradient inside ::before follows them. */
+/* — Reasons. Deliberately not cards. Filled tiles repeated the ecosystem grid a
+   screen above, and — worse — laid an opaque white sheet exactly where the
+   pearl is choreographed to cross behind this section. Structure now comes from
+   hairline rules instead of boxes, so the block reads as one continuous spec
+   sheet and the pearl stays visible through every gap between the rules. */
 
-.why-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 18px;
+.why-list {
+  border-top: 1px solid rgb(17 18 20 / 0.12);
 }
 
-.why-tile {
+.why-row {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 30px 28px 26px;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 268px) minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 32px;
+  padding: 26px 18px 27px;
+  border-bottom: 1px solid rgb(17 18 20 / 0.09);
   overflow: hidden;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgb(213 215 214 / 0.62);
-  background: rgb(255 255 255 / 0.5);
-  box-shadow: 0 22px 44px -38px rgb(110 158 162 / 0.5);
-  transition-property: transform, border-color, box-shadow, background-color;
-  transition-duration: 320ms;
-  transition-timing-function: var(--ease-out-power3);
 }
 
-/* Spans live in classes rather than an inline custom property so the media
-   queries below can actually override them. */
-.why-span-4 { grid-column: span 4; }
-.why-span-5 { grid-column: span 5; }
-.why-span-7 { grid-column: span 7; }
-
-.why-tile::before {
+/* A wash, not a fill — it tints the row on top of the pearl without hiding it. */
+.why-row::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 320ms var(--ease-out-power3);
-  background: radial-gradient(
-    300px circle at var(--spot-x, 50%) var(--spot-y, 0%),
-    rgb(169 221 224 / 0.44),
-    transparent 70%
+  transition: opacity 300ms var(--ease-out-power3);
+  background: linear-gradient(
+    90deg,
+    rgb(169 221 224 / 0.3),
+    rgb(169 221 224 / 0.08) 52%,
+    transparent 76%
   );
 }
 
-.why-tile:hover {
-  transform: translateY(-4px);
-  border-color: color-mix(in oklab, var(--color-ice) 58%, white);
-  background: rgb(255 255 255 / 0.68);
-  box-shadow: 0 30px 54px -34px rgb(110 158 162 / 0.44);
-}
-
-.why-tile:hover::before {
+.why-row:hover::before {
   opacity: 1;
 }
 
-.why-icon {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-sm);
-  background: rgb(255 255 255 / 0.8);
-  border: 1px solid rgb(213 215 214 / 0.6);
-  color: var(--color-ice-deep);
+/* Scanner sweep. A soft band parked off the left edge travels the full width
+   of the row on hover; the wide 300% background is what gives the band room to
+   enter and exit instead of popping at the edges. */
+.why-row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background-image: linear-gradient(
+    100deg,
+    transparent 44%,
+    rgb(169 221 224 / 0.62) 50%,
+    transparent 56%
+  );
+  background-size: 300% 100%;
+  background-repeat: no-repeat;
+  background-position: -60% 0;
+  transition:
+    background-position 900ms var(--ease-out-power3),
+    opacity 240ms linear;
 }
 
-.why-tile h3 {
+.why-row:hover::after {
+  opacity: 1;
+  background-position: 160% 0;
+}
+
+/* The row's own rule picks up the accent, so the hovered row closes itself in
+   ice instead of just sitting under a neutral hairline. */
+.why-row:hover {
+  border-bottom-color: color-mix(in oklab, var(--color-ice) 72%, transparent);
+}
+
+.why-row-num {
   position: relative;
-  margin: 4px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--color-haze);
+  transition:
+    color 300ms var(--ease-out-power3),
+    transform 420ms var(--ease-out-power3);
+}
+
+/* The active-row rail, drawn from the middle out. */
+.why-row-num::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  width: 2px;
+  height: 0;
+  border-radius: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(180deg, transparent, var(--color-ice-deep), transparent);
+  transition: height 420ms var(--ease-out-power3);
+}
+
+.why-row:hover .why-row-num {
+  color: var(--color-ice-deep);
+  transform: translateX(4px);
+}
+
+.why-row:hover .why-row-num::before {
+  height: 78%;
+}
+
+.why-row-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 0;
   font-size: 17px;
   font-weight: 600;
   letter-spacing: -0.015em;
   color: var(--color-ink);
+  transition: transform 420ms var(--ease-out-power3);
 }
 
-.why-tile p {
+.why-row:hover .why-row-title {
+  transform: translateX(6px);
+}
+
+.why-row-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--color-ice) 44%, white);
+  color: var(--color-ice-deep);
+  transition-property: background-color, border-color, transform, box-shadow;
+  transition-duration: 420ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.why-row:hover .why-row-icon {
+  background: rgb(255 255 255 / 0.82);
+  border-color: color-mix(in oklab, var(--color-ice) 88%, white);
+  transform: scale(1.09) rotate(-7deg);
+  box-shadow: 0 0 0 5px rgb(169 221 224 / 0.2);
+}
+
+.why-row-desc {
   position: relative;
   margin: 0;
+  max-width: 48ch;
   font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--color-mist);
+  text-wrap: pretty;
+  transition:
+    color 360ms var(--ease-out-power3),
+    transform 420ms var(--ease-out-power3);
+}
+
+.why-row:hover .why-row-desc {
+  color: var(--color-ink);
+  transform: translateX(6px);
+}
+
+/* — Prepaid tiers. Sits directly under the reasons so the purchase path is one
+   step from the argument for it.
+
+   The cards carry no fill at all. Two earlier passes tinted the featured tier —
+   first the reference's lime, then the site's own ice — and both read as a
+   patch of another colour laid on a pearl page, because a tinted rectangle is
+   read as an object rather than as the page. With the fill gone the pearl
+   passes straight through the row, which is what makes the cards belong to the
+   page instead of sitting on it.
+
+   Hierarchy is carried by weight instead of colour, in three steps that get
+   stronger as they narrow: a hairline rule (all three), a badge (featured), and
+   the only solid ink button in the row (featured). The featured card also takes
+   a white sheen — a pearl's own highlight, so it stays in the palette — plus a
+   crisper rule, since with no fill the border is the card. */
+
+.tier-head {
+  margin-top: 58px;
+}
+
+.tier-head .section-kicker {
+  margin-bottom: 12px;
+}
+
+.tier-lede {
+  margin: 0;
+  font-size: 14px;
   line-height: 1.6;
   color: var(--color-mist);
   text-wrap: pretty;
 }
 
-/* — Top-up band. Sits directly under the reasons so the purchase path is one
-   step from the argument for it. Light ice tint rather than the infra card's
-   dark panel, so the two heavy blocks don't repeat. */
-
-.why-cta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 28px;
-  margin-top: 18px;
-  padding: 28px 32px;
-  border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in oklab, var(--color-ice) 55%, white);
-  background:
-    radial-gradient(ellipse at 8% 20%, rgb(169 221 224 / 0.3), transparent 58%),
-    rgb(255 255 255 / 0.55);
-  box-shadow: 0 26px 50px -42px rgb(110 158 162 / 0.55);
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 26px;
 }
 
-.why-cta-title {
-  margin: 0 0 6px;
-  font-size: 18px;
+/* Two elements per card, because the hover does two things that can't share one
+   transform: the lift wants to ease in and out, the pointer tilt has to track
+   the cursor with no transition at all or it feels like it's on a rubber band.
+   So the outer element carries the lift (free to transition) and the inner one
+   carries the rule, the sheen and the tilt. */
+.tier-card {
+  position: relative;
+  display: flex;
+  transition: transform 400ms var(--ease-out-power3);
+}
+
+.tier-card:hover {
+  transform: translateY(-9px) scale(1.014);
+}
+
+.tier-inner {
+  position: relative;
+  /* Also the stacking context that lets the glare sit behind the copy. */
+  z-index: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 30px 28px 26px;
+  border-radius: var(--radius-lg);
+  /* One rule for all three cards. The featured tier is marked by its badge, its
+     sheen and the only solid button in the row — not by a heavier outline, and
+     not by a fill. */
+  border: 1px solid rgb(213 215 214 / 0.86);
+  background: transparent;
+  /* No 3D transform at rest: keeping a perspective on the element at all times
+     costs every card its subpixel text antialiasing. */
+  transform: none;
+  transition:
+    transform 620ms var(--ease-out-power3),
+    border-color 340ms var(--ease-out-power3),
+    background-color 340ms var(--ease-out-power3);
+}
+
+
+/* While the pointer is inside, the tilt must not lag behind the cursor. */
+.tier-inner.is-tilting {
+  transition:
+    transform 0ms linear,
+    border-color 340ms var(--ease-out-power3),
+    background-color 340ms var(--ease-out-power3);
+}
+
+/* What actually sells the tilt: a hue-free white highlight tracking the
+   pointer, the way the pearl lights its own high points. Sits behind the text
+   so it never washes the copy out. */
+.tier-inner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    240px circle at var(--tilt-mx, 50%) var(--tilt-my, 50%),
+    rgb(255 255 255 / 0.78),
+    rgb(255 255 255 / 0) 68%
+  );
+  transition: opacity 320ms linear;
+}
+
+.tier-card:hover .tier-inner::after {
+  opacity: 1;
+}
+
+.tier-card:hover .tier-inner {
+  transform: perspective(1200px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  border-color: color-mix(in oklab, var(--color-ice) 58%, white);
+  background-color: rgb(255 255 255 / 0.3);
+}
+
+/* Still no colour — the featured card takes more light instead. */
+.tier-card.is-featured .tier-inner {
+  background-image:
+    radial-gradient(ellipse 92% 62% at 50% -14%, rgb(255 255 255 / 1), rgb(255 255 255 / 0) 72%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.36), rgb(255 255 255 / 0.08));
+  box-shadow: 0 26px 54px -44px rgb(70 93 101 / 0.5);
+}
+
+.tier-card.is-featured:hover .tier-inner {
+  background-image:
+    radial-gradient(ellipse 92% 62% at 50% -14%, rgb(255 255 255 / 1), rgb(255 255 255 / 0.12) 76%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.52), rgb(255 255 255 / 0.18));
+  box-shadow: 0 34px 64px -42px rgb(70 93 101 / 0.55);
+}
+
+.tier-badge {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  padding: 6px 12px 7px;
+  border-radius: var(--radius-capsule);
+  background: var(--color-ink);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.tier-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgb(213 215 214 / 0.66);
+  background: rgb(255 255 255 / 0.86);
+  color: var(--color-ice-deep);
+}
+
+
+.tier-name {
+  margin: 22px 0 0;
+  font-size: 21px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--color-ink);
 }
 
-.why-cta-note {
-  margin: 0;
+.tier-tagline {
+  margin: 6px 0 0;
   font-size: 13.5px;
+  line-height: 1.55;
   color: var(--color-mist);
 }
 
-.why-cta-actions {
+.tier-price {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 14px;
+  align-items: baseline;
+  gap: 9px;
+  margin: 24px 0 0;
 }
 
-.why-amounts {
+.tier-price-amount {
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.tier-price-unit {
+  font-size: 12px;
+  color: var(--color-haze);
+}
+
+.tier-features {
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-  margin: 0;
+  flex-direction: column;
+  gap: 12px;
+  /* Pushes the note and button to a shared baseline across all three cards,
+     however many features each one lists. */
+  flex: 1 1 auto;
+  margin: 24px 0 0;
   padding: 0;
 }
 
-.why-amounts a {
-  display: grid;
-  place-items: center;
-  min-width: 68px;
-  padding: 11px 14px;
-  border-radius: var(--radius-capsule);
-  border: 1px solid rgb(213 215 214 / 0.72);
-  background: rgb(255 255 255 / 0.82);
-  font-family: var(--font-mono);
+.tier-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+.tier-features svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--color-ice-deep);
+}
+
+.tier-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgb(17 18 20 / 0.08);
+  font-size: 13px;
+  color: var(--color-mist);
+}
+
+.tier-card.is-featured .tier-note {
+  border-top-color: rgb(17 18 20 / 0.1);
+}
+
+.tier-note svg {
+  flex: none;
+  color: var(--color-ice-deep);
+}
+
+.tier-buy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 18px;
+  padding: 14px 20px;
+  border-radius: var(--radius-capsule);
+  border: 1px solid rgb(17 18 20 / 0.16);
+  background: rgb(255 255 255 / 0.9);
+  font-size: 14px;
   font-weight: 500;
   color: var(--color-ink);
   text-decoration: none;
-  transition-property: transform, border-color, background-color, box-shadow;
-  transition-duration: 260ms;
+  transition-property: transform, background-color, border-color, box-shadow, color;
+  transition-duration: 280ms;
   transition-timing-function: var(--ease-out-power3);
 }
 
-.why-amounts a:hover {
+.tier-buy:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--color-ice) 62%, white);
+  border-color: color-mix(in oklab, var(--color-ice) 66%, white);
   background: #fff;
-  box-shadow: 0 14px 26px -18px rgb(110 158 162 / 0.6);
+  box-shadow: 0 16px 28px -20px rgb(70 93 101 / 0.6);
 }
 
-.why-buy {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  text-decoration: none;
+/* The only solid button in the row: the featured tier's call to action. */
+.tier-card.is-featured .tier-buy {
+  border-color: transparent;
+  background: var(--color-ink);
+  color: #fff;
+}
+
+.tier-card.is-featured .tier-buy:hover {
+  background: #1c1e21;
+  box-shadow: 0 20px 34px -22px rgb(17 18 20 / 0.7);
+}
+
+/* Three cards stay side by side down to here; below it they'd be too narrow for
+   the price to hold one line, and a two-column orphans the third card. */
+@media (max-width: 860px) {
+  .tier-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  /* Stacked, equal-height cards would just stretch the shorter ones. */
+  .tier-features {
+    flex: 0 1 auto;
+  }
 }
 
 @media (max-width: 639px) {
-  .why-cta {
-    padding: 22px 20px;
-    gap: 20px;
+  .tier-inner {
+    padding: 26px 22px 22px;
   }
 
-  .why-cta-actions {
-    width: 100%;
+  .tier-price-amount {
+    font-size: 30px;
+  }
+}
+
+/* The tilt is pointer-driven and wouldn't fire here anyway, but the lift, the
+   glare and the sheen all still move — flatten the lot. */
+@media (prefers-reduced-motion: reduce) {
+  .tier-card,
+  .tier-card:hover,
+  .tier-inner,
+  .tier-card:hover .tier-inner {
+    transform: none;
+    transition-duration: 0ms;
   }
 
-  .why-amounts a {
-    min-width: 60px;
-    padding: 10px 12px;
-    font-size: 12.5px;
+  .tier-inner::after {
+    display: none;
   }
 }
 
@@ -819,7 +1139,9 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 30px;
-  min-height: 400px;
+  /* Was 400px, which set a card tall enough that the links panel had ~170px it
+     could not fill. This is the panel's own content height plus a little air. */
+  min-height: 344px;
   padding: 38px 36px;
   overflow: hidden;
   color: var(--color-ink);
@@ -966,21 +1288,26 @@
 
 /* Warm paper against the ice panel; the hairline is the seam between the two
    temperatures, which a tonal split alone doesn't resolve at low contrast. */
+/* The stamp is a grid cell beside the columns rather than an absolutely
+   positioned badge. Pinned top-right it forced a 152px reserve on the columns,
+   which emptied the panel's lower half; as a cell it just occupies the corner
+   it was always covering, and the columns centre against it. */
 .infra-links {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 44px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
+  column-gap: 44px;
   padding: 40px 44px 30px;
   background: #fcfbf7;
   border-left: 1px solid rgb(17 18 20 / 0.07);
 }
 
 .infra-stamp {
-  position: absolute;
-  top: 24px;
-  right: 26px;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  justify-self: end;
   transform: rotate(12deg);
   pointer-events: none;
   user-select: none;
@@ -1039,12 +1366,12 @@
 }
 
 .infra-cols {
+  grid-column: 1;
+  grid-row: 1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 30px;
-  /* Keeps the last column clear of the stamp above it, with enough slack for
-     the longer English labels. */
-  padding-right: 152px;
+  align-content: center;
 }
 
 .infra-col-title {
@@ -1077,8 +1404,10 @@
 }
 
 .infra-copy {
+  grid-column: 1 / -1;
+  grid-row: 2;
   margin: 0;
-  padding-top: 22px;
+  padding-top: 20px;
   border-top: 1px solid rgb(213 215 214 / 0.72);
   font-size: 12px;
   color: var(--color-haze);
@@ -1102,9 +1431,6 @@
     border-top: 1px solid rgb(17 18 20 / 0.06);
   }
 
-  .infra-cols {
-    padding-right: 150px;
-  }
 }
 
 @media (max-width: 639px) {
@@ -1126,26 +1452,36 @@
     padding: 26px 22px 22px;
   }
 
-  /* At this width the panel is too narrow to run the columns beside the stamp,
-     so the stamp leaves absolute positioning and takes its own row. */
+  /* No room for a third column beside the badge: the grid collapses to one
+     track and the badge drops below the links, still inside the closing rule. */
+  .infra-links {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 26px;
+  }
+
   .infra-stamp {
-    position: static;
-    align-self: flex-end;
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    justify-self: end;
     transform: rotate(8deg);
-    margin-bottom: -4px;
+  }
+
+  .infra-copy {
+    grid-column: 1;
+    grid-row: 3;
   }
 
   .infra-stamp-ring {
-    width: 94px;
-    height: 94px;
-    padding: 8px;
-    font-size: 6.6px;
+    width: 84px;
+    height: 84px;
+    padding: 7px;
+    font-size: 6px;
   }
 
   .infra-cols {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 22px;
-    padding-right: 0;
   }
 }
 
@@ -3701,6 +4037,86 @@
   font-size: 15px;
 }
 
+/* — Plan checkout. Shares the top-up sheet's shell (frame, intro, totals, pay
+   button) because it is the same act, one step more specific. What it drops is
+   the amount picker: when a plan is already chosen, the order summary replaces
+   the choice. */
+
+.plan-sheet {
+  width: min(520px, calc(100vw - 32px));
+}
+
+.plan-order {
+  padding: 18px 20px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgb(17 18 20 / 0.09);
+  background: rgb(255 255 255 / 0.6);
+}
+
+.plan-order-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+}
+
+.plan-order-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgb(17 18 20 / 0.08);
+  background: var(--color-ink);
+  color: var(--color-acid);
+}
+
+.plan-order-id h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.plan-order-id p {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: var(--color-mist);
+}
+
+.plan-order-price {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.plan-order-perks {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 15px 0 0;
+  border-top: 1px solid rgb(17 18 20 / 0.08);
+}
+
+.plan-order-perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+.plan-order-perks svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--color-acid-ink);
+}
+
 .topup-secure {
   margin: 10px 0 0;
   text-align: center;
@@ -3813,15 +4229,58 @@
 }
 
 @media (max-width: 959px) {
-  .why-span-7,
-  .why-span-5 {
-    grid-column: span 6;
+  .why-head {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 20px;
+  }
+
+  .why-head .section-kicker,
+  .why-head .section-title,
+  .why-lede {
+    grid-column: 1;
+  }
+
+  .why-head .section-kicker {
+    grid-row: 1;
+    margin-bottom: 0;
+  }
+
+  .why-head .section-title {
+    grid-row: 2;
+  }
+
+  .why-lede {
+    grid-row: 3;
+    align-self: start;
+    max-width: 34rem;
+  }
+
+  /* Stacked, the title column would starve the description — the two-part row
+     becomes number + title over a full-width description. */
+  .why-row {
+    grid-template-columns: 40px minmax(0, 1fr);
+    row-gap: 9px;
+    column-gap: 20px;
+  }
+
+  .why-row-desc {
+    grid-column: 2;
+    max-width: none;
+  }
+
+  /* The rig leaves absolute positioning here but stays a flex item, so the
+     hero has to stop being a row: side by side, the panel took 304px of a
+     390px viewport and crushed the headline to one character per line. */
+  .hero {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .api-panel-rig {
     position: relative;
     right: auto;
     bottom: auto;
+    align-self: flex-start;
     margin: 48px 0 0;
     transform: none;
   }
@@ -3955,17 +4414,42 @@
   }
 
   .why-head {
-    margin-bottom: 32px;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 22px;
+    margin-bottom: 34px;
   }
 
-  .why-span-7,
-  .why-span-5,
-  .why-span-4 {
-    grid-column: span 12;
+  .why-head .section-kicker,
+  .why-head .section-title,
+  .why-lede {
+    grid-column: 1;
   }
 
-  .why-tile {
-    padding: 24px 20px 22px;
+  .why-head .section-kicker {
+    grid-row: 1;
+    margin-bottom: 0;
+  }
+
+  .why-head .section-title {
+    grid-row: 2;
+  }
+
+  .why-lede {
+    grid-row: 3;
+    align-self: start;
+  }
+
+  /* The 3-part row collapses: number and title share the first line, the
+     description drops underneath them. */
+  .why-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+    row-gap: 10px;
+    padding: 22px 6px 23px;
+    column-gap: 16px;
+  }
+
+  .why-row-desc {
+    grid-column: 2;
   }
 }
 
@@ -3978,7 +4462,7 @@
   .page-veil,
   .model-tile,
   .eco-card,
-  .why-tile,
+  .why-row,
   .warp-orbit-ring,
   .warp-sat-icon {
     animation: none;
