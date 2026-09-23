@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { SignedIn, UserButton } from "@/lib/auth/gates";
+import { SignedIn, SignedOut, UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 export function AuthSlot({ language = "en" }: { language?: "zh" | "en" }) {
@@ -8,9 +8,16 @@ export function AuthSlot({ language = "en" }: { language?: "zh" | "en" }) {
     return null;
   }
   return (
-    <SignedIn>
-      <UserButton language={language} />
-    </SignedIn>
+    <>
+      <SignedIn>
+        <UserButton language={language} />
+      </SignedIn>
+      <SignedOut>
+        <Link to="/login" className="nav-auth-btn" data-cursor="hover">
+          {language === "zh" ? "登录" : "Sign in"}
+        </Link>
+      </SignedOut>
+    </>
   );
 }
 

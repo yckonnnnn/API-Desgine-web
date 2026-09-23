@@ -48,9 +48,9 @@ export function Navbar() {
           )}
         </nav>
         <div className="nav-actions">
-          <AuthSlot language={language} />
-          <NotificationBell />
           <LanguageSwitcher />
+          <NotificationBell />
+          <AuthSlot language={language} />
         </div>
       </LiquidGlass>
     </header>

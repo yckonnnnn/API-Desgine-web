@@ -2,8 +2,17 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Info } from "lucide-react";
 import { FoytonBrand } from "@/components/layout/foyton-brand";
 import { useLanguage } from "@/lib/language";
+
+/** Where the social icons point; X goes to the official account. */
+const SOCIAL_URLS: Record<(typeof SOCIALS)[number]["title"], string> = {
+  X: "https://x.com/FUYITONG111",
+  Discord: "https://discord.com",
+  LinkedIn: "https://linkedin.com",
+  YouTube: "https://youtube.com",
+};
 
 const STATS = [
   { value: "99.99%", label: { zh: "可用率", en: "Uptime" } },
@@ -33,7 +42,7 @@ const COLUMNS = [
     items: [
       { label: { zh: "关于我们", en: "About" }, to: null },
       { label: { zh: "博客", en: "Blog" }, to: null },
-      { label: { zh: "联系我们", en: "Contact" }, to: null },
+      { label: { zh: "联系我们", en: "Contact" }, to: "/contact" as const },
     ],
   },
 ] as const;
@@ -108,15 +117,15 @@ export function InfraSection() {
           </div>
 
           <div className="infra-brand-foot">
-            <span className="infra-contact">
-              <i aria-hidden="true" />
+            <Link to="/contact" className="infra-contact" data-cursor="hover">
+              <Info size={14} strokeWidth={2} aria-hidden="true" />
               {zh ? "联系我们" : "Contact us"}
-            </span>
+            </Link>
             <div className="infra-social">
               {SOCIALS.map((social) => (
                 <a
                   key={social.title}
-                  href={`https://${social.title.toLowerCase()}.com`}
+                  href={SOCIAL_URLS[social.title]}
                   target="_blank"
                   rel="noreferrer"
                   title={social.title}

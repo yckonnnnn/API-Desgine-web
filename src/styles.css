@@ -289,6 +289,29 @@
   gap: 10px;
 }
 
+.nav-auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 12%, transparent);
+  border-radius: var(--radius-capsule);
+  background: rgb(255 255 255 / 0.24);
+  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition-property: color, background-color, border-color;
+  transition-duration: 220ms;
+  transition-timing-function: var(--ease-out-power3);
+}
+
+.nav-auth-btn:hover {
+  background: rgb(255 255 255 / 0.4);
+  border-color: color-mix(in oklab, var(--color-ink) 20%, transparent);
+}
+
 .language-dropdown-trigger {
   display: inline-flex;
   align-items: center;
@@ -1378,17 +1401,11 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--color-ink);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
 }
 
-/* Echoes the navbar's `.wordmark-mark`: the site's one recurring "live" dot,
-   which reads as a status mark here instead of the old white checkbox square. */
-.infra-contact i {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #f7fbfb, var(--color-ice) 55%, var(--color-ice-deep));
-  box-shadow: 0 0 0 3px rgb(169 221 224 / 0.34);
-}
+.infra-contact:hover { opacity: 0.65; }
 
 .infra-social {
   display: flex;
@@ -2549,6 +2566,38 @@
   justify-content: center;
   width: min(100%, 460px);
   padding: 48px 0;
+}
+
+.auth-topbar {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.auth-topbar .auth-brand { margin-bottom: 0; }
+
+.auth-back {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 14%, transparent);
+  background: color-mix(in srgb, white 55%, transparent);
+  color: var(--color-ink);
+  backdrop-filter: blur(8px);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.auth-back:hover {
+  background: color-mix(in srgb, white 80%, transparent);
+  transform: translateY(-50%) translateX(-2px);
 }
 
 .auth-brand {
@@ -5985,6 +6034,12 @@
   .site-nav .nav-bar { gap: 10px; }
 
   .nav-actions { gap: 6px; }
+
+  .nav-auth-btn {
+    min-height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
 
   .language-dropdown-trigger {
     min-height: 28px;
