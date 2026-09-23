@@ -3,6 +3,7 @@ import { ArrowRight, Check, KeyRound, PlugZap, Receipt, Signal, Wallet } from "l
 import { Link } from "@tanstack/react-router";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { useLanguage } from "@/lib/language";
+import { ApiPanel } from "@/components/hero/api-panel";
 import { PLANS, isFeaturedPlan, planCheckoutHref, type Plan } from "@/lib/plans";
 import { formatUsd } from "@/lib/format";
 
@@ -176,11 +177,14 @@ export function WhyUsSection() {
           <br />
           {zh ? "省掉七套对接。" : "Seven integrations you skip."}
         </h2>
-        <p className="why-lede">
-          {zh
-            ? "不用维护多个账号，不用适配多套 SDK，也不用自己写故障转移与计费。"
-            : "No separate accounts, no per-vendor SDKs, and no routing or billing layer to build yourself."}
-        </p>
+        <div className="why-aside">
+          <p className="why-lede">
+            {zh
+              ? "不用维护多个账号，不用适配多套 SDK，也不用自己写故障转移与计费。"
+              : "No separate accounts, no per-vendor SDKs, and no routing or billing layer to build yourself."}
+          </p>
+          <ApiPanel />
+        </div>
       </header>
 
       <div className="why-list">

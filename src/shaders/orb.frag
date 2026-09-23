@@ -3,6 +3,7 @@ uniform float uScroll;
 uniform float uIntensity;
 uniform float uQuality;
 uniform float uOpacity;
+uniform float uAuth;
 uniform vec2 uMouse;
 
 varying vec3 vNormal;
@@ -110,7 +111,7 @@ void main() {
   vec3 ice = vec3(0.78, 0.90, 0.92);
   vec3 warm = vec3(0.99, 0.97, 0.94);
   vec3 irid = mix(pearl, ice, clamp(fres * 0.62 + (1.0 - NoV) * 0.14, 0.0, 1.0));
-  albedo = mix(albedo, irid, 0.52);
+  albedo = mix(albedo, irid, mix(0.52, 0.4, uAuth));
 
   vec3 ambient = vec3(0.72, 0.71, 0.69) * 0.58;
   vec3 keyCol = vec3(1.0, 0.985, 0.96);
@@ -125,24 +126,24 @@ void main() {
   vec3 H2 = normalize(L2 + V);
   float spec2 = pow(clamp(dot(N, H2), 0.0, 1.0), 28.0);
   vec3 F0 = vec3(0.11, 0.115, 0.12);
-  col += spec1 * mix(F0, albedo, 0.16) * keyCol * 0.85;
-  col += spec2 * F0 * fillCol * 0.28;
+  col += spec1 * mix(F0, albedo, 0.16) * keyCol * mix(0.85, 0.68, uAuth);
+  col += spec2 * F0 * fillCol * mix(0.28, 0.22, uAuth);
 
-  col += ice * fres * 0.22;
-  col += warm * pow(ndl1, 6.0) * 0.07;
+  col += ice * fres * mix(0.22, 0.18, uAuth);
+  col += warm * pow(ndl1, 6.0) * mix(0.07, 0.055, uAuth);
   float sheen = pow(1.0 - NoV, 4.0);
-  col += vec3(0.90, 0.925, 0.94) * sheen * 0.12;
+  col += vec3(0.90, 0.925, 0.94) * sheen * mix(0.12, 0.095, uAuth);
 
   vec3 mDir = normalize(vec3(uMouse.x * 0.8, uMouse.y * 0.8, 0.72));
   float mSpec = pow(clamp(dot(reflect(-mDir, N), V), 0.0, 1.0), 36.0);
-  col += vec3(0.88, 0.94, 0.96) * mSpec * (0.12 + uIntensity * 0.14);
+  col += vec3(0.88, 0.94, 0.96) * mSpec * mix(0.12 + uIntensity * 0.14, 0.08 + uIntensity * 0.1, uAuth);
 
   float sss = pow(clamp(dot(V, -L1), 0.0, 1.0), 2.0) * (1.0 - ndl1);
   col += ice * sss * 0.08;
 
   col += ice * uScroll * 0.03;
 
-  col = mix(col, col * vec3(0.96, 0.97, 0.98), 0.12);
+  col = mix(col, col * vec3(0.96, 0.97, 0.98), mix(0.12, 0.14, uAuth));
   col = clamp(col, 0.0, 1.0);
 
   gl_FragColor = vec4(col, uOpacity);

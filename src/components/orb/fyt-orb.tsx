@@ -14,9 +14,10 @@ type Uniforms = {
   uQuality: { value: number };
   uOpacity: { value: number };
   uMouse: { value: THREE.Vector2 };
+  uAuth: { value: number };
 };
 
-export function FytOrb() {
+export function FytOrb({ appearance = "site" }: { appearance?: "site" | "auth" }) {
   const group = useRef<THREE.Group>(null);
   const mesh = useRef<THREE.Mesh>(null);
   const shell = useRef<THREE.Mesh>(null);
@@ -31,8 +32,9 @@ export function FytOrb() {
       uQuality: { value: 1 },
       uOpacity: { value: 1 },
       uMouse: { value: new THREE.Vector2(0, 0) },
+      uAuth: { value: appearance === "auth" ? 1 : 0 },
     }),
-    [],
+    [appearance],
   );
 
   const geometry = useMemo(() => {
@@ -57,10 +59,10 @@ export function FytOrb() {
 
     if (scene.reduced) {
       uniforms.uTime.value += d * 0.12;
-      uniforms.uIntensity.value = 0.15;
+      uniforms.uIntensity.value = appearance === "auth" ? 0.12 : 0.15;
     } else {
       uniforms.uTime.value += d;
-      uniforms.uIntensity.value = 0.85 + scene.hover * 0.35;
+      uniforms.uIntensity.value = appearance === "auth" ? 0.62 + scene.hover * 0.1 : 0.85 + scene.hover * 0.35;
     }
 
     uniforms.uScroll.value = scene.scroll;

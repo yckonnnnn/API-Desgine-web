@@ -6,6 +6,7 @@ import { ModelLogo } from "@/components/models/model-logo";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { useLanguage } from "@/lib/language";
 import { MODEL_FILTERS, MODELS, type ModelCategory } from "@/lib/models";
+import { USD_SYMBOL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/models")({ component: ModelsPage });
@@ -105,8 +106,8 @@ function ModelsMarket() {
               </button>
               <div className="tile-tags"><span>{CATEGORY_LABELS[model.category][language]}</span><span>{model.context} Context</span></div>
               <dl>
-                <div><dt>{zh ? "输入价格" : "Input"}</dt><dd>{model.input} / 1M</dd></div>
-                <div><dt>{zh ? "输出价格" : "Output"}</dt><dd>{model.output} / 1M</dd></div>
+                <div><dt>{zh ? "输入价格" : "Input"}</dt><dd>{model.input.replace("$", USD_SYMBOL)} / 1M</dd></div>
+                <div><dt>{zh ? "输出价格" : "Output"}</dt><dd>{model.output.replace("$", USD_SYMBOL)} / 1M</dd></div>
                 <div><dt>{zh ? "典型延迟" : "Latency"}</dt><dd>{model.latency}</dd></div>
                 <div><dt>{zh ? "上下文" : "Context"}</dt><dd>{model.context}</dd></div>
               </dl>

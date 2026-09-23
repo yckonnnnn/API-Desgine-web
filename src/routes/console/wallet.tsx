@@ -4,7 +4,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowUpRight, Activity, Check, Coins, Eye, EyeOff, Plus, Wallet, X } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip } from "recharts";
 import { addFunds, getDashboard, getUserPlan, getUsage, getWallet, subscribePlan } from "@/lib/fyt";
-import { formatNumber, formatUsd } from "@/lib/format";
+import { formatNumber, formatUsd, USD_SYMBOL } from "@/lib/format";
 import { useLanguage } from "@/lib/language";
 import { PLANS, findPlan, isFeaturedPlan, type Plan, type PlanId } from "@/lib/plans";
 import { cn } from "@/lib/utils";
@@ -568,7 +568,7 @@ function WalletPage() {
                         {item === 200 ? <span className="topup-badge">{zh ? "常用" : "Popular"}</span> : null}
                       </span>
                       <span className="topup-option-amount">
-                        <em>$</em>
+                        <em>{USD_SYMBOL}</em>
                         {item}
                       </span>
                       <span className="topup-radio" aria-hidden="true">{on ? <Check size={13} strokeWidth={3} /> : null}</span>
@@ -581,11 +581,11 @@ function WalletPage() {
                 <span className="topup-label-row">
                   <span>{zh ? "自定义金额" : "Custom amount"}</span>
                   <span className="topup-hint">
-                    {zh ? `最低 $${MIN_AMOUNT}` : `Min $${MIN_AMOUNT}`}
+                    {zh ? `最低 ${USD_SYMBOL}${MIN_AMOUNT}` : `Min ${USD_SYMBOL}${MIN_AMOUNT}`}
                   </span>
                 </span>
                 <span className="topup-custom-field">
-                  <em>$</em>
+                  <em>{USD_SYMBOL}</em>
                   <input
                     type="number"
                     min={MIN_AMOUNT}

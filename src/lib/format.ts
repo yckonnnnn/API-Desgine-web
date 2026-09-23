@@ -8,6 +8,8 @@
  * looking at a dollar price expects `$1,248.50`, not a localised separator that
  * would read as a different number.
  */
+export const USD_SYMBOL = "$";
+
 export function formatUsd(cents: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
