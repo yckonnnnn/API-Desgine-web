@@ -11,7 +11,7 @@ const LINKS = [
   { href: "/models", label: "模型广场" },
   { href: "/console", label: "控制台" },
   { href: "/docs", label: "文档" },
-  { href: "/contact", label: "联系我们" },
+  { href: "/contact", label: "联系我们", isRoute: true },
 ];
 
 export function Navbar() {
@@ -36,7 +36,7 @@ export function Navbar() {
         </Link>
         <nav className="nav-links" aria-label="Primary">
           {LINKS.map((link) =>
-            link.href === "/models" || link.href === "/console" ? (
+            link.isRoute || link.href === "/models" || link.href === "/console" ? (
               <Link key={link.label} to={link.href} data-cursor="hover">
                 {labelMap[link.label]}
               </Link>

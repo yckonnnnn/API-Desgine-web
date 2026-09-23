@@ -18,6 +18,9 @@ export function SiteFooter() {
         <Link to="/login" data-cursor="hover">
           {zh ? "控制台" : "Console"}
         </Link>
+        <Link to="/contact" data-cursor="hover">
+          {zh ? "联系我们" : "Contact"}
+        </Link>
       </nav>
     </footer>
   );

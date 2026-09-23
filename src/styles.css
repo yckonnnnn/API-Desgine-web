@@ -5929,3 +5929,434 @@
     display: none;
   }
 }
+
+
+/* ── Contact page ────────────────────────────────────────────── */
+
+.contact-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 100px 6vw 100px;
+}
+
+.contact-bg-blur {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.contact-bg-blur::before {
+  content: "";
+  position: absolute;
+  top: -12rem;
+  right: -10rem;
+  width: 38rem;
+  height: 38rem;
+  border-radius: 50%;
+  background: rgb(169 221 224 / 0.18);
+  filter: blur(100px);
+}
+
+.contact-bg-blur::after {
+  content: "";
+  position: absolute;
+  bottom: -10rem;
+  left: -12rem;
+  width: 34rem;
+  height: 34rem;
+  border-radius: 50%;
+  background: rgb(196 220 224 / 0.14);
+  filter: blur(110px);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.contact-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.contact-card {
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+
+.contact-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.contact-card-head h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.contact-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: rgb(169 221 224 / 0.22);
+  color: var(--color-ice-deep);
+}
+
+.contact-card-desc {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-mist);
+}
+
+.contact-email-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-email-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgb(17 18 20 / 0.06);
+}
+
+.contact-email-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.contact-email-row:first-child {
+  padding-top: 0;
+}
+
+.contact-email-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-haze);
+  margin-bottom: 3px;
+}
+
+.contact-email-address {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.contact-email-address:hover {
+  color: var(--color-ice-deep);
+}
+
+.contact-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: 1px solid rgb(17 18 20 / 0.08);
+  border-radius: var(--radius-capsule);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-mist);
+  white-space: nowrap;
+  transition: all 200ms var(--ease-out-power3);
+}
+
+.contact-copy-btn:hover {
+  background: rgb(17 18 20 / 0.04);
+  color: var(--color-ink);
+}
+
+.contact-wechat-qr {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.contact-qr-img {
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius-md);
+  object-fit: contain;
+  background: #fff;
+  padding: 8px;
+  box-shadow: 0 2px 12px rgb(17 18 20 / 0.06);
+}
+
+.contact-email-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ice-deep);
+  text-decoration: none;
+  transition: gap 200ms var(--ease-out-power3);
+}
+
+.contact-email-link:hover {
+  gap: 10px;
+}
+
+.contact-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.contact-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.contact-tip > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-ice-deep);
+}
+
+.contact-tip-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.contact-tip-desc {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-haze);
+}
+
+/* Form */
+
+.contact-form-wrap {
+  position: relative;
+}
+
+.contact-form-card {
+  border-radius: var(--radius-xl);
+  padding: 36px;
+}
+
+@media (max-width: 600px) {
+  .contact-form-card {
+    padding: 24px;
+  }
+}
+
+.contact-form-head {
+  margin-bottom: 24px;
+}
+
+.contact-form-kicker {
+  margin-bottom: 8px;
+}
+
+.contact-form-head .contact-form-title {
+  margin: 0 0 10px;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+}
+
+.contact-form-head .contact-form-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-mist);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 500px) {
+  .contact-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.contact-field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-mist);
+}
+
+.contact-field input,
+.contact-field select,
+.contact-field textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgb(17 18 20 / 0.1);
+  border-radius: var(--radius-sm);
+  background: rgb(255 255 255 / 0.5);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-ink);
+  transition: border-color 200ms, box-shadow 200ms;
+  outline: none;
+}
+
+.contact-field input:focus,
+.contact-field select:focus,
+.contact-field textarea:focus {
+  border-color: var(--color-ice-deep);
+  box-shadow: 0 0 0 3px rgb(169 221 224 / 0.2);
+}
+
+.contact-field input::placeholder,
+.contact-field textarea::placeholder {
+  color: var(--color-haze);
+}
+
+.contact-field textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+.contact-field select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364676c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.contact-field-error {
+  font-size: 11px;
+  color: #c44;
+  font-weight: 500;
+}
+
+.contact-field-count {
+  align-self: flex-end;
+  font-size: 11px;
+  color: var(--color-haze);
+  margin-top: -2px;
+}
+
+.contact-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  border: none;
+  border-radius: var(--radius-capsule);
+  background: var(--color-ink);
+  color: var(--color-canvas);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: opacity 200ms, transform 200ms var(--ease-out-power3);
+}
+
+.contact-submit:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.contact-submit:disabled {
+  opacity: 0.6;
+}
+
+.contact-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px 0 0;
+  font-size: 12px;
+  color: var(--color-haze);
+}
+
+/* Success state */
+
+.contact-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.contact-success-inner {
+  max-width: 480px;
+  width: 100%;
+  border-radius: var(--radius-xl);
+  padding: 56px 48px;
+  text-align: center;
+}
+
+.contact-success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgb(169 221 224 / 0.25);
+  color: var(--color-ice-deep);
+  margin-bottom: 24px;
+}
+
+.contact-success-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+}
+
+.contact-success-desc {
+  margin: 16px auto 0;
+  max-width: 360px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-mist);
+}
