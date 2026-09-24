@@ -26,6 +26,7 @@ export const PLANS = [
     desc: { zh: "个人项目与轻量开发", en: "Side projects and light development" },
     perks: [
       { zh: "全部模型可用", en: "Every model included" },
+      { zh: "兼容 OpenAI 协议", en: "OpenAI-compatible API" },
       { zh: "标准路由通道", en: "Standard routing" },
       { zh: "用量与成本明细", en: "Usage and cost breakdown" },
     ],

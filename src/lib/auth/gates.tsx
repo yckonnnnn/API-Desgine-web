@@ -326,9 +326,9 @@ export function UserButton({ language = "en" }: { language?: "zh" | "en" }) {
 }
 
 /**
- * Avatar URL: the provider's image when there is one, otherwise a DiceBear
- * cartoon seeded by the user's name. DiceBear is a third-party host, so a
- * failure falls back to a monogram rather than a broken image.
+ * Use the account's chosen image when available. Otherwise use a deterministic
+ * cartoon portrait; if the remote avatar service fails, the caller falls back
+ * to a monogram rather than a broken image.
  */
 function avatarSource(
   profileImageUrl: string | null,
@@ -337,7 +337,6 @@ function avatarSource(
 ): string | null {
   if (failed) return null;
   if (profileImageUrl) return profileImageUrl;
-  // Soft pastels, to sit beside the site's canvas rather than shout over it.
   const bg = "b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf,d1f4d9";
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(
     name,

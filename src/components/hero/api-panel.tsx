@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Check, Copy } from "lucide-react";
 import { LiquidGlass } from "@/components/glass/liquid-glass";
 import { useLanguage } from "@/lib/language";
 
@@ -25,7 +26,10 @@ export function ApiPanel() {
       <LiquidGlass className="api-panel" data-cursor="hover">
         <div className="api-panel-head">
           <span className="api-panel-index">FYT API <i aria-hidden="true" /> {zh ? "连接地址" : "ENDPOINT"}</span>
-          <span className="api-panel-secure">HTTPS</span>
+          <Link to="/console" className="api-panel-cta" data-cursor="hover">
+            <span>{zh ? "立即接入" : "Get started"}</span>
+            <ArrowRight size={14} aria-hidden="true" />
+          </Link>
         </div>
         <p className="api-panel-label">API Base URL</p>
         <div className="api-url-row">

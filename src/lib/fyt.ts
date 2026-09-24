@@ -236,3 +236,96 @@ export const getBilling = createServerFn({ method: "GET" })
       limit 40
     `;
   });
+
+export const getUsageLogPage = createServerFn({ method: "GET" })
+  .validator((input: {
+    from?: string;
+    to?: string;
+    model?: string;
+    key?: string;
+    status?: "all" | "ok" | "failed";
+    page?: number;
+    pageSize?: number;
+  }) => {
+    const asIso = (value?: string) => {
+      if (!value) return null;
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date.toISOString();
+    };
+    const pageSize = [10, 25, 50, 100].includes(Number(input.pageSize))
+      ? Number(input.pageSize)
+      : 10;
+    return {
+      from: asIso(input.from),
+      to: asIso(input.to),
+      model: input.model?.trim().slice(0, 100) || null,
+      key: input.key?.trim().slice(0, 4) || null,
+      status: input.status === "ok" || input.status === "failed" ? input.status : "all",
+      page: Math.max(1, Math.floor(Number(input.page) || 1)),
+      pageSize,
+    };
+  })
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    const { ensureAccount } = await import("./fyt-data.server.ts");
+    const { getSql } = await import("@/lib/db");
+    await ensureAccount(context.userId);
+    const sql = await getSql();
+    const filterRows = await sql<{
+      total_rows: number;
+      total_input: number;
+      total_output: number;
+      total_cost_cents: number;
+      has_real_data: boolean;
+    }>`
+      select
+        count(*)::int as total_rows,
+        coalesce(sum(input_tokens), 0)::int as total_input,
+        coalesce(sum(output_tokens), 0)::int as total_output,
+        coalesce(sum(cost_cents), 0)::int as total_cost_cents,
+        exists (
+          select 1 from billing_rows all_rows
+          where all_rows.user_id = ${context.userId}
+        ) as has_real_data
+      from billing_rows
+      where user_id = ${context.userId}
+        and ( ${data.from}::timestamptz is null or created_at >= ${data.from}::timestamptz)
+        and ( ${data.to}::timestamptz is null or created_at <= ${data.to}::timestamptz)
+        and ( ${data.model}::text is null or model ilike '%' || ${data.model} || '%')
+        and ( ${data.key}::text is null or api_key_last4 = ${data.key})
+        and (${data.status} = 'all' or (${data.status} = 'ok' and status = 'ok') or (${data.status} = 'failed' and status <> 'ok'))
+    `;
+    const [summary] = filterRows;
+    const rows = await sql<{
+      id: number;
+      created_at: string;
+      model: string;
+      api_key_last4: string;
+      input_tokens: number;
+      output_tokens: number;
+      cost_cents: number;
+      status: string;
+    }>`
+      select id, created_at, model, api_key_last4, input_tokens, output_tokens, cost_cents, status
+      from billing_rows
+      where user_id = ${context.userId}
+        and (${data.from}::timestamptz is null or created_at >= ${data.from}::timestamptz)
+        and (${data.to}::timestamptz is null or created_at <= ${data.to}::timestamptz)
+        and (${data.model}::text is null or model ilike '%' || ${data.model} || '%')
+        and (${data.key}::text is null or api_key_last4 = ${data.key})
+        and (${data.status} = 'all' or (${data.status} = 'ok' and status = 'ok') or (${data.status} = 'failed' and status <> 'ok'))
+      order by created_at desc
+      limit ${data.pageSize}
+      offset ${(data.page - 1) * data.pageSize}
+    `;
+    return {
+      rows,
+      totalRows: summary?.total_rows ?? 0,
+      totalInput: summary?.total_input ?? 0,
+      totalOutput: summary?.total_output ?? 0,
+      totalCostCents: summary?.total_cost_cents ?? 0,
+      hasRealData: summary?.has_real_data ?? false,
+      page: data.page,
+      pageSize: data.pageSize,
+    };
+  });

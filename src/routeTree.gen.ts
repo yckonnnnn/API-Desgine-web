@@ -18,6 +18,8 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ConsoleIndexRouteImport } from './routes/console/index'
 import { Route as ConsoleBillingRouteImport } from './routes/console/billing'
 import { Route as ConsoleKeysRouteImport } from './routes/console/keys'
+import { Route as ConsoleLogsRouteImport } from './routes/console/logs'
+import { Route as ConsoleOverviewRouteImport } from './routes/console/overview'
 import { Route as ConsoleUsageRouteImport } from './routes/console/usage'
 import { Route as ConsoleWalletRouteImport } from './routes/console/wallet'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -67,6 +69,16 @@ const ConsoleKeysRoute = ConsoleKeysRouteImport.update({
   path: '/keys',
   getParentRoute: () => ConsoleRoute,
 } as any)
+const ConsoleLogsRoute = ConsoleLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleOverviewRoute = ConsoleOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => ConsoleRoute,
+} as any)
 const ConsoleUsageRoute = ConsoleUsageRouteImport.update({
   id: '/usage',
   path: '/usage',
@@ -92,6 +104,8 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/console/billing': typeof ConsoleBillingRoute
   '/console/keys': typeof ConsoleKeysRoute
+  '/console/logs': typeof ConsoleLogsRoute
+  '/console/overview': typeof ConsoleOverviewRoute
   '/console/usage': typeof ConsoleUsageRoute
   '/console/wallet': typeof ConsoleWalletRoute
   '/console/': typeof ConsoleIndexRoute
@@ -105,6 +119,8 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/console/billing': typeof ConsoleBillingRoute
   '/console/keys': typeof ConsoleKeysRoute
+  '/console/logs': typeof ConsoleLogsRoute
+  '/console/overview': typeof ConsoleOverviewRoute
   '/console/usage': typeof ConsoleUsageRoute
   '/console/wallet': typeof ConsoleWalletRoute
   '/console': typeof ConsoleIndexRoute
@@ -120,6 +136,8 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/console/billing': typeof ConsoleBillingRoute
   '/console/keys': typeof ConsoleKeysRoute
+  '/console/logs': typeof ConsoleLogsRoute
+  '/console/overview': typeof ConsoleOverviewRoute
   '/console/usage': typeof ConsoleUsageRoute
   '/console/wallet': typeof ConsoleWalletRoute
   '/console/': typeof ConsoleIndexRoute
@@ -136,6 +154,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/console/billing'
     | '/console/keys'
+    | '/console/logs'
+    | '/console/overview'
     | '/console/usage'
     | '/console/wallet'
     | '/console/'
@@ -149,6 +169,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/console/billing'
     | '/console/keys'
+    | '/console/logs'
+    | '/console/overview'
     | '/console/usage'
     | '/console/wallet'
     | '/console'
@@ -163,6 +185,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/console/billing'
     | '/console/keys'
+    | '/console/logs'
+    | '/console/overview'
     | '/console/usage'
     | '/console/wallet'
     | '/console/'
@@ -244,6 +268,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleKeysRouteImport
       parentRoute: typeof ConsoleRoute
     }
+    '/console/logs': {
+      id: '/console/logs'
+      path: '/logs'
+      fullPath: '/console/logs'
+      preLoaderRoute: typeof ConsoleLogsRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
+    '/console/overview': {
+      id: '/console/overview'
+      path: '/overview'
+      fullPath: '/console/overview'
+      preLoaderRoute: typeof ConsoleOverviewRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
     '/console/usage': {
       id: '/console/usage'
       path: '/usage'
@@ -271,6 +309,8 @@ declare module '@tanstack/react-router' {
 interface ConsoleRouteChildren {
   ConsoleBillingRoute: typeof ConsoleBillingRoute
   ConsoleKeysRoute: typeof ConsoleKeysRoute
+  ConsoleLogsRoute: typeof ConsoleLogsRoute
+  ConsoleOverviewRoute: typeof ConsoleOverviewRoute
   ConsoleUsageRoute: typeof ConsoleUsageRoute
   ConsoleWalletRoute: typeof ConsoleWalletRoute
   ConsoleIndexRoute: typeof ConsoleIndexRoute
@@ -279,6 +319,8 @@ interface ConsoleRouteChildren {
 const ConsoleRouteChildren: ConsoleRouteChildren = {
   ConsoleBillingRoute: ConsoleBillingRoute,
   ConsoleKeysRoute: ConsoleKeysRoute,
+  ConsoleLogsRoute: ConsoleLogsRoute,
+  ConsoleOverviewRoute: ConsoleOverviewRoute,
   ConsoleUsageRoute: ConsoleUsageRoute,
   ConsoleWalletRoute: ConsoleWalletRoute,
   ConsoleIndexRoute: ConsoleIndexRoute,

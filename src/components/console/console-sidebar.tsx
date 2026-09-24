@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Activity, House, LayoutDashboard, Menu, Receipt, Wallet, X } from "lucide-react";
+import { Activity, FileText, House, KeyRound, LayoutDashboard, Menu, Receipt, Wallet, X } from "lucide-react";
 import { FoytonBrand } from "@/components/layout/foyton-brand";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { NotificationBell } from "@/components/ui/notification-bell";
@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Workspace chrome: one fixed sidebar holding everything the workspace needs —
- * the four sections, the way back to the marketing site, the language control
+ * workspace pages, the way back to the marketing site, the language control
  * and the account. It replaces the top bar outright rather than sitting under
  * one, and its 248px column is what keeps the working area from stretching
  * edge to edge on a wide monitor.
@@ -21,10 +21,12 @@ import { cn } from "@/lib/utils";
  * navigation row on screen.
  */
 const NAV = [
-  { to: "/console" as const, zh: "概况", en: "Overview", icon: LayoutDashboard },
-  { to: "/console/usage" as const, zh: "用量", en: "Usage", icon: Activity },
-  { to: "/console/billing" as const, zh: "账单", en: "Billing", icon: Receipt },
   { to: "/console/wallet" as const, zh: "钱包", en: "Wallet", icon: Wallet },
+  { to: "/console/overview" as const, zh: "概况", en: "Overview", icon: LayoutDashboard },
+  { to: "/console/keys" as const, zh: "API 密钥", en: "API keys", icon: KeyRound },
+  { to: "/console/usage" as const, zh: "用量", en: "Usage", icon: Activity },
+  { to: "/console/logs" as const, zh: "使用日志", en: "Usage logs", icon: FileText },
+  { to: "/console/billing" as const, zh: "账单", en: "Billing", icon: Receipt },
 ];
 
 export function ConsoleSidebar({
@@ -112,7 +114,7 @@ export function ConsoleSidebar({
             const Icon = item.icon;
             const on =
               ready &&
-              (item.to === "/console" ? pathname === "/console" : pathname.startsWith(item.to));
+              pathname.startsWith(item.to);
             return (
               <Link
                 key={item.to}

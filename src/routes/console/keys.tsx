@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { Check, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { createKey, disableKey, listKeys, renameKey } from "@/lib/fyt";
 import { maskKey } from "@/lib/format";
@@ -14,6 +15,7 @@ const rise = (i: number) => ({ "--ops-i": i }) as CSSProperties;
 
 /** How long the modal's exit animation runs before unmount (keep in sync with CSS). */
 const MODAL_EXIT_MS = 190;
+const API_BASE_URL = "https://fytapi.com";
 
 function KeysPage() {
   const { language } = useLanguage();
@@ -26,6 +28,7 @@ function KeysPage() {
   const [fresh, setFresh] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [baseUrlCopied, setBaseUrlCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function refresh() {
@@ -52,6 +55,16 @@ function KeysPage() {
   function markCopied(id: string) {
     setCopied(id);
     window.setTimeout(() => setCopied((cur) => (cur === id ? null : cur)), 1600);
+  }
+
+  async function copyBaseUrl() {
+    try {
+      await navigator.clipboard.writeText(API_BASE_URL);
+      setBaseUrlCopied(true);
+      window.setTimeout(() => setBaseUrlCopied(false), 1600);
+    } catch {
+      toast.error(zh ? "复制失败，请手动复制地址。" : "Couldn't copy. Copy the address manually.");
+    }
   }
 
   function requestClose() {
@@ -118,6 +131,20 @@ function KeysPage() {
             }}
           >
             {zh ? "创建密钥" : "Create API Key"}
+          </button>
+        </div>
+
+        <div className="keys-baseurl">
+          <div className="keys-baseurl-info">
+            <span className="keys-baseurl-label">API Base URL</span>
+            <a href={API_BASE_URL} target="_blank" rel="noreferrer" className="keys-baseurl-link">
+              <code>{API_BASE_URL}</code>
+              <ExternalLink size={13} aria-hidden="true" />
+            </a>
+          </div>
+          <button type="button" className="keys-baseurl-copy" onClick={() => void copyBaseUrl()}>
+            {baseUrlCopied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+            {baseUrlCopied ? (zh ? "已复制" : "Copied") : (zh ? "复制地址" : "Copy URL")}
           </button>
         </div>
 
