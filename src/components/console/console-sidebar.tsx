@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Activity, FileText, House, KeyRound, LayoutDashboard, Menu, Receipt, Wallet, X } from "lucide-react";
+import { Activity, BarChart3, FileText, House, KeyRound, LayoutDashboard, Menu, Receipt, Wallet, X } from "lucide-react";
 import { FoytonBrand } from "@/components/layout/foyton-brand";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { NotificationBell } from "@/components/ui/notification-bell";
@@ -22,11 +22,12 @@ import { cn } from "@/lib/utils";
  */
 const NAV = [
   { to: "/console/wallet" as const, zh: "钱包", en: "Wallet", icon: Wallet },
-  { to: "/console/overview" as const, zh: "概况", en: "Overview", icon: LayoutDashboard },
-  { to: "/console/keys" as const, zh: "API 密钥", en: "API keys", icon: KeyRound },
-  { to: "/console/usage" as const, zh: "用量", en: "Usage", icon: Activity },
-  { to: "/console/logs" as const, zh: "使用日志", en: "Usage logs", icon: FileText },
-  { to: "/console/billing" as const, zh: "账单", en: "Billing", icon: Receipt },
+  { group: "personal", to: "/console/overview" as const, zh: "概况", en: "Overview", icon: LayoutDashboard },
+  { group: "personal", to: "/console/keys" as const, zh: "API 密钥", en: "API keys", icon: KeyRound },
+  { group: "personal", to: "/console/usage" as const, zh: "用量", en: "Usage", icon: Activity },
+  { group: "personal", to: "/console/logs" as const, zh: "使用日志", en: "Usage logs", icon: FileText },
+  { group: "personal", to: "/console/billing" as const, zh: "账单", en: "Billing", icon: Receipt },
+  { group: "admin", to: "/console/analytics" as const, zh: "数据分析", en: "Analytics", icon: BarChart3 },
 ];
 
 export function ConsoleSidebar({
@@ -110,7 +111,7 @@ export function ConsoleSidebar({
 
         <nav className="ops-nav" aria-label={zh ? "工作台" : "Console"}>
           <p className="ops-nav-label">{zh ? "工作台" : "Workspace"}</p>
-          {NAV.map((item) => {
+          {NAV.filter((item) => !item.group).map((item) => {
             const Icon = item.icon;
             const on =
               ready &&
@@ -123,6 +124,28 @@ export function ConsoleSidebar({
                 data-cursor="hover"
                 aria-current={on ? "page" : undefined}
               >
+                <Icon size={17} strokeWidth={1.75} aria-hidden="true" />
+                {zh ? item.zh : item.en}
+              </Link>
+            );
+          })}
+          <p className="ops-nav-label ops-nav-section-label">{zh ? "个人" : "Personal"}</p>
+          {NAV.filter((item) => item.group === "personal").map((item) => {
+            const Icon = item.icon;
+            const on = ready && pathname.startsWith(item.to);
+            return (
+              <Link key={item.to} to={item.to} className={cn("ops-link", on && "is-on")} data-cursor="hover" aria-current={on ? "page" : undefined}>
+                <Icon size={17} strokeWidth={1.75} aria-hidden="true" />
+                {zh ? item.zh : item.en}
+              </Link>
+            );
+          })}
+          <p className="ops-nav-label ops-nav-section-label">{zh ? "管理" : "Administration"}</p>
+          {NAV.filter((item) => item.group === "admin").map((item) => {
+            const Icon = item.icon;
+            const on = ready && pathname.startsWith(item.to);
+            return (
+              <Link key={item.to} to={item.to} className={cn("ops-link", on && "is-on")} data-cursor="hover" aria-current={on ? "page" : undefined}>
                 <Icon size={17} strokeWidth={1.75} aria-hidden="true" />
                 {zh ? item.zh : item.en}
               </Link>

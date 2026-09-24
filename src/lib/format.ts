@@ -11,11 +11,13 @@
 export const USD_SYMBOL = "$";
 
 export function formatUsd(cents: number) {
-  return new Intl.NumberFormat("en-US", {
+  const formatted = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(cents / 100);
+  return formatted.replace(/\.00$/, "");
 }
 
 export function formatTokens(n: number) {

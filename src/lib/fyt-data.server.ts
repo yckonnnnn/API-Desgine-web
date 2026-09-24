@@ -58,6 +58,60 @@ export async function ensureAccount(userId: string) {
   }
 }
 
+export async function ensureAnalyticsData() {
+  const sql = await getSql();
+  await sql`
+    create table if not exists payments (
+      id text primary key,
+      user_id text not null,
+      amount_cents integer not null,
+      plan_id text,
+      status text not null default 'completed',
+      created_at timestamptz not null default now()
+    )
+  `;
+
+  const [existing] = await sql<{ count: number }>`
+    select count(*)::int as count from payments
+  `;
+  if (existing && existing.count > 0) return;
+
+  const now = new Date();
+  // Realistic seed data across past 6 days + today
+  const seeds = [
+    { daysAgo: 6, payments: [{ user: "user_alpha", amount: 10000, plan: "pro" }] },
+    { daysAgo: 5, payments: [{ user: "user_beta", amount: 20000, plan: "max" }, { user: "user_gamma", amount: 5000, plan: null }] },
+    { daysAgo: 4, payments: [{ user: "user_delta", amount: 10000, plan: "pro" }] },
+    { daysAgo: 3, payments: [{ user: "user_epsilon", amount: 50000, plan: "business" }, { user: "user_zeta", amount: 20000, plan: "max" }, { user: "user_eta", amount: 10000, plan: null }] },
+    { daysAgo: 2, payments: [{ user: "user_theta", amount: 20000, plan: "max" }, { user: "user_iota", amount: 10000, plan: "pro" }] },
+    { daysAgo: 1, payments: [{ user: "user_kappa", amount: 20000, plan: "max" }, { user: "user_lambda", amount: 10000, plan: "pro" }] },
+    { daysAgo: 0, payments: [{ user: "user_mu", amount: 10000, plan: "pro" }, { user: "demo-admin", amount: 20000, plan: "max" }] },
+  ];
+
+  for (const s of seeds) {
+    const d = new Date(now.getTime() - s.daysAgo * 86400_000);
+    // Add sample payments
+    for (const p of s.payments) {
+      await sql`
+        insert into payments (id, user_id, amount_cents, plan_id, created_at)
+        values (${randomUUID()}, ${p.user}, ${p.amount}, ${p.plan}, ${d.toISOString()}::timestamptz)
+      `;
+    }
+
+    // Also ensure historical user signups exist for the curves
+    if (s.daysAgo > 0) {
+      for (let u = 0; u < (s.daysAgo % 3) + 2; u++) {
+        const uid = `sample_user_${s.daysAgo}_${u}`;
+        await sql`
+          insert into "user" (id, name, email, "emailVerified", "createdAt", "updatedAt")
+          values (${uid}, ${`User ${s.daysAgo}-${u}`}, ${`u${s.daysAgo}_${u}@example.com`}, true, ${d.toISOString()}::timestamptz, ${d.toISOString()}::timestamptz)
+          on conflict (id) do nothing
+        `;
+      }
+    }
+  }
+}
+
 export async function newApiSecret() {
   const secret = `sk-fyt-${randomBytes(18).toString("base64url")}`;
   return { secret, last4: secret.slice(-4), id: randomUUID() };

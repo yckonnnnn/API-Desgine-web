@@ -37,6 +37,113 @@ export const getDashboard = createServerFn({ method: "GET" })
     };
   });
 
+/** Aggregate platform metrics for the admin analytics view. */
+export const getPlatformAnalytics = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const { ensureAnalyticsData } = await import("./fyt-data.server.ts");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const [admin] = await sql<{ email: string | null }>`
+      select email from "user" where id = ${context.userId}
+    `;
+    if (admin?.email !== "admin@fyt.local") throw new Error("Forbidden");
+
+    await ensureAnalyticsData();
+
+    const [userStats] = await sql<{ total: number; today: number; yesterday: number }>`
+      select
+        count(*)::int as total,
+        count(*) filter (where "createdAt" >= date_trunc('day', now()))::int as today,
+        count(*) filter (
+          where "createdAt" >= date_trunc('day', now()) - interval '1 day'
+            and "createdAt" < date_trunc('day', now())
+        )::int as yesterday
+      from "user"
+    `;
+
+    const [payStats] = await sql<{
+      total_cents: number;
+      today_cents: number;
+      yesterday_cents: number;
+      today_users: number;
+      yesterday_users: number;
+    }>`
+      select
+        coalesce(sum(amount_cents), 0)::int as total_cents,
+        coalesce(sum(amount_cents) filter (where created_at >= date_trunc('day', now())), 0)::int as today_cents,
+        coalesce(sum(amount_cents) filter (
+          where created_at >= date_trunc('day', now()) - interval '1 day'
+            and created_at < date_trunc('day', now())
+        ), 0)::int as yesterday_cents,
+        count(distinct user_id) filter (where created_at >= date_trunc('day', now()))::int as today_users,
+        count(distinct user_id) filter (
+          where created_at >= date_trunc('day', now()) - interval '1 day'
+            and created_at < date_trunc('day', now())
+        )::int as yesterday_users
+      from payments
+    `;
+
+    const days = await sql<{
+      day: string;
+      full_date: string;
+      users: number;
+      paying_users: number;
+      paid_cents: number;
+      paid_amount: number;
+    }>`
+      with date_series as (
+        select date_trunc('day', now() - (n || ' days')::interval) as day_date
+        from generate_series(6, 0, -1) as n
+      ),
+      user_counts as (
+        select date_trunc('day', "createdAt") as day_date, count(*)::int as users
+        from "user"
+        where "createdAt" >= date_trunc('day', now()) - interval '6 days'
+        group by date_trunc('day', "createdAt")
+      ),
+      pay_counts as (
+        select
+          date_trunc('day', created_at) as day_date,
+          count(distinct user_id)::int as paying_users,
+          coalesce(sum(amount_cents), 0)::int as paid_cents
+        from payments
+        where created_at >= date_trunc('day', now()) - interval '6 days'
+        group by date_trunc('day', created_at)
+      )
+      select
+        to_char(ds.day_date, 'MM-DD') as day,
+        to_char(ds.day_date, 'YYYY-MM-DD') as full_date,
+        coalesce(uc.users, 0)::int as users,
+        coalesce(pc.paying_users, 0)::int as paying_users,
+        coalesce(pc.paid_cents, 0)::int as paid_cents,
+        round(coalesce(pc.paid_cents, 0) / 100.0, 2)::float as paid_amount
+      from date_series ds
+      left join user_counts uc on uc.day_date = ds.day_date
+      left join pay_counts pc on pc.day_date = ds.day_date
+      order by ds.day_date asc
+    `;
+
+    return {
+      totalUsers: userStats?.total ?? 0,
+      todayUsers: userStats?.today ?? 0,
+      yesterdayUsers: userStats?.yesterday ?? 0,
+      todayPayingUsers: payStats?.today_users ?? 0,
+      yesterdayPayingUsers: payStats?.yesterday_users ?? 0,
+      todayPaidCents: payStats?.today_cents ?? 0,
+      yesterdayPaidCents: payStats?.yesterday_cents ?? 0,
+      totalPaidCents: payStats?.total_cents ?? 0,
+      days: days.map((d) => ({
+        day: d.day,
+        fullDate: d.full_date,
+        users: d.users,
+        payingUsers: d.paying_users,
+        paidCents: d.paid_cents,
+        paidAmount: d.paid_amount,
+      })),
+    };
+  });
+
 export const listKeys = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
@@ -132,6 +239,7 @@ export const addFunds = createServerFn({ method: "POST" })
   .handler(async ({ context, data: dollarAmount }) => {
     const { ensureAccount } = await import("./fyt-data.server.ts");
     const { getSql } = await import("@/lib/db");
+    const { randomUUID } = await import("node:crypto");
     await ensureAccount(context.userId);
     const sql = await getSql();
     const cents = dollarAmount * 100;
@@ -139,6 +247,10 @@ export const addFunds = createServerFn({ method: "POST" })
       update wallets
       set balance_cents = balance_cents + ${cents}
       where user_id = ${context.userId}
+    `;
+    await sql`
+      insert into payments (id, user_id, amount_cents, plan_id, created_at)
+      values (${randomUUID()}, ${context.userId}, ${cents}, null, now())
     `;
     const [row] = await sql<{ balance_cents: number }>`
       select balance_cents from wallets where user_id = ${context.userId}
@@ -174,6 +286,7 @@ export const subscribePlan = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const { ensureAccount } = await import("./fyt-data.server.ts");
     const { getSql } = await import("@/lib/db");
+    const { randomUUID } = await import("node:crypto");
     await ensureAccount(context.userId);
     const sql = await getSql();
     const cents = data.dollarAmount * 100;
@@ -181,6 +294,10 @@ export const subscribePlan = createServerFn({ method: "POST" })
       update wallets
       set balance_cents = balance_cents + ${cents}, plan_id = ${data.planId}
       where user_id = ${context.userId}
+    `;
+    await sql`
+      insert into payments (id, user_id, amount_cents, plan_id, created_at)
+      values (${randomUUID()}, ${context.userId}, ${cents}, ${data.planId}, now())
     `;
     const [row] = await sql<{ balance_cents: number; plan_id: string | null }>`
       select balance_cents, plan_id from wallets where user_id = ${context.userId}

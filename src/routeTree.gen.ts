@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ModelsRouteImport } from './routes/models'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ConsoleIndexRouteImport } from './routes/console/index'
+import { Route as ConsoleAnalyticsRouteImport } from './routes/console/analytics'
 import { Route as ConsoleBillingRouteImport } from './routes/console/billing'
 import { Route as ConsoleKeysRouteImport } from './routes/console/keys'
 import { Route as ConsoleLogsRouteImport } from './routes/console/logs'
@@ -57,6 +58,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const ConsoleIndexRoute = ConsoleIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => ConsoleRoute,
+} as any)
+const ConsoleAnalyticsRoute = ConsoleAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => ConsoleRoute,
 } as any)
 const ConsoleBillingRoute = ConsoleBillingRouteImport.update({
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/models': typeof ModelsRoute
   '/register': typeof RegisterRoute
+  '/console/analytics': typeof ConsoleAnalyticsRoute
   '/console/billing': typeof ConsoleBillingRoute
   '/console/keys': typeof ConsoleKeysRoute
   '/console/logs': typeof ConsoleLogsRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/models': typeof ModelsRoute
   '/register': typeof RegisterRoute
+  '/console/analytics': typeof ConsoleAnalyticsRoute
   '/console/billing': typeof ConsoleBillingRoute
   '/console/keys': typeof ConsoleKeysRoute
   '/console/logs': typeof ConsoleLogsRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/models': typeof ModelsRoute
   '/register': typeof RegisterRoute
+  '/console/analytics': typeof ConsoleAnalyticsRoute
   '/console/billing': typeof ConsoleBillingRoute
   '/console/keys': typeof ConsoleKeysRoute
   '/console/logs': typeof ConsoleLogsRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/models'
     | '/register'
+    | '/console/analytics'
     | '/console/billing'
     | '/console/keys'
     | '/console/logs'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/models'
     | '/register'
+    | '/console/analytics'
     | '/console/billing'
     | '/console/keys'
     | '/console/logs'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/models'
     | '/register'
+    | '/console/analytics'
     | '/console/billing'
     | '/console/keys'
     | '/console/logs'
@@ -254,6 +266,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleIndexRouteImport
       parentRoute: typeof ConsoleRoute
     }
+    '/console/analytics': {
+      id: '/console/analytics'
+      path: '/analytics'
+      fullPath: '/console/analytics'
+      preLoaderRoute: typeof ConsoleAnalyticsRouteImport
+      parentRoute: typeof ConsoleRoute
+    }
     '/console/billing': {
       id: '/console/billing'
       path: '/billing'
@@ -307,6 +326,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface ConsoleRouteChildren {
+  ConsoleAnalyticsRoute: typeof ConsoleAnalyticsRoute
   ConsoleBillingRoute: typeof ConsoleBillingRoute
   ConsoleKeysRoute: typeof ConsoleKeysRoute
   ConsoleLogsRoute: typeof ConsoleLogsRoute
@@ -317,6 +337,7 @@ interface ConsoleRouteChildren {
 }
 
 const ConsoleRouteChildren: ConsoleRouteChildren = {
+  ConsoleAnalyticsRoute: ConsoleAnalyticsRoute,
   ConsoleBillingRoute: ConsoleBillingRoute,
   ConsoleKeysRoute: ConsoleKeysRoute,
   ConsoleLogsRoute: ConsoleLogsRoute,
