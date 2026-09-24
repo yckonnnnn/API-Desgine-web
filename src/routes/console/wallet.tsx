@@ -462,7 +462,7 @@ function WalletPage() {
 
               <header className="wallet-plan-top">
                 <span className="wallet-plan-icon" aria-hidden="true">
-                  <Icon size={20} strokeWidth={1.9} />
+                  <Icon size={19} strokeWidth={1.9} />
                 </span>
                 <h3>{plan.name}</h3>
                 <p className="wallet-plan-desc">{zh ? plan.desc.zh : plan.desc.en}</p>
@@ -480,12 +480,13 @@ function WalletPage() {
                     {zh ? perk.zh : perk.en}
                   </li>
                 ))}
+                {/* Shared closing line inside the list, not a separate fenced
+                    block after it: one delimiter fewer, and the row's CTA
+                    baseline stops depending on where that fence lands. */}
+                <li className="wallet-plan-perks-foot">
+                  {zh ? "支付后即时到账" : "Credited on payment"}
+                </li>
               </ul>
-
-              <p className="wallet-plan-note">
-                <Check size={14} strokeWidth={2.6} aria-hidden="true" />
-                {zh ? "支付后即时到账" : "Credited on payment"}
-              </p>
 
               <button
                 type="button"

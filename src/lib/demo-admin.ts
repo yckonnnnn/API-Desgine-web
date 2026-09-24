@@ -42,34 +42,51 @@ export const ensureDemoAdmin = createServerFn({ method: "POST" }).handler(
     }
 
     const sql = await getSql();
-    const existing = await sql<{ id: string }>`
-      select id from "user" where id = ${DEMO_USER_ID}
+    const email = `${DEMO_ACCOUNT}@${DEMO_EMAIL_DOMAIN}`;
+    const existingUsers = await sql<{ id: string }>`
+      select id from "user"
+      where id = ${DEMO_USER_ID} or email = ${email}
+      order by case when id = ${DEMO_USER_ID} then 0 else 1 end
+      limit 1
     `;
-    if (existing.length) {
-      return { seeded: false, reason: "already-present" };
+    const userId = existingUsers[0]?.id ?? DEMO_USER_ID;
+
+    if (!existingUsers.length) {
+      await sql`
+        insert into "user" (id, name, email, "emailVerified")
+        values (${userId}, ${DEMO_ACCOUNT}, ${email}, true)
+      `;
     }
 
     const { hashPassword } = await import("better-auth/crypto");
     const password = await hashPassword(DEMO_PASSWORD);
-    const email = `${DEMO_ACCOUNT}@${DEMO_EMAIL_DOMAIN}`;
+    const credentials = await sql<{ id: string }>`
+      select id from "account"
+      where "userId" = ${userId} and "providerId" = 'credential'
+      limit 1
+    `;
 
-    // `accountId` mirrors the user id — that pairing is what Better Auth's
-    // email/password provider looks the credential row up by.
-    await sql`
-      insert into "user" (id, name, email, "emailVerified")
-      values (${DEMO_USER_ID}, ${DEMO_ACCOUNT}, ${email}, true)
-    `;
-    await sql`
-      insert into "account" (id, "accountId", "providerId", "userId", password, "updatedAt")
-      values (
-        ${"demo-admin-credential"},
-        ${DEMO_USER_ID},
-        'credential',
-        ${DEMO_USER_ID},
-        ${password},
-        now()
-      )
-    `;
+    // Keep the reserved local demo login usable if an earlier sign-up created
+    // its email under a different user id or left a partial credential row.
+    if (credentials.length) {
+      await sql`
+        update "account"
+        set "accountId" = ${userId}, password = ${password}, "updatedAt" = now()
+        where id = ${credentials[0].id}
+      `;
+    } else {
+      await sql`
+        insert into "account" (id, "accountId", "providerId", "userId", password, "updatedAt")
+        values (
+          ${"demo-admin-credential"},
+          ${userId},
+          'credential',
+          ${userId},
+          ${password},
+          now()
+        )
+      `;
+    }
 
     return { seeded: true, email };
   },

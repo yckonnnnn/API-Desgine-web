@@ -24,7 +24,7 @@ const COLUMNS = [
   {
     title: { zh: "产品", en: "Product" },
     items: [
-      { label: { zh: "模型广场", en: "Models" }, to: "/models" as const },
+      { label: { zh: "模型列表", en: "Model list" }, to: "/models" as const },
       { label: { zh: "控制台", en: "Console" }, to: "/console" as const },
       { label: { zh: "服务保障", en: "Service levels" }, to: null },
     ],

@@ -108,7 +108,7 @@ export function EcosystemSection() {
             <ArrowRight size={18} strokeWidth={1.75} />
           </span>
           <h3>{zh ? "查看全部模型" : "View all models"}</h3>
-          <p>{zh ? "进入模型广场" : "Open the model square"}</p>
+          <p>{zh ? "查看模型列表" : "Browse the model list"}</p>
         </Link>
       </div>
 

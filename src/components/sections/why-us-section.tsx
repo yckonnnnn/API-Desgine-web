@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { ArrowRight, Check, Flame, KeyRound, PlugZap, Receipt, Signal, Wallet } from "lucide-react";
+import { ArrowRight, Check, KeyRound, PlugZap, Receipt, Signal, Wallet } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { useLanguage } from "@/lib/language";
@@ -121,7 +121,7 @@ function TierCard({ plan, zh, signedIn }: { plan: Plan; zh: boolean; signedIn: b
       <div className="tier-inner" ref={inner}>
         {plan.badge ? (
           <span className="tier-badge">
-            <Flame size={13} strokeWidth={2.2} aria-hidden="true" />
+            <span className="tier-badge-flame" aria-hidden="true">🔥</span>
             {zh ? plan.badge.zh : plan.badge.en}
           </span>
         ) : null}

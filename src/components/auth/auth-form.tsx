@@ -5,7 +5,7 @@ import { LanguageProvider, useLanguage } from "@/lib/language";
 import { authClient } from "@/lib/auth/client";
 import { splitRedirect } from "@/lib/auth/redirect";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { resolveAccountEmail } from "@/lib/demo-admin";
+import { ensureDemoAdmin, resolveAccountEmail } from "@/lib/demo-admin";
 import { Grain } from "@/components/layout/grain";
 import { OrbCanvas } from "@/components/orb/orb-canvas";
 import { PageVeil } from "@/components/layout/page-veil";
@@ -21,7 +21,7 @@ const COPY = {
     title: { login: "欢迎回来。", register: "从这里开始。" },
     intro: { login: "登录 FYT API，继续管理你的模型与用量。", register: "创建一个账户，开始使用统一的模型 API。" },
     username: "用户名", email: "邮箱地址", account: "账号或邮箱", password: "密码", confirm: "确认密码", code: "邮箱验证码",
-    usernamePlaceholder: "你的称呼", emailPlaceholder: "name@example.com", accountPlaceholder: "and me", passwordPlaceholder: "and me", codePlaceholder: "输入邮件中的验证码",
+    usernamePlaceholder: "你的称呼", emailPlaceholder: "name@example.com", accountPlaceholder: "", passwordPlaceholder: "", codePlaceholder: "输入邮件中的验证码",
     login: "登录", register: "创建账户", continue: "正在处理…", sending: "发送验证码", sent: "已发送",
     emailNote: "验证邮件服务尚未配置，暂时无法发送验证码。",
     mismatch: "两次输入的密码不一致。", needCode: "请输入邮箱验证码。", setup: "邮件验证尚未配置，暂时不能完成注册。",
@@ -33,7 +33,7 @@ const COPY = {
     title: { login: "Welcome back.", register: "Make it yours." },
     intro: { login: "Sign in to continue with your models and usage.", register: "Create an account to get started with FYT API." },
     username: "Username", email: "Email address", account: "Username or email", password: "Password", confirm: "Confirm password", code: "Email verification code",
-    usernamePlaceholder: "How should we call you?", emailPlaceholder: "name@example.com", accountPlaceholder: "and me", passwordPlaceholder: "and me", codePlaceholder: "Enter the code from your email",
+    usernamePlaceholder: "How should we call you?", emailPlaceholder: "name@example.com", accountPlaceholder: "", passwordPlaceholder: "", codePlaceholder: "Enter the code from your email",
     login: "Sign in", register: "Create account", continue: "Please wait…", sending: "Send code", sent: "Sent",
     emailNote: "Email delivery is not configured yet, so verification codes cannot be sent.",
     mismatch: "The passwords do not match.", needCode: "Enter the verification code from your email.", setup: "Email verification is not configured yet, so registration cannot be completed.",
@@ -85,8 +85,10 @@ function AuthFormInner({ mode, redirect }: { mode: Mode; redirect?: string }) {
     }
     setBusy(true);
     try {
+      const accountEmail = resolveAccountEmail(email);
+      if (accountEmail === "admin@fyt.local") await ensureDemoAdmin();
       const { error: err } = await authClient.signIn.email({
-        email: resolveAccountEmail(email), password, callbackURL: destination,
+        email: accountEmail, password, callbackURL: destination,
       });
       if (err) throw new Error(err.message);
       window.location.href = destination;

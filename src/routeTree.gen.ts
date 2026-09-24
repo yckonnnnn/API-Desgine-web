@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConsoleRouteImport } from './routes/console'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ModelsRouteImport } from './routes/models'
 import { Route as RegisterRouteImport } from './routes/register'
@@ -23,7 +24,15 @@ import { Route as ConsoleLogsRouteImport } from './routes/console/logs'
 import { Route as ConsoleOverviewRouteImport } from './routes/console/overview'
 import { Route as ConsoleUsageRouteImport } from './routes/console/usage'
 import { Route as ConsoleWalletRouteImport } from './routes/console/wallet'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsModelsRouteImport } from './routes/docs/models'
+import { Route as DocsQuickstartRouteImport } from './routes/docs/quickstart'
+import { Route as DocsTroubleshootingRouteImport } from './routes/docs/troubleshooting'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as DocsApiAnthropicRouteImport } from './routes/docs/api/anthropic'
+import { Route as DocsApiOpenaiRouteImport } from './routes/docs/api/openai'
+import { Route as DocsClientsClaudeCodeRouteImport } from './routes/docs/clients/claude-code'
+import { Route as DocsClientsCodexRouteImport } from './routes/docs/clients/codex'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,6 +47,11 @@ const ConsoleRoute = ConsoleRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -95,16 +109,57 @@ const ConsoleWalletRoute = ConsoleWalletRouteImport.update({
   path: '/wallet',
   getParentRoute: () => ConsoleRoute,
 } as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsModelsRoute = DocsModelsRouteImport.update({
+  id: '/models',
+  path: '/models',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsQuickstartRoute = DocsQuickstartRouteImport.update({
+  id: '/quickstart',
+  path: '/quickstart',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsTroubleshootingRoute = DocsTroubleshootingRouteImport.update({
+  id: '/troubleshooting',
+  path: '/troubleshooting',
+  getParentRoute: () => DocsRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DocsApiAnthropicRoute = DocsApiAnthropicRouteImport.update({
+  id: '/api/anthropic',
+  path: '/api/anthropic',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsApiOpenaiRoute = DocsApiOpenaiRouteImport.update({
+  id: '/api/openai',
+  path: '/api/openai',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsClientsClaudeCodeRoute = DocsClientsClaudeCodeRouteImport.update({
+  id: '/clients/claude-code',
+  path: '/clients/claude-code',
+  getParentRoute: () => DocsRoute,
+} as any)
+const DocsClientsCodexRoute = DocsClientsCodexRouteImport.update({
+  id: '/clients/codex',
+  path: '/clients/codex',
+  getParentRoute: () => DocsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/console': typeof ConsoleRouteWithChildren
   '/contact': typeof ContactRoute
+  '/docs': typeof DocsRouteWithChildren
   '/login': typeof LoginRoute
   '/models': typeof ModelsRoute
   '/register': typeof RegisterRoute
@@ -115,8 +170,16 @@ export interface FileRoutesByFullPath {
   '/console/overview': typeof ConsoleOverviewRoute
   '/console/usage': typeof ConsoleUsageRoute
   '/console/wallet': typeof ConsoleWalletRoute
+  '/docs/models': typeof DocsModelsRoute
+  '/docs/quickstart': typeof DocsQuickstartRoute
+  '/docs/troubleshooting': typeof DocsTroubleshootingRoute
   '/console/': typeof ConsoleIndexRoute
+  '/docs/': typeof DocsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/docs/api/anthropic': typeof DocsApiAnthropicRoute
+  '/docs/api/openai': typeof DocsApiOpenaiRoute
+  '/docs/clients/claude-code': typeof DocsClientsClaudeCodeRoute
+  '/docs/clients/codex': typeof DocsClientsCodexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -131,14 +194,23 @@ export interface FileRoutesByTo {
   '/console/overview': typeof ConsoleOverviewRoute
   '/console/usage': typeof ConsoleUsageRoute
   '/console/wallet': typeof ConsoleWalletRoute
+  '/docs/models': typeof DocsModelsRoute
+  '/docs/quickstart': typeof DocsQuickstartRoute
+  '/docs/troubleshooting': typeof DocsTroubleshootingRoute
   '/console': typeof ConsoleIndexRoute
+  '/docs': typeof DocsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/docs/api/anthropic': typeof DocsApiAnthropicRoute
+  '/docs/api/openai': typeof DocsApiOpenaiRoute
+  '/docs/clients/claude-code': typeof DocsClientsClaudeCodeRoute
+  '/docs/clients/codex': typeof DocsClientsCodexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/console': typeof ConsoleRouteWithChildren
   '/contact': typeof ContactRoute
+  '/docs': typeof DocsRouteWithChildren
   '/login': typeof LoginRoute
   '/models': typeof ModelsRoute
   '/register': typeof RegisterRoute
@@ -149,8 +221,16 @@ export interface FileRoutesById {
   '/console/overview': typeof ConsoleOverviewRoute
   '/console/usage': typeof ConsoleUsageRoute
   '/console/wallet': typeof ConsoleWalletRoute
+  '/docs/models': typeof DocsModelsRoute
+  '/docs/quickstart': typeof DocsQuickstartRoute
+  '/docs/troubleshooting': typeof DocsTroubleshootingRoute
   '/console/': typeof ConsoleIndexRoute
+  '/docs/': typeof DocsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/docs/api/anthropic': typeof DocsApiAnthropicRoute
+  '/docs/api/openai': typeof DocsApiOpenaiRoute
+  '/docs/clients/claude-code': typeof DocsClientsClaudeCodeRoute
+  '/docs/clients/codex': typeof DocsClientsCodexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -158,6 +238,7 @@ export interface FileRouteTypes {
     | '/'
     | '/console'
     | '/contact'
+    | '/docs'
     | '/login'
     | '/models'
     | '/register'
@@ -168,8 +249,16 @@ export interface FileRouteTypes {
     | '/console/overview'
     | '/console/usage'
     | '/console/wallet'
+    | '/docs/models'
+    | '/docs/quickstart'
+    | '/docs/troubleshooting'
     | '/console/'
+    | '/docs/'
     | '/api/auth/$'
+    | '/docs/api/anthropic'
+    | '/docs/api/openai'
+    | '/docs/clients/claude-code'
+    | '/docs/clients/codex'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -184,13 +273,22 @@ export interface FileRouteTypes {
     | '/console/overview'
     | '/console/usage'
     | '/console/wallet'
+    | '/docs/models'
+    | '/docs/quickstart'
+    | '/docs/troubleshooting'
     | '/console'
+    | '/docs'
     | '/api/auth/$'
+    | '/docs/api/anthropic'
+    | '/docs/api/openai'
+    | '/docs/clients/claude-code'
+    | '/docs/clients/codex'
   id:
     | '__root__'
     | '/'
     | '/console'
     | '/contact'
+    | '/docs'
     | '/login'
     | '/models'
     | '/register'
@@ -201,14 +299,23 @@ export interface FileRouteTypes {
     | '/console/overview'
     | '/console/usage'
     | '/console/wallet'
+    | '/docs/models'
+    | '/docs/quickstart'
+    | '/docs/troubleshooting'
     | '/console/'
+    | '/docs/'
     | '/api/auth/$'
+    | '/docs/api/anthropic'
+    | '/docs/api/openai'
+    | '/docs/clients/claude-code'
+    | '/docs/clients/codex'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ConsoleRoute: typeof ConsoleRouteWithChildren
   ContactRoute: typeof ContactRoute
+  DocsRoute: typeof DocsRouteWithChildren
   LoginRoute: typeof LoginRoute
   ModelsRoute: typeof ModelsRoute
   RegisterRoute: typeof RegisterRoute
@@ -236,6 +343,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -315,12 +429,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleWalletRouteImport
       parentRoute: typeof ConsoleRoute
     }
+    '/docs/': {
+      id: '/docs/'
+      path: '/'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/models': {
+      id: '/docs/models'
+      path: '/models'
+      fullPath: '/docs/models'
+      preLoaderRoute: typeof DocsModelsRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/quickstart': {
+      id: '/docs/quickstart'
+      path: '/quickstart'
+      fullPath: '/docs/quickstart'
+      preLoaderRoute: typeof DocsQuickstartRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/troubleshooting': {
+      id: '/docs/troubleshooting'
+      path: '/troubleshooting'
+      fullPath: '/docs/troubleshooting'
+      preLoaderRoute: typeof DocsTroubleshootingRouteImport
+      parentRoute: typeof DocsRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/docs/api/anthropic': {
+      id: '/docs/api/anthropic'
+      path: '/api/anthropic'
+      fullPath: '/docs/api/anthropic'
+      preLoaderRoute: typeof DocsApiAnthropicRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/api/openai': {
+      id: '/docs/api/openai'
+      path: '/api/openai'
+      fullPath: '/docs/api/openai'
+      preLoaderRoute: typeof DocsApiOpenaiRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/clients/claude-code': {
+      id: '/docs/clients/claude-code'
+      path: '/clients/claude-code'
+      fullPath: '/docs/clients/claude-code'
+      preLoaderRoute: typeof DocsClientsClaudeCodeRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/clients/codex': {
+      id: '/docs/clients/codex'
+      path: '/clients/codex'
+      fullPath: '/docs/clients/codex'
+      preLoaderRoute: typeof DocsClientsCodexRouteImport
+      parentRoute: typeof DocsRoute
     }
   }
 }
@@ -350,10 +520,35 @@ const ConsoleRouteChildren: ConsoleRouteChildren = {
 const ConsoleRouteWithChildren =
   ConsoleRoute._addFileChildren(ConsoleRouteChildren)
 
+interface DocsRouteChildren {
+  DocsModelsRoute: typeof DocsModelsRoute
+  DocsQuickstartRoute: typeof DocsQuickstartRoute
+  DocsTroubleshootingRoute: typeof DocsTroubleshootingRoute
+  DocsIndexRoute: typeof DocsIndexRoute
+  DocsApiAnthropicRoute: typeof DocsApiAnthropicRoute
+  DocsApiOpenaiRoute: typeof DocsApiOpenaiRoute
+  DocsClientsClaudeCodeRoute: typeof DocsClientsClaudeCodeRoute
+  DocsClientsCodexRoute: typeof DocsClientsCodexRoute
+}
+
+const DocsRouteChildren: DocsRouteChildren = {
+  DocsModelsRoute: DocsModelsRoute,
+  DocsQuickstartRoute: DocsQuickstartRoute,
+  DocsTroubleshootingRoute: DocsTroubleshootingRoute,
+  DocsIndexRoute: DocsIndexRoute,
+  DocsApiAnthropicRoute: DocsApiAnthropicRoute,
+  DocsApiOpenaiRoute: DocsApiOpenaiRoute,
+  DocsClientsClaudeCodeRoute: DocsClientsClaudeCodeRoute,
+  DocsClientsCodexRoute: DocsClientsCodexRoute,
+}
+
+const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ConsoleRoute: ConsoleRouteWithChildren,
   ContactRoute: ContactRoute,
+  DocsRoute: DocsRouteWithChildren,
   LoginRoute: LoginRoute,
   ModelsRoute: ModelsRoute,
   RegisterRoute: RegisterRoute,

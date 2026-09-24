@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Activity, BarChart3, FileText, House, KeyRound, LayoutDashboard, Menu, Receipt, Wallet, X } from "lucide-react";
+import { Activity, BarChart3, Boxes, FileText, House, KeyRound, LayoutDashboard, Menu, Receipt, Wallet, X } from "lucide-react";
 import { FoytonBrand } from "@/components/layout/foyton-brand";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { NotificationBell } from "@/components/ui/notification-bell";
@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
  */
 const NAV = [
   { to: "/console/wallet" as const, zh: "钱包", en: "Wallet", icon: Wallet },
+  { to: "/models" as const, zh: "模型列表", en: "Model list", icon: Boxes },
   { group: "personal", to: "/console/overview" as const, zh: "概况", en: "Overview", icon: LayoutDashboard },
   { group: "personal", to: "/console/keys" as const, zh: "API 密钥", en: "API keys", icon: KeyRound },
   { group: "personal", to: "/console/usage" as const, zh: "用量", en: "Usage", icon: Activity },
