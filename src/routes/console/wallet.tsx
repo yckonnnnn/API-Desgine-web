@@ -23,7 +23,9 @@ export const Route = createFileRoute("/console/wallet")({
   component: WalletPage,
 });
 
-const QUICK_AMOUNTS = [100, 200, 500, 1000] as const;
+const QUICK_AMOUNTS = [5, 10, 20, 50] as const;
+/** The one preset that carries the "Popular" badge and is selected on open. */
+const FEATURED_AMOUNT = 20;
 const MIN_AMOUNT = 1;
 
 /**
@@ -35,6 +37,46 @@ const MIN_AMOUNT = 1;
  */
 function redactAmount(formatted: string) {
   return formatted.replace(/[\d.,]/g, "*");
+}
+
+/**
+ * The top-up sheet's own mark: a filled banknote with the dollar sign knocked
+ * out of it.
+ *
+ * Drawn by hand rather than taken from the icon set. At the 18px this renders
+ * at, inside a 34px tile, every stock money glyph (banknote, coins,
+ * circle-dollar) collapses into noise — they carry an outline *and* interior
+ * detail, and at this size both land inside a pixel or two of each other. Two
+ * shapes survive: the banknote's solid silhouette, and the $ cut out of it.
+ *
+ * The knockout is `--color-ink` because the tile behind it always is; the bill
+ * itself is `currentColor`, so the mark still follows whatever the tile's text
+ * colour is set to.
+ */
+function TopUpMark() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M2.6 9.4A3.4 3.4 0 0 1 6 6h12a3.4 3.4 0 0 1 3.4 3.4v5.2A3.4 3.4 0 0 1 18 18H6a3.4 3.4 0 0 1-3.4-3.4V9.4Z"
+      />
+      <path
+        d="M12 8.7v6.6M13.9 10.6c-.42-.75-1.18-1.15-2-1.15-1.24 0-2.1.55-2.1 1.36 0 .95.85 1.33 2.1 1.55 1.36.26 2.32.63 2.32 1.66 0 .95-.85 1.55-2.32 1.55-.95 0-1.7-.32-2.1-1.05"
+        stroke="var(--color-ink)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
 }
 
 /**
@@ -178,7 +220,7 @@ function WalletPage() {
   /** The plan being checked out, when a specific one was chosen. Distinct from
    *  `open`: the top-up sheet is "pick an amount", this is "buy this plan". */
   const [checkout, setCheckout] = useState<Plan | null>(null);
-  const [amount, setAmount] = useState(200);
+  const [amount, setAmount] = useState<number>(FEATURED_AMOUNT);
   const [custom, setCustom] = useState("");
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
@@ -457,7 +499,10 @@ function WalletPage() {
           return (
             <article key={plan.id} className={cn("wallet-plan", `is-${plan.tone}`)}>
               {plan.badge ? (
-                <span className="wallet-plan-badge">{zh ? plan.badge.zh : plan.badge.en}</span>
+                <span className="wallet-plan-badge">
+                  <span className="tier-badge-flame" aria-hidden="true">🔥</span>
+                  {zh ? plan.badge.zh : plan.badge.en}
+                </span>
               ) : null}
 
               <header className="wallet-plan-top">
@@ -527,7 +572,7 @@ function WalletPage() {
         >
           <div className="topup-sheet">
             <div className="topup-intro">
-              <span className="topup-intro-mark" aria-hidden="true"><Plus size={17} strokeWidth={2.4} /></span>
+              <span className="topup-intro-mark" aria-hidden="true"><TopUpMark /></span>
               <button
                 type="button"
                 className="topup-close"
@@ -566,7 +611,12 @@ function WalletPage() {
                     >
                       <span className="topup-option-meta">
                         <span>{zh ? "充值额度" : "Wallet credit"}</span>
-                        {item === 200 ? <span className="topup-badge">{zh ? "常用" : "Popular"}</span> : null}
+                        {item === FEATURED_AMOUNT ? (
+                          <span className="topup-badge">
+                            <span className="tier-badge-flame" aria-hidden="true">🔥</span>
+                            {zh ? "常用" : "Popular"}
+                          </span>
+                        ) : null}
                       </span>
                       <span className="topup-option-amount">
                         <em>{USD_SYMBOL}</em>

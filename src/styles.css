@@ -4119,7 +4119,11 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
+}
+
+.wallet-page {
+  margin-top: -10px;
 }
 
 /* — Wallet: the balance lives on a card — */
@@ -4154,7 +4158,7 @@
   /* The ratio is the card's shape when it is alone on its row. Where the panel
      opposite is taller, the explicit height is what lets the card take that
      height — a stretched grid item with a ratio keeps the ratio instead. */
-  aspect-ratio: 1.5;
+  aspect-ratio: 1.7;
   height: 100%;
   padding: 24px 26px;
   overflow: hidden;
@@ -4507,13 +4511,13 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  margin: 30px 0 16px;
+  margin: 22px 0 12px;
 }
 
 .wallet-plans {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 16px;
   /* Per-row bands, not per-card fences: the name block, the price block and
      the CTA each own one band, so a one-line wrap in any card flexes the whole
      row instead of tilting the baseline of its neighbours. */
@@ -4529,10 +4533,10 @@
      aligned the CTA, leaving the mid-card blocks to drift. */
   grid-template-rows: subgrid;
   grid-row: span 4;
-  gap: 14px;
+  gap: 12px;
   min-height: 0;
-  padding: 22px 22px 20px;
-  border-radius: var(--radius-xl);
+  padding: 20px 20px 18px;
+  border-radius: 22px;
   border: 1px solid rgb(213 215 214 / 0.6);
   background: #fff;
   /* Same lift as the wallet card: a lit top edge over a stacked shadow, so the
@@ -4547,7 +4551,7 @@
 }
 
 .wallet-plan:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: 0 26px 50px -34px rgb(17 18 20 / 0.32);
 }
 
@@ -4614,9 +4618,9 @@
   align-items: baseline;
   gap: 9px;
   margin: 0;
-  padding-top: 14px;
+  padding-top: 12px;
   border-top: 1px solid rgb(17 18 20 / 0.08);
-  font-size: clamp(1.9rem, 2.6vw, 2.35rem);
+  font-size: clamp(1.8rem, 2.2vw, 2.15rem);
   font-weight: 600;
   letter-spacing: -0.045em;
   line-height: 1;
@@ -4651,10 +4655,10 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   margin: 0;
   padding: 0;
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--color-mist);
 }
 
@@ -4707,8 +4711,8 @@
 }
 
 .wallet-plan-cta {
-  min-height: 44px;
-  padding: 10px 18px;
+  min-height: 42px;
+  padding: 9px 16px;
   border: 0;
   border-radius: var(--radius-md);
   background: var(--color-ink);
@@ -4739,6 +4743,9 @@
 
 .wallet-plan-badge {
   position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   top: 16px;
   right: 18px;
   padding: 5px 13px 6px;
@@ -4749,6 +4756,10 @@
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
+}
+
+.wallet-plan-badge .tier-badge-flame {
+  font-size: 12px;
 }
 
 .wallet-plan-icon {
@@ -5008,20 +5019,39 @@
   color: var(--color-ink);
 }
 
+/* Full-height currency mark, not a shrunk superscript.
+   At 15px/500 beside 27px/600 digits the `$` read as a speck — and it carries
+   half the meaning of the number next to it. It now sits at the digits' own
+   size, in solid ink rather than a muted grey, and reads as the unit rather
+   than as a leading digit.
+   The stroke is what actually buys that extra weight: this stack is Arial /
+   Helvetica, which only ships regular and bold, so 700 resolves to the same
+   face the 600 digits already use and bumping the number further does nothing.
+   A hairline stroke around the glyph is the one lever left, and it is what
+   gives the symbol its stamped, higher-contrast look at this size. */
 .topup-option-amount em {
-  font-size: 15px;
+  font-size: inherit;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 700;
+  color: var(--color-ink);
+  -webkit-text-stroke: 0.6px var(--color-ink);
 }
 
 .topup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   padding: 2px 7px 3px;
+  border: 1px solid rgb(95 122 22 / 0.26);
   border-radius: var(--radius-capsule);
   background: var(--color-acid-tint);
   color: var(--color-acid-ink);
   font-size: 10px;
   font-weight: 600;
+  box-shadow: 0 1px 5px rgb(95 122 22 / 0.12);
 }
+
+.topup-badge .tier-badge-flame { font-size: 11px; }
 
 .topup-custom {
   display: block;
@@ -5048,11 +5078,16 @@
   background: var(--color-canvas-warm);
 }
 
+/* Same rule as the amount grid's `$`: matched to the value's size (18px here),
+   set in ink where it used to be 15px and grey — a placeholder-grade grey that
+   made the symbol look disabled next to an active input — and stroked by the
+   same proportion as the grid's mark, so both symbols read as the same object. */
 .topup-custom-field em {
-  font-size: 15px;
+  font-size: 18px;
   font-style: normal;
-  font-weight: 600;
-  color: var(--color-mist);
+  font-weight: 700;
+  color: var(--color-ink);
+  -webkit-text-stroke: 0.4px var(--color-ink);
 }
 
 .topup-custom-field input {
@@ -5211,11 +5246,27 @@
   color: var(--color-haze);
 }
 
-@media (max-width: 1279px) {
+@media (max-width: 1099px) {
   /* Two-up before one-up: at mid widths three columns starve the type, but a
      single column wastes the row. The featured card leads the pair. */
   .wallet-plans {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Three cards in a two-column band leave the last one stranded in the left
+   cell, which reads as a card that failed to load rather than as a layout.
+   Centring it turns the orphan into the point of the composition: the dark
+   card closes the row like a keystone, at the same width as its neighbours.
+   `:nth-child(odd):last-child` is the count test — it fires only for an odd
+   number of plans, so a fourth plan later returns to a plain 2×2 instead of
+   centring the wrong card. 9px is half the 18px gap, so the width equals one
+   column exactly. */
+@media (min-width: 960px) and (max-width: 1099px) {
+  .wallet-plans > .wallet-plan:nth-child(odd):last-child {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 9px);
   }
 }
 
