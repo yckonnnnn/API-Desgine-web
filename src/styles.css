@@ -6452,7 +6452,8 @@
 .logs-live-mark.is-demo { border-color: rgb(164 125 47 / .2); background: #fffaf0; color: #80602a; }
 .logs-live-mark.is-demo i { background: #c08b31; box-shadow: 0 0 0 3px rgb(192 139 49 / .12); }
 .logs-filter { overflow: hidden; margin-bottom: 16px; border: 1px solid rgb(17 18 20 / .075); border-radius: 22px; background: rgb(255 255 255 / .76); box-shadow: 0 18px 36px -34px rgb(70 93 101 / .42); }
-.logs-filter-main { display: grid; grid-template-columns: minmax(190px, 1.2fr) minmax(190px, 1.2fr) minmax(150px, 1fr) auto auto; align-items: end; gap: 11px; padding: 18px 18px 15px; }
+.logs-filter-main { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.05fr) minmax(0, .8fr) max-content max-content; align-items: end; gap: 9px; padding: 18px 15px 15px; }
+.logs-filter-main > * { min-width: 0; }
 .logs-field { display: grid; gap: 7px; min-width: 0; color: var(--color-mist); font-size: 11px; }
 .logs-field > span:first-child { padding-left: 2px; }
 .logs-input-wrap { position: relative; display: flex; align-items: center; min-width: 0; }
@@ -6464,8 +6465,8 @@
 .logs-more-button:hover, .logs-reset-button:hover { background: #f1f3ed; color: var(--color-ink); }
 .logs-more-button > svg:last-child { transition: transform 160ms ease; }
 .logs-more-button.is-open > svg:last-child { transform: rotate(90deg); }
-.logs-filter-actions { display: flex; align-items: center; gap: 7px; }
-.logs-search-button { min-width: 94px; padding-inline: 16px; background: #17191a; color: white; font-weight: 600; }
+.logs-filter-actions { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.logs-search-button { min-width: 94px; padding-inline: 13px; background: #17191a; color: white; font-weight: 600; }
 .logs-search-button:hover { background: #30342d; transform: translateY(-1px); }
 .logs-search-button:active, .logs-more-button:active, .logs-reset-button:active { transform: scale(.98); }
 .logs-filter-extra { display: grid; grid-template-columns: minmax(160px, 220px) minmax(160px, 220px) 1fr; align-items: end; gap: 12px; padding: 0 18px 16px; animation: ops-fade 180ms ease both; }
