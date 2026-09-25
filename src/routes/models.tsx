@@ -253,7 +253,7 @@ function ModelsMarket() {
               </div>
               <div className="market-th">{zh ? "可用性" : "Availability"}</div>
               <div className="market-th" style={{ textAlign: "right" }}>
-                {zh ? "使用" : "Use"}
+                {zh ? "计费规则" : "Billing rules"}
               </div>
             </div>
 
@@ -327,12 +327,12 @@ function ModelsMarket() {
                       </div>
                     </div>
 
-                    {/* Col 4: FOYTON API Input Price (Warm Orange Highlight) */}
+                    {/* Col 4: FOYTON API Input Price */}
                     <div className="market-cell is-foyton-in">
                       <div className="market-foyton-price-row">
                         <span className="market-price-foyton">{foytonIn}</span>
                         {model.discount && (
-                          <span className="market-discount-badge">{model.discount}</span>
+                          <span className="market-discount-badge"><span className="market-discount-flame" aria-hidden="true">🔥</span>{model.discount}</span>
                         )}
                       </div>
                       {foytonIn !== "—" && (
@@ -351,12 +351,12 @@ function ModelsMarket() {
                       )}
                     </div>
 
-                    {/* Col 5: FOYTON API Output Price (Warm Orange Highlight) */}
+                    {/* Col 5: FOYTON API Output Price */}
                     <div className="market-cell is-foyton-out">
                       <div className="market-foyton-price-row">
                         <span className="market-price-foyton">{foytonOut}</span>
                         {model.discount && (
-                          <span className="market-discount-badge">{model.discount}</span>
+                          <span className="market-discount-badge"><span className="market-discount-flame" aria-hidden="true">🔥</span>{model.discount}</span>
                         )}
                       </div>
                       {foytonOut !== "—" && (
@@ -392,21 +392,14 @@ function ModelsMarket() {
                       <div className="market-actions-row">
                         <button
                           type="button"
-                          className="market-action-btn"
+                          className="market-billing-action"
                           onClick={() => setActiveModel(model)}
-                          aria-label={zh ? `查看 ${model.full} 详情` : `View ${model.full} details`}
-                          title={zh ? "查看详情" : "View details"}
+                          aria-label={zh ? `查看 ${model.full} 计费规则` : `View billing rules for ${model.full}`}
+                          data-cursor="hover"
                         >
-                          <ChevronRight size={16} />
+                          <span className="market-billing-action-label">{zh ? "计费规则" : "Pricing"}</span>
+                          <ArrowRight size={17} aria-hidden="true" />
                         </button>
-                        <Link
-                          to="/console/keys"
-                          className="market-action-btn"
-                          aria-label={zh ? `接入 ${model.full}` : `Use ${model.full}`}
-                          title={zh ? "快速接入" : "Integration"}
-                        >
-                          <ChevronRight size={16} />
-                        </Link>
                       </div>
                     </div>
                   </article>

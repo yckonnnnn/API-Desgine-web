@@ -256,7 +256,7 @@ export function UserButton({ language = "en" }: { language?: "zh" | "en" }) {
                   <span className="user-card-tier-label">{tierLabel}</span>
                   <Link
                     to="/console/wallet"
-                    search={activePlan ? {} : { topup: true }}
+                    search={{ topup: true }}
                     className="user-card-tier-btn"
                     data-cursor="hover"
                     onClick={() => setOpen(false)}
